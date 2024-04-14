@@ -1,10 +1,23 @@
 <script setup lang="ts">
 import HLoginForm from '../components/HLoginForm.vue'
+import HSubmitButton from '../components/HSubmitButton.vue'
+import HButton from '../components/HButton.vue'
+import HCard from '../components/HCard.vue'
 </script>
 
 <template>
-<h1>Register for Hitstar</h1>
+<div class="bg-neutral">
+<h1 class="mb-5 ml-5 font-bold">Login for your Hitstar account</h1>
 <HLoginForm>Login</HLoginForm>
-<input type="text" class="border-2 border-gray-500">
-<input type="password" name="" id="">
+<RouterLink to="/start">
+    <HButton>Go to Start Screen</HButton>
+</RouterLink>
+<RouterLink to="/register">
+    <HButton>Go to Registration</HButton>
+</RouterLink>
+<RouterLink to="/qr-code">
+    <HSubmitButton>Login</HSubmitButton>
+</RouterLink>
+<HCard></HCard>
+</div>
 </template>
