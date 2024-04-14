@@ -6,16 +6,15 @@ import SearchInput from "/src/components/gameSettingComponents/SearchInput.vue"
 import Genre from "/src/components/gameSettingComponents/Genre.vue"
 import MusicYear from "/src/components/gameSettingComponents/MusicYear.vue"
 
+import GameLogo from "/src/components/GameLogo.vue"
 
 </script>
 
 <template>
     <h1>Music configuration</h1>
 
-    <div class="  mx-auto  mb-10 ">
-        <img class="h-auto w-28" src=" ..\assets\hitstar.jpg
-" alt="image description">
-    </div>
+<GameLogo> </GameLogo>
+
 
 
     <div class="container mx-auto px-30 ">
@@ -46,10 +45,10 @@ import MusicYear from "/src/components/gameSettingComponents/MusicYear.vue"
 
             <button type="button"
                 class=" text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
-        
-        
-        
-            </div>
+
+
+
+        </div>
     </div>
 
 </template>

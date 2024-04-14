@@ -4,7 +4,7 @@
 
 
 
-
+<!-- List of Checkbox for Genres -->
 <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-Grey">Choose Genre </h3>
 
 <ul class="grid w-full gap-4 md:grid-cols-4">
