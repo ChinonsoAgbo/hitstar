@@ -4,7 +4,8 @@ import HAvatar from '../components/HAvatar.vue';
 import HCard from '../components/HCard.vue'
 import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
-import { PlayIcon } from '@heroicons/vue/24/outline'
+import MusicPlayer from "../components/MusicPlayer.vue";
+import { useElementBounding } from '@vueuse/core'
 
 interface Card {
     title: string,
@@ -19,68 +20,137 @@ interface Player {
 }
 
 enum GameCycle {
-    NEW_GAME, 
-    NEW_TURN, 
-    WAIT_FOR_DRAWING_CARD, 
+    START_GAME,
+    START_TURN,
+    WAIT_FOR_DRAW_CARD,
     DRAW_CARD, 
-    CARD_DRAWED, 
-    PLAY_CARD_SONG, 
-    SORT_CARD
+    CARD_DREW,
+    SHOW_SONG_MENU,
+    SORT_CARD,
+    WAIT_FOR_CARD_SORTED,
+    CARD_SORTED
 }
+const activeState = ref(GameCycle.START_GAME);
 
 const players = ref<Player[]>([
     {
         name: "Harry",
-        icon: "../../public/profile-picture-5.jpg",
+        icon: "/profile-picture-5.jpg",
         cards: []
     },
     {
         name: "Hermione",
-        icon: "../../public/profile-picture-3.jpg",
+        icon: "/profile-picture-3.jpg",
         cards: []
     },
     {
         name: "Ron",
-        icon: "../../public/profile-picture-2.jpg",
+        icon: "/profile-picture-2.jpg",
         cards: []
     }
 ]);
-
 const activePlayerIndex = ref(-1);
 const activePlayer = computed(() => activePlayerIndex.value > -1 ? players.value[activePlayerIndex.value] : null);
 
-const activeState = ref(GameCycle.NEW_GAME);
+const cards = ref<Card[]>([
+    {
+      title: "HITSTAR",
+      year: 2024,
+      interpreter: "HITSTAR"
+    },
+    {
+      title: "We are the Champions",
+      year: 1978,
+      interpreter: "Queen"
+    },
+    {
+      title: "Watermelon Sugar",
+      year: 2020,
+      interpreter: "Harry Styles"
+    },
+    {
+      title: "Hallelujah",
+      year: 1648,
+      interpreter: "G. F. Händel"
+    }
+]);
+const drawnCard = ref<Card | null>(null);
+const insertionIndex = ref(0);
 
-const timeDelta = 1;
-// function newGame() {
-//     activeState.value = states[0]
-// }
+const animationDuration = 3000;
+const musicPlayDuration = 5000;
+
+
+const timeline = ref<HTMLDivElement | null>(null);
+const timelineBounding = useElementBounding(timeline);
 
 function newTurn() {
-    activeState.value = GameCycle.NEW_TURN
+    activeState.value = GameCycle.START_TURN
     activePlayerIndex.value = (activePlayerIndex.value + 1) % players.value.length
 
     setTimeout(() => {
-        activeState.value = GameCycle.WAIT_FOR_DRAWING_CARD
-    }, timeDelta)
+        activeState.value = GameCycle.WAIT_FOR_DRAW_CARD
+    }, animationDuration)
 }
 
 function drawCard() {
-    if (activeState.value !== GameCycle.DRAW_CARD) {
-        activeState.value = GameCycle.DRAW_CARD
-        
-    } else {
-        activeState.value = GameCycle.WAIT_FOR_DRAWING_CARD
-    }
+    activeState.value = GameCycle.DRAW_CARD
+    drawnCard.value = cards.value[Math.floor(Math.random() * cards.value.length)];
+
     setTimeout(() => {
-        activeState.value = GameCycle.CARD_DRAWED
+        activeState.value = GameCycle.CARD_DREW
     }, 1000);
 }
 
+function showSongMenu() {
+    activeState.value = GameCycle.SHOW_SONG_MENU
+}
+
+
+function startSorting() {
+    activeState.value = GameCycle.SORT_CARD
+    insertionIndex.value = Math.floor(activePlayer.value?.cards.length / 2)
+    console.log(insertionIndex.value)
+}
+
+function stepRight() {
+  insertionIndex.value = (insertionIndex.value - 1 + activePlayer.value?.cards.length) % (activePlayer.value?.cards.length + 1)
+  console.log(insertionIndex.value)
+  timeline.value.style.left = timelineBounding.left.value + 80 + 'px'
+}
+
+function stepLeft() {
+  insertionIndex.value = (insertionIndex.value + 1) % (activePlayer.value?.cards.length + 1)
+
+  console.log(insertionIndex.value)
+  timeline.value.style.left = timelineBounding.left.value - 80 + 'px'
+}
+
+function insertCard() {
+  if (activeState.value === GameCycle.SORT_CARD) {
+    activePlayer.value?.cards.splice(insertionIndex.value, 0, drawnCard.value!);
+    drawnCard.value = null;
+    activeState.value = GameCycle.WAIT_FOR_CARD_SORTED;
+    timeline.value.style.left = '10%'
+    setTimeout(() => {
+      activeState.value = GameCycle.CARD_SORTED;
+    }, 1000);
+  }
+}
+
 onMounted(() => {
+    document.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+          insertCard()
+      } else if (e.key === 'ArrowLeft') {
+          stepLeft()
+      } else if (e.key === 'ArrowRight') {
+          stepRight()
+      }
+    }
     setTimeout(() => {
         newTurn()
-    }, timeDelta)
+    }, animationDuration)
 })
 </script>
 
@@ -99,8 +169,8 @@ onMounted(() => {
         </div>
 
         <!-- Zeitstrahl -->
-        <div class="fixed top-[30%] left-[10%] w-[80%] h-[40%] flex items-center justify-center gap-2">
-            <HCard 
+        <div ref="timeline" class="fixed top-[30%] left-[10%] w-[80%] h-[40%] flex items-center justify-center gap-2">
+            <HCard
                 v-for="card in activePlayer?.cards" 
                 :size="10">
                 <h5 class="text-md text-gray-900 dark:text-white text-center">{{ card.title }}</h5>
@@ -110,7 +180,12 @@ onMounted(() => {
         </div>
 
         <!-- Aktuelle Karte -->
-        <div v-if="activeState === GameCycle.CARD_DRAWED" class="fixed bottom-4 left-0 w-full flex justify-center">
+        <div
+            v-if="activeState >= GameCycle.CARD_DREW && activeState <= GameCycle.SORT_CARD"
+            @click="showSongMenu()"
+            class="fixed bottom-4 left-0 w-full flex justify-center"
+            :class="[activeState === GameCycle.SORT_CARD ? 'animate-pulse' : '']">
+
             <HCard :size="10" :padding="false" class="">
                 <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
             </HCard>
@@ -127,14 +202,18 @@ onMounted(() => {
 
         <!-- Nachziehstapel -->
         <div class="fixed bottom-4 left-4 hover:cursor-pointer" @click="drawCard()">
-            <HCard :size="10" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAWING_CARD ? 'animate-pulse' : '']">
+            <HCard :size="10" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
                 <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
             </HCard>
         </div>
 
         <!-- v-if="activeState === GameCycle.NEW_GAME || activeState === GameCycle.NEW_TURN" -->
-        <HPopOver>
-            <div v-if="activeState === GameCycle.NEW_TURN">
+        <HPopOver v-if="
+            activeState === GameCycle.START_GAME ||
+            activeState === GameCycle.START_TURN ||
+            activeState == GameCycle.SHOW_SONG_MENU
+        ">
+            <div v-if="activeState === GameCycle.START_TURN">
                 <Transition name="pop" appear>
                     <div class="flex flex-col justify-center items-center gap-3">
                         <HAvatar 
@@ -148,19 +227,16 @@ onMounted(() => {
                     </div>
                 </Transition>
             </div>
-            <div v-if="activeState === GameCycle.NEW_GAME">
+            <div v-if="activeState === GameCycle.START_GAME">
                 <Transition name="pop" appear>
-                    <h1 
-                        class="text-5xl font-bold tracking-tight text-white">
-                    New Game!
-                </h1>
+                    <h1 class="text-5xl font-bold tracking-tight text-white">
+                      New Game!
+                    </h1>
                 </Transition>
             </div>
-            <div class="w-full h-full flex justify-center items-center">
+            <div v-if="activeState === GameCycle.SHOW_SONG_MENU" class="w-full h-full flex justify-center items-center">
                 <Transition name="pop" appear>
-                    <div class="w-[30%] h-[30%] bg-white rounded-md">
-                        <PlayIcon class="w-full h-full" />
-                    </div>
+                    <MusicPlayer :time-delta="musicPlayDuration" @finished="startSorting()" />
                 </Transition>
             </div>
         </HPopOver>
@@ -190,15 +266,12 @@ onMounted(() => {
 .draw-leave-active, .draw-enter-active {
    animation: slide-in 1s ease;
  }
-
  @keyframes slide-in {
     0% {
         left: -50%;
-        /* transform: translateX(0%); */
     }
     100% {
         left: 0;
-        /* transform: translateX(50%); */
     }
  }
 </style>
