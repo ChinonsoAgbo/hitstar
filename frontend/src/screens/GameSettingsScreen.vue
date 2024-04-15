@@ -2,9 +2,9 @@
 
 </script>
 <script setup>
-import SearchInput from "/src/components/gameSettingComponents/SearchInput.vue"
-import Genre from "/src/components/gameSettingComponents/Genre.vue"
-import MusicYear from "/src/components/gameSettingComponents/MusicYear.vue"
+import SearchInput from "./gameSettingComponents/SearchInput.vue"
+import Genre from "./gameSettingComponents/Genre.vue"
+import MusicYear from "./gameSettingComponents/MusicYear.vue"
 
 import GameLogo from "/src/components/GameLogo.vue"
 
@@ -17,7 +17,7 @@ import GameLogo from "/src/components/GameLogo.vue"
 
 
 
-    <div class="container mx-auto px-30 ">
+    <div class="container mx-auto  ">
         <!-- ... -->
 
         <!-- Search -->

@@ -1,7 +1,7 @@
 <script setup lang="ts" >
-import WaitingGamers from '../components/waitingLists/WaitingGamers.vue';
+import WaitingGamers from './lobbyWaitingLists/WaitingGamers.vue';
 
-import GameLogo from "/src/components/GameLogo.vue"
+import GameLogo from "../components/GameLogo.vue"
 
 </script>
 
@@ -11,6 +11,7 @@ import GameLogo from "/src/components/GameLogo.vue"
     <GameLogo></GameLogo>
 
     <div class="container mx-auto  ">
+        <h3 class="mb-1 text-center text-lg font-semibold text-gray-900 dark:text-Grey"> Wait for Hitstars to join before starting the Game ! </h3>
 
 
             <!-- Joining Icons and List -->
