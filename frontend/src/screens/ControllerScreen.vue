@@ -76,7 +76,7 @@ const toggleDropdown = () => {
             </div>
 
             <div class="flex flex-col items-center pb-10">
-                <img class="w-20 h-24 mb-3 rounded-full shadow-lg" src="../assets/image2.png" alt="Game Username" />
+                <img class="w-12 h-12 mb-3 rounded-full shadow-lg" src="../assets/image1.jpg" alt="Game Username" />
                 <span class="text-sm text-gray-500 dark:text-gray-400">Game Username</span>
 
                 <!-- Navigation button-->
