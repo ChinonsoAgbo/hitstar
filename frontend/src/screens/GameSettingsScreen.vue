@@ -17,7 +17,10 @@ import GameLogo from "/src/components/GameLogo.vue"
 
 
 
-    <div class="container mx-auto  ">
+   <!-- <div class="container mx-auto  "> -->
+
+    <div class="  container gab-1 relative flex  mx-auto min-h-screen flex-col  overflow-hidden bg-transparent py-6 sm:py-12">
+        <div class=""> </div>
         <!-- ... -->
 
         <!-- Search -->

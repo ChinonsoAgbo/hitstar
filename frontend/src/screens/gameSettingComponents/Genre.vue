@@ -7,7 +7,7 @@
 <!-- List of Checkbox for Genres -->
 <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-Grey">Choose Genre </h3>
 
-<ul class="grid w-full gap-4 md:grid-cols-4">
+<ul class="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
     <li>
         <input type="checkbox" id="rockMetal" value="" class="hidden peer">
         <label for="rockMetal"
