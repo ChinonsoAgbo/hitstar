@@ -8,7 +8,7 @@ import GameLogo from "../components/GameLogo.vue"
 <template>
     <h1>Controller Lobby</h1>
 <!-- Logo -->
-    <GameLogo></GameLogo>
+    <GameLogo></GameLogo>  <!-- Logo über HCard compo-->
 
     <div class="container mx-auto  ">
         <h3 class="mb-1 text-center text-lg font-semibold text-gray-900 dark:text-Grey"> Wait for Hitstars to join before starting the Game ! </h3>
