@@ -1,10 +1,7 @@
-<script setup lang="ts">
-
-</script>
 <script setup>
-import SearchInput from "./gameSettingComponents/SearchInput.vue"
-import Genre from "./gameSettingComponents/Genre.vue"
-import MusicYear from "./gameSettingComponents/MusicYear.vue"
+import SearchInput from "../components/gameSettingComponents/SearchInput.vue"
+import Genre from "../components/gameSettingComponents/Genre.vue"
+import MusicYear from "../components/gameSettingComponents/MusicYear.vue"
 
 import GameLogo from "/src/components/GameLogo.vue"
 

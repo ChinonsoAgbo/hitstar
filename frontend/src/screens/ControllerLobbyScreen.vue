@@ -1,5 +1,5 @@
 <script setup lang="ts" >
-import WaitingGamers from './lobbyWaitingLists/WaitingGamers.vue';
+import WaitingGamers from '../components/lobbyWaitingLists/WaitingGamers.vue';
 
 import GameLogo from "../components/GameLogo.vue"
 
