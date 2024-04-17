@@ -10,7 +10,7 @@ const changeLoginStatus = () => {
 </script>
 
 <template>
-  <div v-show="isLoggedIn" class="absolute top-5 right-5 h-16 w-16">
+  <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
     <HAvatar url="/profile-picture-5.jpg"> </HAvatar>
   </div>
   <div
@@ -37,9 +37,7 @@ const changeLoginStatus = () => {
       </div>
     </div>
     <RouterLink to="/">
-      <HButton @click="changeLoginStatus" class="lg:m-5 m-10"
-        >Game instructions</HButton
-      >
+      <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
 </template>
