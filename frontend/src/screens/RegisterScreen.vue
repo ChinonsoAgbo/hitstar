@@ -15,7 +15,7 @@ import HCard from '../components/HCard.vue'
 <RouterLink to="/login">
     <HButton>Go to Login</HButton>
 </RouterLink>
-<RouterLink to="/login">
+<RouterLink to="/start">
     <HSubmitButton>Register</HSubmitButton>
 </RouterLink>
 <HCard size=15 :padding='false'>

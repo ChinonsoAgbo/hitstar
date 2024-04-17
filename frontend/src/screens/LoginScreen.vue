@@ -15,7 +15,7 @@ import HCard from '../components/HCard.vue'
 <RouterLink to="/register">
     <HButton>Go to Registration</HButton>
 </RouterLink>
-<RouterLink to="/qr-code">
+<RouterLink to="/start">
     <HSubmitButton>Login</HSubmitButton>
 </RouterLink>
 <HCard size=15 :padding='false'>
