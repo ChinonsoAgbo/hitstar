@@ -10,10 +10,7 @@ import HCard from '../components/HCard.vue'
 <h1 class="mb-5 ml-5 font-bold">Login for your Hitstar account</h1>
 <HLoginForm>Login</HLoginForm>
 <RouterLink to="/start">
-    <HButton>Go to Start Screen</HButton>
-</RouterLink>
-<RouterLink to="/register">
-    <HButton>Go to Registration</HButton>
+    <HButton>Go back to Start Screen</HButton>
 </RouterLink>
 <RouterLink to="/start">
     <HSubmitButton>Login</HSubmitButton>
