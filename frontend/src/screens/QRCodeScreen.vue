@@ -115,13 +115,7 @@ const qrcode = useQRCode(url);
       <p class="text-lg font-semibold">Players in the waiting lobby:</p>
       <li class="py-4">
         <div class="flex items-center space-x-4 rtl:space-x-reverse">
-          <HAvatar
-            class="font-medium text-gray-600 dark:text-gray-300, overflow-visible"
-            >HA
-            <span
-              class="top-0 left-7 absolute w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full"
-            ></span>
-          </HAvatar>
+          <HAvatar url="/profile-picture-2.jpg"> </HAvatar>
           <div class="flex-1 min-w-0">
             <p
               class="text-sm font-medium text-gray-900 truncate dark:text-white"
@@ -134,13 +128,7 @@ const qrcode = useQRCode(url);
 
       <li class="py-3 sm:py-4">
         <div class="flex items-center space-x-4 rtl:space-x-reverse">
-          <HAvatar
-            class="font-medium text-gray-600 dark:text-gray-300, overflow-visible"
-            >CA
-            <span
-              class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
-            ></span>
-          </HAvatar>
+          <HAvatar url="/profile-picture-5.jpg"> </HAvatar>
           <div class="flex-1 min-w-0">
             <p
               class="text-sm font-medium text-gray-900 truncate dark:text-white"
@@ -152,56 +140,12 @@ const qrcode = useQRCode(url);
       </li>
       <li class="py-3 sm:py-4">
         <div class="flex items-center space-x-4 rtl:space-x-reverse">
-          <HAvatar
-            class="font-medium text-gray-600 dark:text-gray-300, overflow-visible"
-            >CH
-            <span
-              class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
-            ></span>
-          </HAvatar>
+          <HAvatar url="/profile-picture-3.jpg"> </HAvatar>
           <div class="flex-1 min-w-0">
             <p
               class="text-sm font-medium text-gray-900 truncate dark:text-white"
             >
               Cornelius Hartmann
-            </p>
-          </div>
-        </div>
-      </li>
-      <li class="py-3 sm:py-4">
-        <div class="flex items-center space-x-4 rtl:space-x-reverse">
-          <HAvatar
-            class="font-medium text-gray-600 dark:text-gray-300, overflow-visible"
-            >MW
-            <span
-              class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
-            ></span>
-          </HAvatar>
-          <div class="flex-1 min-w-0">
-            <p
-              class="text-sm font-medium text-gray-900 truncate dark:text-white"
-            >
-              Michael Wenninger
-            </p>
-          </div>
-        </div>
-      </li>
-      <li class="pt-3 pb-0 sm:pt-4">
-        <div class="flex items-center space-x-4 rtl:space-x-reverse">
-          <div class="flex-shrink-0">
-            <HAvatar
-              class="font-medium text-gray-600 dark:text-gray-300, overflow-visible"
-              >SW
-              <span
-                class="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"
-              ></span>
-            </HAvatar>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p
-              class="text-sm font-medium text-gray-900 truncate dark:text-white"
-            >
-              Simon Widmann
             </p>
           </div>
         </div>
