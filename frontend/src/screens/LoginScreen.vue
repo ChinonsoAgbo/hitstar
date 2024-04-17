@@ -18,6 +18,8 @@ import HCard from '../components/HCard.vue'
 <RouterLink to="/qr-code">
     <HSubmitButton>Login</HSubmitButton>
 </RouterLink>
-<HCard></HCard>
+<HCard size=15 :padding='false'>
+  <img class="rounded-2xl" src="/hitstar.jpg" alt="" />
+</HCard>
 </div>
 </template>
