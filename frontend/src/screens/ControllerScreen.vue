@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, defineProps } from 'vue';
 
+import { ChevronLeftIcon } from '@heroicons/vue/24/outline';
 
 const showDropdown = ref(false);
 const username = ref('Laddy B'); // Defined the username variable
@@ -146,8 +147,9 @@ const updateUsername = () => {
                 <!-- Rejection button-->
                 <button type="button"
                     class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full  px-20 py-4  pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-                    
-                    <img class="w-10 h-10 rounded-full" src="../assets/icons/unlike.png" alt=""></button>
+            <ChevronLeftIcon class="w-10 h-10 text-slate-200"> </ChevronLeftIcon>
+                    <!-- <img class="w-10 h-10 rounded-full" src="../assets/icons/unlike.png" alt=""> -->
+                </button>
            
                 </div>
 
