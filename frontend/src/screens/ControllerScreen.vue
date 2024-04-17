@@ -99,7 +99,7 @@ const updateUsername = () => {
                 
                 <div class="flex justify-start m-3 ">
                     <!-- Link to Game instructions -->
-                    <img class="w-12 h-12 mb-3 rounded-full shadow-lg" src="../assets/image1.jpg" alt="Game Username" />
+                    <img class="w-12 h-12 mb-3 rounded-full shadow-lg" src="/image1.jpg" alt="Game Username" />
                     <span class="text-sm m-2 text-gray-500 dark:text-gray-400">{{ username }}</span>
                 </div>
 
@@ -109,7 +109,7 @@ const updateUsername = () => {
                     <button @click="toggleDropdown" data-dropdown-toggle="dropdown"
                         class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
                         type="button">
-                        <img class="w-10 h-10 " src="../assets/icons/list.png" alt="">
+                        <img class="w-10 h-10 " src="/icons/list.png" alt="">
                     </button>
 
                     
@@ -117,7 +117,7 @@ const updateUsername = () => {
 
 
                 <!-- Link to Game instructions -->
-                <a href=""> <img class="w-10 h-10  rounded-full" src="../assets/icons/support.png" alt=""></a>
+                <a href=""> <img class="w-10 h-10  rounded-full" src="/icons/support.png" alt=""></a>
 
 
             </div>
