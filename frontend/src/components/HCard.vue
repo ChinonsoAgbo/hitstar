@@ -22,7 +22,6 @@ withDefaults(defineProps<{
             <div
                 :style="{ width: size + 'em', height: size + 'em', padding: padding ? '1.25rem' : '0rem' }"
                 class="flex-col bg-secondary-500 border-primary-700 border-4 rounded-2xl">
-                <img class="rounded-2xl" src="/hitstar.jpg" alt="" />
                 <slot />
             </div>
         <!-- </template> -->
