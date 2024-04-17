@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import  {ref} from 'vue'
-import WaitingPlayer from '../WaitingPlayer.vue';
+import { ref } from 'vue'
+import Player from '../Player.vue';
 
 interface Player {
     name: string,
@@ -21,7 +21,7 @@ const players = ref<Player[]>([
         name: "Ron",
         icon: "/profile-picture-2.jpg",
     },
-  
+
 ]);
 
 </script>
@@ -32,11 +32,13 @@ const players = ref<Player[]>([
 
     <div class="mt-5  mb-10">
         <div class="border border-blue-300 shadow rounded-md p-4 max-w-m w-full mt-auto mx-auto">
+          
             <div class="animate-pulse ">
+              
                 <!-- Gamers Grid -->
 
                 <div
-                    class="relative mt-10  mb-10 w-full grid grid-cols-6 sm:grid-cols-6 md:grid-cols-6 lg:grid-cols-6 xl:grid-cols-6 ">
+                    class="mt-10  mb-10 w-full grid grid-cols-4  sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 ">
                     <!-- To Join Game -->
 
 
@@ -46,6 +48,7 @@ const players = ref<Player[]>([
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
                         </span>
+
                         <div class="rounded-full bg-slate-700 h-10 w-10"></div>
                         <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6"> Joining..
                         </span>
@@ -53,9 +56,9 @@ const players = ref<Player[]>([
                     </div>
 
                     <!-- Successfully Joined list-->
-                   <WaitingPlayer v-for="player in players" :player="player" > </WaitingPlayer>
+                    <Player v-for="player in players" :player="player"> </Player>
 
-                    
+
                     <!-- <div class="relative">
                         <img class="w-10 h-10 rounded" src="../../assets/image4.png" alt="">
                         <span
@@ -95,6 +98,9 @@ const players = ref<Player[]>([
                 </div>
             </div>
         </div>
+
+
+
 
     </div>
 
