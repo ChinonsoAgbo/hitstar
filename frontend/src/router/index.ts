@@ -9,6 +9,7 @@ import LoginScreen from '../screens/LoginScreen.vue'
 import QRCodeScreen from '../screens/QRCodeScreen.vue'
 import RegisterScreen from '../screens/RegisterScreen.vue'
 import StartScreen from '../screens/StartScreen.vue'
+import Test from '../screens/Test.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -24,5 +25,7 @@ export const router = createRouter({
     { path: '/qr-code', component: QRCodeScreen },
     { path: '/register', component: RegisterScreen },
     { path: '/start', component: StartScreen },
+    { path: '/test', component: Test },
+
   ],
 })
