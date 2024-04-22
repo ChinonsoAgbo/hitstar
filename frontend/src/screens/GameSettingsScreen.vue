@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import SearchInput from "../components/gameSettingComponents/SearchInput.vue"
-import Genre from "../components/gameSettingComponents/Genre.vue"
+import Genre from "../components/Genre.vue"
+import GameLogo from "../components/GameLogo.vue"
+import HButton from "../components/HButton.vue";
+import RangYearSlider from "../components/RangYearSlider.vue";
+import SearchInput from "../components/SearchInput.vue";
 
 import {ref} from 'vue'
-
-import GameLogo from "/src/components/GameLogo.vue"
-import HButton from "../components/HButton.vue";
-import RangYearSlider from "../components/gameSettingComponents/RangYearSlider.vue";
-
 
 interface Genre {
   id: String,
