@@ -38,7 +38,7 @@ import HAvatar from '../components/HAvatar.vue';
                    
                     <!-- Spiel GameInstruction -->
                     <RouterLink to="/game"> 
-                        <img class="w-10 h-10  rounded-full" src="/icons/support.png" alt="">
+                        <img class="w-10 h-10  rounded-full" src="/support.png" alt="">
 
                     </RouterLink>
                     

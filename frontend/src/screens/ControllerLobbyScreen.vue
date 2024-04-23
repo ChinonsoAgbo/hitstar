@@ -139,13 +139,14 @@ const avaterProfiles = ref([
 
         <div class="relative mt-10  mb-10 z-0 w-full  grid grid-flow-col">
 
-          <RouterLink to="/game">
-            <HButton class=" bg-red-700"> Exit Game </HButton>
+          <RouterLink to="/qr-code">
+            <HButton class=" bg-red-700"> Exit Lobby  </HButton>
 
           </RouterLink>
 
 
-                 <HButton class="">  Button </HButton>
+
+<!--                 <HButton class="">  ? </HButton>-->
 
                
 

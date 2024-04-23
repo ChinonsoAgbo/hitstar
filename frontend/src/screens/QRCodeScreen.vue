@@ -2,7 +2,6 @@
 import { useQRCode } from "@vueuse/integrations/useQRCode";
 import HAvatar from "../components/HAvatar.vue";
 import HButton from "../components/HButton.vue";
-
 const url = window.location.href;
 const qrcode = useQRCode(url);
 </script>
