@@ -3,7 +3,7 @@ import { useQRCode } from "@vueuse/integrations/useQRCode";
 
 import HButton from "../components/HButton.vue";
 import HPlayerNameHorizontal from "../components/HPlayerNameHorizontal.vue";
-import HSettings from "../components/HSettings.vue";
+
 import HCopy from "../components/HCopy.vue";
 import { ref } from "vue";
 
