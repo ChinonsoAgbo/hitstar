@@ -54,9 +54,8 @@ const avaterProfiles = ref([
 </script>
 
 <template>
-    <h1>Controller Lobby</h1>
+    <h1> Lobby </h1>
 <!-- Logo -->
-    <GameLogo></GameLogo>  <!-- Logo über HCard compo-->
 
     <div class="container mx-auto px-5  ">
 
