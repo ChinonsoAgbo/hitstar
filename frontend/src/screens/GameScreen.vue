@@ -6,18 +6,11 @@ import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
 import MusicPlayer from "../components/MusicPlayer.vue";
 import { useElementBounding } from '@vueuse/core'
+import Tokens from "../components/Tokens.vue";
+import {Player, Card} from "../types";
+import {QuestionMarkCircleIcon} from "@heroicons/vue/24/outline";
 
-interface Card {
-    title: string,
-    year: number,
-    interpreter: string
-}
-
-interface Player {
-    name: string,
-    icon: string,
-    cards: Card[]
-}
+const cardSize = ref(7)
 
 enum GameCycle {
     START_GAME,
@@ -36,17 +29,20 @@ const players = ref<Player[]>([
     {
         name: "Harry",
         icon: "/profile-picture-5.jpg",
-        cards: []
+        cards: [],
+        tokens: 2
     },
     {
         name: "Hermione",
         icon: "/profile-picture-3.jpg",
-        cards: []
+        cards: [],
+        tokens: 3
     },
     {
         name: "Ron",
         icon: "/profile-picture-2.jpg",
-        cards: []
+        cards: [],
+        tokens: 1
     }
 ]);
 const activePlayerIndex = ref(-1);
@@ -77,8 +73,8 @@ const cards = ref<Card[]>([
 const drawnCard = ref<Card | null>(null);
 const insertionIndex = ref(0);
 
-const animationDuration = 3000;
-const musicPlayDuration = 5000;
+const animationDuration = 30;
+const musicPlayDuration = 60000;
 
 
 const timeline = ref<HTMLDivElement | null>(null);
@@ -157,9 +153,12 @@ onMounted(() => {
 <template>
     <div class="bg-primary-500 absolute w-full h-full">
 
-        <!-- Players -->
+        <!-- Spieler -->
         <div class="fixed right-2 top-2">
             <div v-for="player in players" class=" my-2 flex items-center justify-between gap-2" >
+
+                <Tokens :amount="player.tokens" />
+
                 <h5 v-if="player === activePlayer" class="text-lg font-bold dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
                 <h5 v-else class="text-md dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
 
@@ -169,10 +168,17 @@ onMounted(() => {
         </div>
 
         <!-- Zeitstrahl -->
-        <div ref="timeline" class="fixed top-[30%] left-[10%] w-[80%] h-[40%] flex items-center justify-center gap-2">
-            <HCard
+        <div ref="timeline" class="fixed top-[30%] left-[2%] w-[96%] h-[40%] flex items-center justify-center overflow-x-auto">
+
+          <div class="relative h-min grid grid-cols-10 gap-2">
+            <HCard v-for="_ in 10" :size="cardSize" class="bg-transparent border-dashed border-slate-400 flex justify-center items-center">
+              <QuestionMarkCircleIcon class="w-8 h-8 text-slate-400" />
+            </HCard>
+          </div>
+
+          <HCard
                 v-for="card in activePlayer?.cards" 
-                :size="10">
+                :size="cardSize">
                 <h5 class="text-md text-gray-900 dark:text-white text-center">{{ card.title }}</h5>
                 <h1 class="text-3xl font-bold tracking-tight text-center">{{ card.year }}</h1>
                 <h5 class="text-md text-gray-900 dark:text- text-center">{{ card.interpreter }}</h5>
@@ -186,24 +192,31 @@ onMounted(() => {
             class="fixed bottom-4 left-0 w-full flex justify-center"
             :class="[activeState === GameCycle.SORT_CARD ? 'animate-pulse' : '']">
 
-            <HCard :size="10" :padding="false" class="">
-                <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
+            <HCard :size="cardSize" :padding="false" class="">
+                <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
             </HCard>
         </div>
 
         <!-- Gezogene Karte -->
         <div v-if="activeState === GameCycle.DRAW_CARD" class="fixed bottom-4 left-0 w-full flex justify-center">
             <Transition appear name="draw">
-                <HCard :size="10" :padding="false" class="relative">
-                    <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
+                <HCard :size="cardSize" :padding="false" class="relative">
+                    <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
                 </HCard>
             </Transition>
         </div>
 
+        <!-- Ablagestapel -->
+        <div class="fixed top-4 left-4 hover:cursor-pointer grayscale" @click="drawCard()">
+          <HCard :size="cardSize" :padding="false">
+            <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
+          </HCard>
+        </div>
+
         <!-- Nachziehstapel -->
-        <div class="fixed bottom-4 left-4 hover:cursor-pointer" @click="drawCard()">
-            <HCard :size="10" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
-                <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
+        <div class="fixed top-4 left-36 hover:cursor-pointer" @click="drawCard()">
+            <HCard :size="cardSize" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
+                <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
             </HCard>
         </div>
 
@@ -218,7 +231,7 @@ onMounted(() => {
                     <div class="flex flex-col justify-center items-center gap-3">
                         <HAvatar 
                             :active="true" 
-                            :size="10" 
+                            :size="cardSize"
                             :url="activePlayer?.icon!" />
 
                         <h1 class="text-5xl font-bold tracking-tight text-white">
