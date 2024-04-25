@@ -7,9 +7,9 @@ export interface Card {
 
 export interface Player {
     id: PlayerID,
-    name: string,
-    icon: string,
-    tokens: number,
+    name: PlayerName,
+    icon: IconURL,
+    tokens: TokenCount,
     cards: Card[]
 }
 
@@ -25,32 +25,278 @@ export enum GameState {
     CARD_SORTED
 }
 
+export enum GameStateNew {
+    GAMESTART,
+    TURNSTART,
+    DRAWCARD,
+    LISTEN,
+    GUESS,
+    DOUBT,
+    MATEGUESS,
+    EVALUATION,
+    TURNEND,
+    GAMEEND
+}
+
 type PlayerID = string;
+type PlayerName = string;
+type IconURL = string;
+type TokenCount = number;
 
 type SessionID = string;
 type TopTopic = 'lobby' | 'controller' | 'main';
-type SubTopic = 'blablabla' // TODO
-type Topic = `${SessionID}/${TopTopic}/${SubTopic}`;
+//type SubTopic = 'blablabla'
+type Topic = `${SessionID}/${TopTopic}`;
 
-type Command = 'left' | 'right' | 'commit';
+type Command = 'left' | 'right' | 'commit' | 'play' | 'pause';
 
 interface Message { // TODO
-    senderId: PlayerID,
+    senderId: PlayerID | undefined,
     token: string,
-    gameState: GameState,
-    command: Command | undefined
+    gameState?: GameStateNew,
+    command?: Command,//| undefined
+    playerName?: PlayerName,
+    avatarUrl?: IconURL,
+    // lobbyReady benötigt?
+    playerOrder?: PlayerID [],
+    currentPlayer?: PlayerID,
+    currentCardLocalization?: number
+    playerRanking?: Player[]
+    time?: number
+    playerTokens?: TokenCount[]
+    evaluationResultActivePlayer?: boolean,
+    evaluationResultPassivePlayer?: boolean,
+    finishedListening?: boolean,
+    doubting?: boolean
 }
 
 export interface MQTTMessage {
     topic: Topic,
-    message: Message
+    message: Message,
 }
 
-let msg: MQTTMessage = { // TODO
-    topic: 'abc123/lobby/blablabla',
+/**
+ * Wird an alle Geräte gesendet, wenn ein Spieler 
+ * - der Lobby beitritt
+ * - de Änderungen in seinen Avatar und/oder seinen Spielernamen bestätigt
+ *
+ * qos: 1
+ */
+let lobbyMsg: MQTTMessage = {
+    topic: 'placeholder/lobby',
     message: {
-        senderId: 'lalala123',
-        token: 'sdsd',
-        gameState: GameState.START_GAME
+        senderId: 'placeholder',
+        token: 'placeholder',
+        playerName: 'placeholder',
+        avatarUrl: 'placeholder',
     }
 }
+
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet, wenn der
+ * Spiel starten Button gedrückt wird.
+ *
+ * qos:1
+ */
+let gameStartMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.GAMESTART,
+        playerOrder : ["placeholder1", "placeholder2"],
+    }
+}
+
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet,
+ * wenn der nächste Spieler am Zug ist
+ *
+ * qos: 1
+ */
+let turnStartMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.TURNSTART,
+        currentPlayer:'placeholder'
+    }
+}
+
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet, wenn der
+ * nächste Spieler mit Karte ziehen dran ist.
+ *
+ * qos: 1
+ */
+let drawCardMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.DRAWCARD,
+        currentPlayer:'placeholder'
+    }
+}
+
+/**
+ * Wird vom Controller des aktiven Spielers an das Hauptgerät gesendet, wenn
+ * der Spieler das Karte ziehen bestätigt hat.
+ *
+ * qos:1
+ */
+let drawConfirmMsg:MQTTMessage ={
+    topic: 'placeholder/controller',
+    message: {
+        senderId: 'placeholder',
+        token: 'placeholder',
+        gameState: GameStateNew.DRAWCARD,
+        command:'commit'
+    }
+}
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet,
+ * nachdem der aktive Spieler das Karte ziehen an das Hauptgerät bestätigt hat
+ *
+ * qos: 1
+ */
+let listenMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message:{
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.LISTEN,
+        currentPlayer:'placeholder'
+    }
+}
+
+/**
+ * Wird vom Controller an das Hauptgerät gesendet,
+ * um das Lied abzuspielen bzw. zu pausieren
+ */
+let playPauseMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
+    message:{
+        senderId: 'placeholder',
+        token: 'placeholder',
+        gameState: GameStateNew.LISTEN,
+        command:'play', // play wenn auf Play gedrückt wird, Pause wenn auf Pause gedrückt wird
+        finishedListening : false // True wenn der aktive Spieler
+        // den Zuhören beenden Button gedrückt hat, false wenn nicht
+    }
+}
+
+/**
+ *Wird vom Hauptgerät an alle Controller gesendet,
+ * wenn das Raten begonnen werden kann
+ *
+ * qos: 1
+ */
+let guessMsg: MQTTMessage ={
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        currentPlayer:'placeholder',
+        gameState: GameStateNew.GUESS
+    }
+}
+
+
+
+
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
+ * an die Controller gesendet
+ */
+let evaluationMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
+    message: {
+        senderId: "placeholder",
+        token: 'placeholder',
+        gameState: GameStateNew.EVALUATION,
+        evaluationResultActivePlayer: true,
+        evaluationResultPassivePlayer: false,
+    }
+}
+/**
+ * Wird von dem Spieler ausgelöst der zuvor angezweifelt hat und nun die Karte neu einsortiert und einloggt.
+ */
+let commitateGuessMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: "placeholder",
+        token: 'placeholder',
+        gameState: GameStateNew.MATEGUESS,
+        command: 'commit',
+        currentPlayer: "placeholder",
+        currentCardLocalization: 0,
+        doubting: true
+    }
+}
+
+/**
+ * Wird von dem Spieler ausgelöst, der zuvor angezweifelt hat und die Karte nach links bewegt
+ */
+let leftMateGuessMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: "placeholder",
+        token: 'placeholder',
+        gameState: GameStateNew.MATEGUESS,
+        command: 'left',
+        currentPlayer: "placeholder",
+        currentCardLocalization: 0
+
+    }
+}
+
+/**
+ * Wird von dem Spieler ausgelöst, der zuvor angezweifelt hat und die Karte nach rechts bewegt
+ */
+let rightMateGuessMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: "placeholder",
+        token: 'placeholder',
+        gameState: GameStateNew.MATEGUESS,
+        command: 'right',
+        currentPlayer: "placeholder",
+        currentCardLocalization: 0
+
+    }
+}
+
+/**
+ * Wird vom Hauptgerät ausgelöst, nachdem die Evaluate-Phase vorbei ist und die Platzierung der Karten geprüft wurde
+ */
+let turnEndMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.TURNEND,
+        currentPlayer: 'placeholder'
+    }
+}
+
+
+//let Player[]={null, null}
+/**
+ * Wird vom Hauptgerät gesendet wenn das Spiel zu Ende ist
+ */
+let gameEndMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.GAMEEND,
+        playerRanking:undefined,
+        time: Date.now()
+    }
+}
+
+
+
+
