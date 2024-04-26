@@ -44,7 +44,7 @@ type IconURL = string;
 type TokenCount = number;
 
 type SessionID = string;
-type TopTopic = 'lobby' | 'controller' | 'main';
+type TopTopic = 'lobby' | 'controller' | 'main' | "#";
 //type SubTopic = 'blablabla'
 type Topic = `${SessionID}/${TopTopic}`;
 
@@ -62,7 +62,6 @@ interface Message { // TODO
     currentPlayer?: PlayerID,
     currentCardLocalization?: number
     playerRanking?: Player[]
-    time?: number
     playerTokens?: TokenCount[]
     evaluationResultActivePlayer?: boolean,
     evaluationResultPassivePlayer?: boolean,
@@ -204,63 +203,73 @@ let guessMsg: MQTTMessage ={
 }
 
 
-
-
+/**
+ * Wird von dem Spieler gesendetet, der das eingeloggte auswahl anzweifeln will. Man könnte das an alle (Hauptgerät und Controller) senden um ggf. ein Toast anzuzeigen, wer jetzt gerade anzweifelt
+ * qos: 1
+ */
+let doubtMsg: MQTTMessage ={
+    topic: 'placeholder/#',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        currentPlayer:'placeholder',
+        gameState: GameStateNew.DOUBT,
+    }
+}
 /**
  * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
  * an die Controller gesendet
  */
 let evaluationMsg: MQTTMessage = {
-    topic: 'placeholder/controller',
+    topic: 'placeholder/main',
     message: {
         senderId: "placeholder",
         token: 'placeholder',
         gameState: GameStateNew.EVALUATION,
-        evaluationResultActivePlayer: true,
-        evaluationResultPassivePlayer: false,
+        evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
+        evaluationResultPassivePlayer: undefined, // false wenn nicht
     }
 }
 /**
  * Wird von dem Spieler ausgelöst der zuvor angezweifelt hat und nun die Karte neu einsortiert und einloggt.
  */
-let commitateGuessMsg: MQTTMessage = {
-    topic: 'placeholder/main',
+let commitGuessMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
     message: {
         senderId: "placeholder",
         token: 'placeholder',
-        gameState: GameStateNew.MATEGUESS,
+        gameState: GameStateNew.MATEGUESS | GameStateNew.GUESS,
         command: 'commit',
         currentPlayer: "placeholder",
-        currentCardLocalization: 0,
-        doubting: true
+        currentCardLocalization: 0, //die aktuelle Position von der gezogenen Karte von 0-8 (da max 9 Karten)
+        doubting: true //?
     }
 }
 
 /**
- * Wird von dem Spieler ausgelöst, der zuvor angezweifelt hat und die Karte nach links bewegt
+ * Wird von dem Spieler ausgelöst, der zuvor angezweifelt hat bzw. an der Reihe ist und die Karte nach links bewegt
  */
-let leftMateGuessMsg: MQTTMessage = {
-    topic: 'placeholder/main',
+let leftGuessMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
     message: {
         senderId: "placeholder",
         token: 'placeholder',
-        gameState: GameStateNew.MATEGUESS,
+        gameState: GameStateNew.MATEGUESS | GameStateNew.GUESS,
         command: 'left',
         currentPlayer: "placeholder",
         currentCardLocalization: 0
-
     }
 }
 
 /**
  * Wird von dem Spieler ausgelöst, der zuvor angezweifelt hat und die Karte nach rechts bewegt
  */
-let rightMateGuessMsg: MQTTMessage = {
-    topic: 'placeholder/main',
+let rightGuessMsg: MQTTMessage = {
+    topic: 'placeholder/controller',
     message: {
         senderId: "placeholder",
         token: 'placeholder',
-        gameState: GameStateNew.MATEGUESS,
+        gameState: GameStateNew.MATEGUESS | GameStateNew.GUESS,
         command: 'right',
         currentPlayer: "placeholder",
         currentCardLocalization: 0
@@ -272,7 +281,7 @@ let rightMateGuessMsg: MQTTMessage = {
  * Wird vom Hauptgerät ausgelöst, nachdem die Evaluate-Phase vorbei ist und die Platzierung der Karten geprüft wurde
  */
 let turnEndMsg: MQTTMessage = {
-    topic: 'placeholder/controller',
+    topic: 'placeholder/main',
     message: {
         senderId: undefined,
         token: 'placeholder',
@@ -282,18 +291,17 @@ let turnEndMsg: MQTTMessage = {
 }
 
 
-//let Player[]={null, null}
+
 /**
- * Wird vom Hauptgerät gesendet wenn das Spiel zu Ende ist
+ * Wird vom Hauptgerät gesendet, wenn das Spiel zu Ende ist
  */
 let gameEndMsg: MQTTMessage = {
-    topic: 'placeholder/controller',
+    topic: 'placeholder/main',
     message: {
         senderId: undefined,
         token: 'placeholder',
         gameState: GameStateNew.GAMEEND,
-        playerRanking:undefined,
-        time: Date.now()
+        playerRanking: undefined,
     }
 }
 
