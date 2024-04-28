@@ -13,7 +13,9 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/integrations": "^10.9.0",
     "@vueuse/sound": "^2.0.1",
+    "axios": "^1.6.8",
     "qrcode": "^1.5.3",
+    "querystring": "^0.2.1",
     "vue": "^3.4.21",
     "vue-flip": "^3.0.2",
     "vue-router": "^4.3.0"
