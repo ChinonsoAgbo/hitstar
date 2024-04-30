@@ -7,18 +7,22 @@ import { VueFlip } from 'vue-flip';
 import MusicPlayer from "../components/MusicPlayer.vue";
 import { useElementBounding } from '@vueuse/core'
 import mqtt from "mqtt";
+
 const client = mqtt.connect("ws://localhost:9001");
+
 client.subscribe("placeholder/main")
 client.on("message", function (_, message) {
     const messageStr = message.toString();
     const messageObj = JSON.parse(messageStr);
-    if(messageObj.message.gameState == 2){
+    if(messageObj.message.gameState ==2){
         drawCard()
+        console.log("what the fuck")
+
+    } else if (messageObj.message.gameState ==4) {
+        console.log("mate Guess: Id?")
+
     }
 });
-
-
-
 
 interface Card {
     title: string,
@@ -30,6 +34,7 @@ interface Player {
     name: string,
     icon: string,
     cards: Card[]
+
 }
 
 enum GameCycle {
@@ -151,6 +156,7 @@ function insertCard() {
   }
 }
 
+// hier die navigation bauen 
 onMounted(() => {
     document.onkeydown = (e) => {
       if (e.key === 'Enter') {
