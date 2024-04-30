@@ -135,7 +135,7 @@ const musicPlayDuration = 5000;
         </div>
         <!-- Rejection button-->
         <button
-        @click= 'client.publish("placeholder/main", JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
+        @click= 'client.publish("placeholder/main/controller/dout", JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
           type="button"
           class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >

@@ -10,19 +10,22 @@ import mqtt from "mqtt";
 
 const client = mqtt.connect("ws://localhost:9001");
 
-client.subscribe("placeholder/main")
+client.subscribe("placeholder/#")
 client.on("message", function (_, message) {
     const messageStr = message.toString();
     const messageObj = JSON.parse(messageStr);
+    
+    console.log(messageObj)
+
     if(messageObj.message.gameState ==2){
         drawCard()
-        console.log("what the fuck")
-
-    } else if (messageObj.message.gameState ==4) {
-        console.log("mate Guess: Id?")
+    
+    } else if (messageObj.message.gameState ==5){
+        console.log("doubt")
 
     }
 });
+
 
 interface Card {
     title: string,
