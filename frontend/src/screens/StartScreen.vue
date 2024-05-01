@@ -2,158 +2,68 @@
 import HButton from "../components/HButton.vue";
 import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
-import axios from 'axios'
-import { get } from "http";
-import { clientId, redirectUri } from "../spotifyAPIAUTH/authUtils.ts";
+import { clientId,  getLocalToken, redirectToAuthCodeFlow } from "../spotifyAPIAUTH/todos.ts";
+import { fetchUserPlaylist } from "../spotifyAPIAUTH/playlist.ts";
+import { fetchUserProfile } from "../spotifyAPIAUTH/profile.ts";
+import { fetchSerch, play, searchTerm } from "../spotifyAPIAUTH/search.ts";
 
 const isLoggedIn = ref(true);
 
 
-
-        
-
-const getToken = async (code: string) => {
-    try {
-        const formData = new URLSearchParams({
-            client_id:clientId,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri:redirectUri,
-            // add any additional parameters you need
-        });
-
-        const response = await axios.post('https://accounts.spotify.com/api/token', formData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        });
-
-        console.log(response.data)
-        if (response.status === 200) {
-            const { access_token, refresh_token, expires_in, token_type, scope } = response.data;
-            localStorage.setItem('access_token', access_token);
-            localStorage.setItem('refresh_token', refresh_token);
-            localStorage.setItem('expires_in', expires_in.toString());
-            localStorage.setItem('token_type', token_type);
-            localStorage.setItem('scope', scope);
-
-            console.log('Access Token:', access_token);
-            return access_token;
-        } else {
-            console.error('Failed to get access token:', response.data);
-            return null;
-        }
-    } catch (error) {
-        console.error('Error getting access token:', error);
-        return null;
-    }
-};
-
-const code = new URLSearchParams(window.location.search).get('code');
-        console.log(code)
-        if (code) {
-           await getToken(code);
-        } else {
-            console.error('Authorization code not found.');
-            
-        }
-    
+let token;
+// parse the URL to retrieve the code parameter
+const code = new URLSearchParams(window.location.search).get('code'); // get access code 
+const error = new URLSearchParams(window.location.search).get('error') // get acees denied 
+// console.log(code)
+if (!code) {
+  redirectToAuthCodeFlow(clientId); // make sure the user accepts 
+} else if (code) { //  fetch token
 
 
-// const refreshAccessToken = async ()=> {
-//     try {
-//         const refreshToken = localStorage.getItem('refresh_token');
-//         if (!refreshToken) {
-//             console.error('Refresh token not found');
-//             return null;
-//         }
-//         const formData = new URLSearchParams({
-//             grant_type: 'refresh_token',
-//             refresh_token: refreshToken,
-//             client_id: client_id,
-//             // add any additional parameters you need
-//         });
+  getLocalToken(clientId, code).then((accessToken) => {
+    console.log("Access Token", accessToken)
 
-//         const response = await axios.post('https://accounts.spotify.com/api/token', formData, {
-//             headers: {
-//                 'Content-Type': 'application/x-www-form-urlencoded',
-//             },
-//         });
+    token = accessToken
+    //console.log("token:" + token)
+    fetchUserProfile(token!).then((value) => {
+      console.log(value)
+    });
 
-//         if (response.status === 200) {
-//             const { access_token, refresh_token, expires_in, token_type, scope } = response.data;
-//             localStorage.setItem('access_token', access_token);
-//             localStorage.setItem('refresh_token', refresh_token);
-//             localStorage.setItem('expires_in', expires_in.toString());
-//             localStorage.setItem('token_type', token_type);
-//             localStorage.setItem('scope', scope);
+    fetchUserPlaylist(token!).then((value) => {
+      console.log(value)
+    });
 
-//             console.log('Access TokenRefresh:', access_token);
-//             return access_token;
-//         } else {
-//             console.error('Failed to refresh access token:', response.data);
-//             return null;
-//         }
-//     } catch (error) {
-//         console.error('Error refreshing access token:', error);
-//         return null;
-//     }
-// };
+    fetchSerch(token!,"Sam smit").then((value) => {
+      console.log("seachFetch:  ",value)
 
-// const getAccessToken = async () => {
-//     const accessToken = localStorage.getItem('access_token');
-//     const expiresIn = localStorage.getItem('expires_in');
-//     const expirationTime = expiresIn ? parseInt(expiresIn) * 1000 : 0; // Convert to milliseconds
-//     const currentTime = new Date().getTime();
+      console.log("body",searchTerm.uri)
 
-//     if (!accessToken || expirationTime < currentTime) {
-//         // Access token doesn't exist or is expired, fetch a new one
-//         const code = new URLSearchParams(window.location.search).get('code');
-//         console.log(code)
-//         if (code) {
-//             return await getToken(code);
-//         } else {
-//             console.error('Authorization code not found.');
-//             return null;
-//         }
-//     } else {
-//         // Access token exists and is not expired
-//         return accessToken;
-//     }
-// };
+      // call play here to see 
+      play(token!,searchTerm.uri!).then((value) => {
+      console.log("player:  ",value)
 
-// const checkAndRefreshAccessToken = async ()=> {
-//     const expiresIn = localStorage.getItem('expires_in');
-//     const expirationTime = expiresIn ? parseInt(expiresIn) * 1000 : 0; // Convert to milliseconds
-//     const currentTime = new Date().getTime();
+      console.log("body",searchTerm.uri)
 
-//     if (expirationTime > 0 && expirationTime - currentTime < 60000) {
-//         // If token is about to expire or already expired, refresh it
-//         console.log('Access token is expired or about to expire. Refreshing...');
-//         return await refreshAccessToken();
-//     }
-//     return null;
-// };
+    });
+    });
 
-// Initialize the application
-// const initializeApp = async () => {
-//     const accessToken = await getAccessToken();
-//     if (accessToken) {
-//         // Application initialized successfully, do whatever you need to do
-//         console.log('Application initialized successfully.');
-//     } else {
-//         console.error('Failed to initialize application.');
-//     }
-// };
+  }).catch(error => {
+    console.error("Error fetching access token:", error);
 
-// initializeApp();
+  });
 
-// setInterval(checkAndRefreshAccessToken, 60000); // Check every minute and refresh if necessary
+
+} else {
+  console.error(error);
+}
+
+
+
 </script>
 
 
 <template>
-  <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
+  <div @click="" class="absolute top-5 right-5 h-16 w-16">
     <HAvatar url="/profile-picture-5.jpg"> </HAvatar>
   </div>
   <div class="flex flex-col items-center justify-center space-y-3s bg-primary-300 min-h-screen">
@@ -177,4 +87,6 @@ const code = new URLSearchParams(window.location.search).get('code');
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
+
+
 </template>
