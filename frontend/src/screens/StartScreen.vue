@@ -3,21 +3,22 @@ import HButton from "../components/HButton.vue";
 import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
 import axios from 'axios'
-import { base64encode, codeVerifier, generateCodeChallenge, sha256 } from '../authUtils.ts'; // Import codeVerifier
 import { get } from "http";
+import { clientId, redirectUri } from "../spotifyAPIAUTH/authUtils.ts";
 
 const isLoggedIn = ref(true);
 
-const client_id = 'b7fbf387ec2346fe810dea140d435788';
-const redirect_uri = 'http://localhost:5173/';
+
+
+        
 
 const getToken = async (code: string) => {
     try {
         const formData = new URLSearchParams({
-            client_id,
+            client_id:clientId,
             grant_type: 'authorization_code',
             code,
-            redirect_uri,
+            redirect_uri:redirectUri,
             // add any additional parameters you need
         });
 
@@ -48,15 +49,15 @@ const getToken = async (code: string) => {
     }
 };
 
-
-        const code = new URLSearchParams(window.location.search).get('code');
+const code = new URLSearchParams(window.location.search).get('code');
         console.log(code)
         if (code) {
            await getToken(code);
         } else {
             console.error('Authorization code not found.');
-             null;
+            
         }
+    
 
 
 // const refreshAccessToken = async ()=> {
