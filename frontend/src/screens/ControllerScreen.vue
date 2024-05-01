@@ -15,6 +15,7 @@ import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
 
 import mqtt from "mqtt";
+import { GameStateNew, drawConfirmMsg, turnMsg } from "../types";
 const client = mqtt.connect("ws://localhost:9001");
 
 const isMusicPlaying = ref(false);
@@ -25,30 +26,12 @@ const musicState = ref(true);
 const changeMusicSate = () => {
   musicState.value = !musicState.value;
 };
-enum GameStateNew {
-  GAMESTART,
-  TURNSTART,
-  DRAWCARD,
-  LISTEN,
-  GUESS,
-  DOUBT,
-  MATEGUESS,
-  EVALUATION,
-  TURNEND,
-  GAMEEND,
-}
 
-let turnMsg = (gameState: GameStateNew) => {
-  return {
 
-    message: {
-      senderId: undefined,
-      token: "placeholder",
-      gameState: gameState, //TURNSTART, DRAWCARD, GUESS,LISTEN, TURNEND, oder DOUBT
-      currentPlayer: "placeholder",
-    },
-  };
-};
+
+
+
+
 
 const musicPlayDuration = 5000;
 </script>
@@ -118,7 +101,7 @@ const musicPlayDuration = 5000;
           </button>
 
           <button
-            @click='changePlaySate, client.publish("placeholder/main", JSON.stringify(turnMsg(GameStateNew.DRAWCARD)))'
+            @click='client.publish(drawConfirmMsg.topic, JSON.stringify(drawConfirmMsg.message))'
             
             type="button"
             class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"

@@ -7,15 +7,9 @@ import { VueFlip } from 'vue-flip';
 import MusicPlayer from "../components/MusicPlayer.vue";
 import { useElementBounding } from '@vueuse/core'
 import mqtt from "mqtt";
+import { GameStateNew, turnMsg } from '../types';
 const client = mqtt.connect("ws://localhost:9001");
-client.subscribe("placeholder/main")
-client.on("message", function (_, message) {
-    const messageStr = message.toString();
-    const messageObj = JSON.parse(messageStr);
-    if(messageObj.message.gameState == 2){
-        drawCard()
-    }
-});
+
 
 
 
@@ -165,6 +159,26 @@ onMounted(() => {
         newTurn()
     }, animationDuration)
 })
+
+
+
+client.subscribe("placeholder/controller")
+
+client.on("message", function (_, message) {
+    const messageStr = message.toString();
+    const messageObj = JSON.parse(messageStr);
+    console.log(messageObj)
+    if(messageObj.gameState == 2 && messageObj.senderId == "placeholder" && messageObj.command == "commit" && (activeState.value == GameCycle.WAIT_FOR_DRAW_CARD || activeState.value == GameCycle.START_GAME)){
+    drawCard()
+    client.publish(turnMsg(GameStateNew.DRAWCARD).topic, JSON.stringify(turnMsg(GameStateNew.DRAWCARD).message))
+}
+
+    else if(messageObj.gameState == 4 && activeState.value == GameCycle.CARD_DREW){
+        startSorting()
+    }
+        
+});
+
 </script>
 
 <template>
