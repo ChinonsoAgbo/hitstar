@@ -9,21 +9,12 @@ import { useElementBounding } from '@vueuse/core'
 import Tokens from "../components/Tokens.vue";
 import {Player, Card} from "../types";
 import {QuestionMarkCircleIcon} from "@heroicons/vue/24/outline";
+import {GameStateNew} from "../types";
 
 const cardSize = ref(7)
 
-enum GameCycle {
-    START_GAME,
-    START_TURN,
-    WAIT_FOR_DRAW_CARD,
-    DRAW_CARD, 
-    CARD_DREW,
-    SHOW_SONG_MENU,
-    SORT_CARD,
-    WAIT_FOR_CARD_SORTED,
-    CARD_SORTED
-}
-const activeState = ref(GameCycle.START_GAME);
+
+const activeState = ref(GameStateNew.START_GAME);
 
 const players = ref<Player[]>([
     {
@@ -81,30 +72,30 @@ const timeline = ref<HTMLDivElement | null>(null);
 const timelineBounding = useElementBounding(timeline);
 
 function newTurn() {
-    activeState.value = GameCycle.START_TURN
+    activeState.value = GameStateNew.START_TURN
     activePlayerIndex.value = (activePlayerIndex.value + 1) % players.value.length
 
     setTimeout(() => {
-        activeState.value = GameCycle.WAIT_FOR_DRAW_CARD
+        activeState.value = GameStateNew.WAIT_FOR_DRAW_CARD
     }, animationDuration)
 }
 
 function drawCard() {
-    activeState.value = GameCycle.DRAW_CARD
+    activeState.value = GameStateNew.DRAW_CARD
     drawnCard.value = cards.value[Math.floor(Math.random() * cards.value.length)];
 
     setTimeout(() => {
-        activeState.value = GameCycle.CARD_DREW
+        activeState.value = GameStateNew.CARD_DREW
     }, 1000);
 }
 
 function showSongMenu() {
-    activeState.value = GameCycle.SHOW_SONG_MENU
+    activeState.value = GameStateNew.SHOW_SONG_MENU
 }
 
 
 function startSorting() {
-    activeState.value = GameCycle.SORT_CARD
+    activeState.value = GameStateNew.SORT_CARD
     insertionIndex.value = Math.floor(activePlayer.value?.cards.length / 2)
     console.log(insertionIndex.value)
 }
@@ -123,13 +114,13 @@ function stepLeft() {
 }
 
 function insertCard() {
-  if (activeState.value === GameCycle.SORT_CARD) {
+  if (activeState.value === GameStateNew.SORT_CARD) {
     activePlayer.value?.cards.splice(insertionIndex.value, 0, drawnCard.value!);
     drawnCard.value = null;
-    activeState.value = GameCycle.WAIT_FOR_CARD_SORTED;
+    activeState.value = GameStateNew.WAIT_FOR_CARD_SORTED;
     timeline.value.style.left = '10%'
     setTimeout(() => {
-      activeState.value = GameCycle.CARD_SORTED;
+      activeState.value = GameStateNew.CARD_SORTED;
     }, 1000);
   }
 }
@@ -187,10 +178,10 @@ onMounted(() => {
 
         <!-- Aktuelle Karte -->
         <div
-            v-if="activeState >= GameCycle.CARD_DREW && activeState <= GameCycle.SORT_CARD"
+            v-if="activeState >= GameStateNew.CARD_DREW && activeState <= GameStateNew.SORT_CARD"
             @click="showSongMenu()"
             class="fixed bottom-4 left-0 w-full flex justify-center"
-            :class="[activeState === GameCycle.SORT_CARD ? 'animate-pulse' : '']">
+            :class="[activeState === GameStateNew.SORT_CARD ? 'animate-pulse' : '']">
 
             <HCard :size="cardSize" :padding="false" class="">
                 <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
@@ -198,7 +189,7 @@ onMounted(() => {
         </div>
 
         <!-- Gezogene Karte -->
-        <div v-if="activeState === GameCycle.DRAW_CARD" class="fixed bottom-4 left-0 w-full flex justify-center">
+        <div v-if="activeState === GameStateNew.DRAW_CARD" class="fixed bottom-4 left-0 w-full flex justify-center">
             <Transition appear name="draw">
                 <HCard :size="cardSize" :padding="false" class="relative">
                     <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
@@ -215,18 +206,18 @@ onMounted(() => {
 
         <!-- Nachziehstapel -->
         <div class="fixed top-4 left-36 hover:cursor-pointer" @click="drawCard()">
-            <HCard :size="cardSize" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
+            <HCard :size="cardSize" :padding="false" :class="[activeState === GameStateNew.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
                 <img class="rounded-xl" :style="`height: ${cardSize-0.5}em`" src="../../public/hitstar.jpg" alt="" />
             </HCard>
         </div>
 
         <!-- v-if="activeState === GameCycle.NEW_GAME || activeState === GameCycle.NEW_TURN" -->
         <HPopOver v-if="
-            activeState === GameCycle.START_GAME ||
-            activeState === GameCycle.START_TURN ||
-            activeState == GameCycle.SHOW_SONG_MENU
+            activeState === GameStateNew.START_GAME ||
+            activeState === GameStateNew.START_TURN ||
+            activeState == GameStateNew.SHOW_SONG_MENU
         ">
-            <div v-if="activeState === GameCycle.START_TURN">
+            <div v-if="activeState === GameStateNew.START_TURN">
                 <Transition name="pop" appear>
                     <div class="flex flex-col justify-center items-center gap-3">
                         <HAvatar 
@@ -240,14 +231,14 @@ onMounted(() => {
                     </div>
                 </Transition>
             </div>
-            <div v-if="activeState === GameCycle.START_GAME">
+            <div v-if="activeState === GameStateNew.START_GAME">
                 <Transition name="pop" appear>
                     <h1 class="text-5xl font-bold tracking-tight text-white">
                       New Game!
                     </h1>
                 </Transition>
             </div>
-            <div v-if="activeState === GameCycle.SHOW_SONG_MENU" class="w-full h-full flex justify-center items-center">
+            <div v-if="activeState === GameStateNew.SHOW_SONG_MENU" class="w-full h-full flex justify-center items-center">
                 <Transition name="pop" appear>
                     <MusicPlayer :time-delta="musicPlayDuration" @finished="startSorting()" />
                 </Transition>
