@@ -2,7 +2,6 @@
 import {PauseIcon, PlayIcon} from "@heroicons/vue/24/outline";
 import {onMounted, ref, watch} from 'vue'
 import { useAnimate } from '@vueuse/core'
-import { useSound } from '@vueuse/sound'
 // import trumpetSfx from '../assets/sounds/fanfare.mp3'
 
 const props = defineProps<{
