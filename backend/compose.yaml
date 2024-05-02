@@ -19,4 +19,3 @@ services:
         - "9001:9001"
     volumes:
       - "./mosquitto:/mosquitto"
-      - "./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
