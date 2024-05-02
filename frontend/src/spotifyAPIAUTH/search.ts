@@ -124,20 +124,55 @@ export async function play(token: string, uri: string): Promise<void> {
 
         const url = `https://api.spotify.com/v1/me/player/play`;
 
-        
+
         const response = await fetch(url, {
             method: "PUT",
             headers: {
-                 Authorization: `Bearer ${token}` ,
-                 'Content-Type': 'application/json'
-                
-                },
-                body:JSON.stringify({uris:[uri]})
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify({ uris: [uri] })
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
 
+        }
+
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const player = new Spotify.Player({
+                name: 'Web Playback SDK Quick Start Player',
+                getOAuthToken: cb => { cb(token); },
+                volume: 0.5
+            });
+
+            // Ready
+            player.addListener('ready', ({ device_id }) => {
+                console.log('Ready with Device ID', device_id);
+            });
+
+            // Not Ready
+            player.addListener('not_ready', ({ device_id }) => {
+                console.log('Device ID has gone offline', device_id);
+            });
+
+            player.addListener('initialization_error', ({ message }) => {
+                console.error(message);
+            });
+          
+            player.addListener('authentication_error', ({ message }) => {
+                console.error(message);
+            });
+          
+            player.addListener('account_error', ({ message }) => {
+                console.error(message);
+            });
+
+            // connect to our spotify instance 
+            player.connect();
+
+          
         }
 
         console.log("Player started");
