@@ -8,6 +8,28 @@ import {ref, defineProps, computed} from 'vue';
 import HAvatar from "../components/HAvatar.vue";
 
 
+import mqtt from "mqtt";
+
+const client = mqtt.connect("ws://localhost:9001");
+
+client.subscribe("placeholder/lobby")
+client.on("message", function (_, message) {
+    const messageStr = message.toString();
+    const messageObj = JSON.parse(messageStr);
+    
+    console.log(messageObj)
+
+    if(messageObj.message.gameState ==2){
+        drawCard()
+    
+    } else if (messageObj.message.gameState ==5){
+        console.log("doubt")
+
+    }
+});
+
+
+
 const showDropdown = ref(false);
 const username = ref('Chinonso Agbo'); // Defined the username variable
 
