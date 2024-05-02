@@ -15,6 +15,7 @@ import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
 
 import mqtt from "mqtt";
+import { MQTTMessage } from "../types";
 const client = mqtt.connect("ws://localhost:9001");
 
 const isMusicPlaying = ref(false);
@@ -38,15 +39,16 @@ enum GameStateNew {
   GAMEEND,
 }
 
-let lobbyMsg: MQTTMessage = {
-    topic: 'placeholder/lobby',
+let doubtMsg: MQTTMessage ={
+    topic: 'placeholder/controller',
     message: {
-        senderId: 'placeholder',
+        senderId: "placeholder",
         token: 'placeholder',
-        playerName: 'placeholder',
-        avatarUrl: 'placeholder',
+        currentPlayer:'placeholder',
+        gameState: GameStateNew.DOUBT,
     }
 }
+
 
 let turnMsg = (gameState: GameStateNew) => {
   return {
@@ -145,7 +147,7 @@ const musicPlayDuration = 5000;
         </div>
         <!-- Rejection button-->
         <button
-        @click= 'client.publish("placeholder/controller/", JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
+        @click= 'client.publish(doubtMsg.topic, JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
           type="button"
           class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >

@@ -10,25 +10,70 @@ import { ref } from "vue";
 const url = window.location.href;
 const qrcode = useQRCode(url);
 
+
+import mqtt from "mqtt";
+
+const client = mqtt.connect("ws://localhost:9001");
+
+const players = ref<Player[]>([]);
+
+client.subscribe("placeholder/lobby")
+client.on("message", function (_, message) {
+    const messageStr = message.toString();
+    const messageObj = JSON.parse(messageStr);
+    
+    console.log(messageObj)
+
+    if(messageObj.message){
+
+      console.log("ich bin ein spieler ")
+      players.values (messageObj.message.playername)
+      // hier eine Liste von spieler die subcri haben 
+    }
+});
+
+function addPlayer(playerName: string) {
+  // Check if the player is already in the list
+  if (!players.value.some(player => player.name === playerName)) {
+    players.value.push({
+      name: playerName,
+      icon: "/profile-picture-5.jpg", // You can update the icon as needed
+    });
+  }
+}
+
+// let lobbyMsg: MQTTMessage = {
+//     topic: 'placeholder/lobby',
+//     message: {
+//         senderId: 'placeholder',
+//         token: 'placeholder',
+//         playerName: 'placeholder',
+//         avatarUrl: 'placeholder',
+//     }
+// }
+
+
+
+
 interface Player {
   name: string;
   icon: string;
 }
 
-const players = ref<Player[]>([
-  {
-    name: "Harry",
-    icon: "/profile-picture-5.jpg",
-  },
-  {
-    name: "Hermione",
-    icon: "/profile-picture-3.jpg",
-  },
-  {
-    name: "Ron",
-    icon: "/profile-picture-2.jpg",
-  },
-]);
+// const players = ref<Player[]>([
+//   {
+//     name:"",
+//     icon: "/profile-picture-5.jpg",
+//   },
+//   // {
+//   //   name: "Hermione",
+//   //   icon: "/profile-picture-3.jpg",
+//   // },
+//   // {
+//   //   name: "Ron",
+//   //   icon: "/profile-picture-2.jpg",
+//   // },
+// ]);
 </script>
 
 <template>
