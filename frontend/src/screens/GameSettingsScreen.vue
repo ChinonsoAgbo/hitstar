@@ -1,58 +1,125 @@
-<script setup>
-import SearchInput from "../components/gameSettingComponents/SearchInput.vue"
-import Genre from "../components/gameSettingComponents/Genre.vue"
-import MusicYear from "../components/gameSettingComponents/MusicYear.vue"
-
-import GameLogo from "/src/components/GameLogo.vue"
+<script setup lang="ts">
+import Genre from "../components/Genre.vue"
+import GameLogo from "../components/GameLogo.vue"
 import HButton from "../components/HButton.vue";
+import RangYearSlider from "../components/RangYearSlider.vue";
+import SearchInput from "../components/SearchInput.vue";
+
+import {ref} from 'vue'
+
+interface Genre {
+  id: String,
+  name: string
+}
+
+// Objects of Genre
+const genres = ref<Genre[]>([
+      {
+        id: "rock", name: "Rock"
+      },
+      {
+        id: "metal", name: "Metal"
+      },
+      {
+        id: "electronic", name: "Electronic"
+      },
+
+      {
+        id: "jazz", name: "Jazz"
+      },
+      {
+        id: "r&b", name: "R&B"
+      },
+      {
+        id: "funk", name: "Funk"
+      },
+      {
+        id: "blues", name: "Blues"
+      },
+      {
+        id: "hipHopRap", name: "HipHop/Rap"
+      },
+      {
+        id: "pop", name: "Pop"
+      },
+      {
+        id: "country", name: "Country"
+      },
+      {
+        id: "Reggae", name: "Soul music"
+      },
+      {
+        id: "classical", name: "Classical"
+      },
+      {
+        id: "afroBeat", name: "Afro Beat"
+      },
+
+    ]
+);
 
 </script>
 
 <template>
+  <div class="bg-primary-300 ">
+
+
     <h1>Music configuration</h1>
 
-<GameLogo> </GameLogo>
+    <GameLogo></GameLogo>
 
 
+    <!-- <div class="container mx-auto  "> -->
 
-   <!-- <div class="container mx-auto  "> -->
+    <div class="  container  flex flex-col gab-4 relative space-y-5   mx-auto min-h-screen   py-6 sm:py-12">
+      <div class="">
+        <p> Configured music: 0 </p>
+      </div>
+      <!-- ... -->
 
-    <div class="  container gab-1 relative    mx-auto  min-h-screen   py-6 sm:py-12">
-        <div class=""> </div>
-        <!-- ... -->
-
-        <!-- Search -->
-        <div>
-            <SearchInput />
-        </div>
-
-
-        <div class="mt-10  mb-10">
-
-            <!-- Genre -->
-            <Genre> </Genre>
-        </div>
-        <!-- music year -->
-        <div class="grid grid-flow-row ">
-
-            <MusicYear> </MusicYear>
-        </div>
-        <!-- Button to submit -->
-        <div class="relative mt-10  mb-10 z-0 w-full group grid grid-cols-2 auto-cols-max-max">
-            <button type="button"
-                class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Undo</button>
-             
-                <button type="button"
-                class=" text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save</button>
+      <!-- Search -->
+      <div>
+        <SearchInput></SearchInput>
+      </div>
 
 
+      <div class="mt-10  mb-10">
+
+        <!-- Genre -->
+        <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-Grey">Choose Genre </h3>
+
+        <ul class="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+
+          <Genre v-for="genre in genres" :genre="genre"></Genre>
+        </ul>
 
 
+      </div>
+      <!-- music year -->
 
-        </div>
+      <div>
+        <h3 class="mb-5 text-lg font-semibold text-gray-900 dark:text-Grey">Choose music year </h3>
 
+        <RangYearSlider></RangYearSlider>
+
+      </div>
+
+      <!-- Button to submit -->
+      <div class="relative mt-10  mb-10 z-0 w-full group grid grid-cols-2 ">
+        <RouterLink class="relative mt-10  mb-10 z-0 w-full group grid grid-cols-2 " to="/qr-code">
+          <HButton class="bg-red-700 hover:bg-red-800 "> Undo</HButton>
+        </RouterLink>
+
+        <RouterLink class="relative mt-10  mb-10 z-0 w-full group grid grid-cols-2 " to="/qr-code">
+          <HButton> Save</HButton>
+        </RouterLink>
+
+
+      </div>
 
 
     </div>
-  
+
+  </div>
+
 </template>
