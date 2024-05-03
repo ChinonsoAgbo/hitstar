@@ -75,7 +75,11 @@ interface SearchResult {
     };
 }
 
-
+export const conn = reactive({
+    token: null as string | null,
+  
+  })
+  
 export const searchTerm = reactive({
 
 

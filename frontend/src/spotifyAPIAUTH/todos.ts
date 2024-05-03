@@ -5,7 +5,7 @@ import { error, timeStamp } from 'console';
 const authUrl = new URL('https://accounts.spotify.com/authorize');
 
 
-export const clientId = 'b7fbf387ec2346fe810dea140d435788';
+export const clientId = '3de85bed74224bf5b81e82d76ffb750f';
 export const redirectUri = 'http://localhost:5173/';
 export const scope = ['user-read-private', 'user-read-email','user-read-playback-state','user-modify-playback-state'];
 
