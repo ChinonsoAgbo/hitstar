@@ -17,6 +17,8 @@
     "pinia": "^2.1.7",
     "qrcode": "^1.5.3",
     "vue": "^3.4.21",
+    "vue-confetti": "^2.3.0",
+    "vue-confetti-explosion": "^1.0.2",
     "vue-flip": "^3.0.2",
     "vue-router": "^4.3.0"
   },
