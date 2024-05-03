@@ -62,7 +62,8 @@ function addPlayer(playerName: string) {
     console.log("hallo")
     players.value.push({
       name: playerName,
-      icon: "/profile-picture-5.jpg", // You can update the icon as needed
+      icon: "/profile-picture-5.jpg", 
+      senderId:"",
     });
   }
   console.log("Player lenth", players.value.length)
