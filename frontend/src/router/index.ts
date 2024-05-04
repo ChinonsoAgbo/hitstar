@@ -27,5 +27,6 @@ export const router = createRouter({
     { path: '/start', component: StartScreen },
     { path: '/test', component: Test },
 
+
   ],
 })
