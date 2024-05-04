@@ -2,38 +2,39 @@ export interface Card {
     id: string,
     title: string,
     year: number,
-    interpreter: string
+    interpreter: string,
+    position: number,       // 1 - 10
+    movedDown?: boolean,
+    movedUp?: boolean
 }
 
 export interface Player {
     id: PlayerID,
     name: PlayerName,
-    icon: IconURL,
+    iconURL: IconURL,
     tokens: TokenCount,
     cards: Card[]
 }
 
-export enum GameState {
-    START_GAME,
-    START_TURN,
-    WAIT_FOR_DRAW_CARD,
-    DRAW_CARD,
-    CARD_DREW,
-    SHOW_SONG_MENU,
-    SORT_CARD,
-    WAIT_FOR_CARD_SORTED,
-    CARD_SORTED
-}
-
 export enum GameStateNew {
+    NOTSTARTED = -1,
+        ANIMATE_GAMESTART,
     GAMESTART,
+        ANIMATE_TURNSTART,
     TURNSTART,
     DRAWCARD,
+        ANIMATE_LISTEN,
     LISTEN,
     GUESS,
+        WAIT_FOR_DOUBT,
     DOUBT,
     MATEGUESS,
+        ANIMATE_EVALUATION,
     EVALUATION,
+        ANIMATE_EVALUATION_POSITIVE,
+        EVALUATION_POSITIVE,
+        ANIMATE_EVALUATION_NEGATIVE,
+        EVALUATION_NEGATIVE,
     TURNEND,
     GAMEEND
 }
@@ -82,7 +83,7 @@ export interface MQTTMessage {
  *
  * qos: 1
  */
-let lobbyMsg: MQTTMessage = {
+export const lobbyMsg: MQTTMessage = {
     topic: 'placeholder/lobby',
     message: {
         senderId: 'placeholder',
@@ -98,7 +99,7 @@ let lobbyMsg: MQTTMessage = {
  *
  * qos:1
  */
-let gameStartMsg: MQTTMessage = {
+export const gameStartMsg: MQTTMessage = {
     topic: 'placeholder/main',
     message: {
         senderId: undefined,
@@ -145,7 +146,7 @@ let gameStartMsg: MQTTMessage = {
  *
  */
 
-let turnMsg = (gameState: GameStateNew) => {
+export const turnMsg = (gameState: GameStateNew): MQTTMessage => {
     return {
         topic: 'placeholder/main',
         message: {
@@ -164,7 +165,7 @@ let turnMsg = (gameState: GameStateNew) => {
  * Wird vom Hauptgerät gesendet, wenn das Spiel zu Ende ist
  * qos: 1
  */
-let gameEndMsg: MQTTMessage = {
+export const gameEndMsg: MQTTMessage = {
     topic: 'placeholder/main',
     message: {
         senderId: undefined,
@@ -182,7 +183,7 @@ let gameEndMsg: MQTTMessage = {
  * Wird vom Controller an das Hauptgerät gesendet,
  * um das Lied abzuspielen bzw. zu pausieren
  */
-let playPauseMsg: MQTTMessage = {
+export const playPauseMsg: MQTTMessage = {
     topic: 'placeholder/controller',
     message:{
         senderId: 'placeholder',
@@ -201,7 +202,7 @@ let playPauseMsg: MQTTMessage = {
  * Wird von dem Spieler gesendetet, der das eingeloggte auswahl anzweifeln will. Man könnte das an alle (Hauptgerät und Controller) senden um ggf. ein Toast anzuzeigen, wer jetzt gerade anzweifelt
  * qos: 1
  */
-let doubtMsg: MQTTMessage ={
+export const doubtMsg: MQTTMessage ={
     topic: 'placeholder/controller',
     message: {
         senderId: "placeholder",
@@ -215,7 +216,7 @@ let doubtMsg: MQTTMessage ={
  * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
  * an die Controller gesendet
  */
-let evaluationMsg: MQTTMessage = {
+export const evaluationMsg: MQTTMessage = {
     topic: 'placeholder/main',
     message: {
         senderId: undefined,
@@ -232,7 +233,7 @@ let evaluationMsg: MQTTMessage = {
  * Über diese Message werden die verschiedenen Züge während einem MateGuess oder der Guess Phase von Controller aus gesteuert
  */
 
-let guessMsg = (command: String, gameState: GameStateNew) => {
+export const guessMsg = (command: Command, gameState: GameStateNew): MQTTMessage => {
     return {
         topic: 'placeholder/controller',
         message: {
@@ -251,7 +252,7 @@ let guessMsg = (command: String, gameState: GameStateNew) => {
  *
  * qos:1
  */
-let drawConfirmMsg:MQTTMessage ={
+export const drawConfirmMsg: MQTTMessage = {
     topic: 'placeholder/controller',
     message: {
         senderId: 'placeholder',
