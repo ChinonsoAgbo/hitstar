@@ -18,105 +18,105 @@ const isLoggedIn = ref(true);
 
 
 
-// parse the URL to retrieve the code parameter
-const code = new URLSearchParams(window.location.search).get('code'); // get access code 
-const error = new URLSearchParams(window.location.search).get('error') // get acees denied 
-// console.log(code)
-if (!code) {
-  redirectToAuthCodeFlow(clientId); // make sure the user accepts 
-} else if (code) { //  fetch token
+// // parse the URL to retrieve the code parameter
+// const code = new URLSearchParams(window.location.search).get('code'); // get access code 
+// const error = new URLSearchParams(window.location.search).get('error') // get acees denied 
+// // console.log(code)
+// if (!code) {
+//   redirectToAuthCodeFlow(clientId); // make sure the user accepts 
+// } else if (code) { //  fetch token
 
 
-  getLocalToken(clientId, code).then((accessToken) => {
-    console.log("Access Token", accessToken)
+//   getLocalToken(clientId, code).then((accessToken) => {
+//     console.log("Access Token", accessToken)
 
-    conn.token = accessToken
-    //console.log("token:" + token)
-    fetchUserProfile(conn.token!).then((value) => {
-      console.log(value)
-    });
+//     conn.token = accessToken
+//     //console.log("token:" + token)
+//     fetchUserProfile(conn.token!).then((value) => {
+//       console.log(value)
+//     });
 
-    fetchUserPlaylist(conn.token!).then((value) => {
-      console.log(value)
-    });
+//     fetchUserPlaylist(conn.token!).then((value) => {
+//       console.log(value)
+//     });
 
-    fetchSerch(conn.token!,"Sam smit").then((value) => {
-      console.log("seachFetch:  ",value)
+//     fetchSerch(conn.token!,"Sam smit").then((value) => {
+//       console.log("seachFetch:  ",value)
 
-      console.log("body",searchTerm.uri)
+//       console.log("body",searchTerm.uri)
 
-      // call play here to see 
-    //   play(conn.token!,searchTerm.uri!).then((value) => {
-    //   console.log("player:  ",value)
+//       // call play here to see 
+//     //   play(conn.token!,searchTerm.uri!).then((value) => {
+//     //   console.log("player:  ",value)
 
-    //   console.log("body",searchTerm.uri)
+//     //   console.log("body",searchTerm.uri)
 
-    // });
-    });
+//     // });
+//     });
 
-  }).catch(error => {
-    console.error("Error fetching access token:", error);
+//   }).catch(error => {
+//     console.error("Error fetching access token:", error);
 
-  });
-
-
-} else {
-  console.error(error);
-}
+//   });
 
 
-//console.log("token in start screen", conn.token)
-
-//-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
-const isMusicPlaying = ref(true);
-const changePlaySate = () => {
-  isMusicPlaying.value = !isMusicPlaying.value;
-
-};
-
-const musicState = ref(true);
-const changeMusicSate = () => {
-  musicState.value = !musicState.value;
-  player.togglePlay();
-
-};
-const musicPlayDuration = 5000;
-
-let player: Spotify.Player | null = null;
-  window.onSpotifyWebPlaybackSDKReady = () => {
-    player = new Spotify.Player({
-      name: 'Web Playback SDK Quick Start Player',
-      getOAuthToken: cb => { cb(conn.token); },
-      volume: 0.5
-    });
-
-    // Ready
-    player.addListener('ready', ({ device_id }) => {
-      console.log('Ready with Device ID', device_id);
-    });
-
-    // Not Ready
-    player.addListener('not_ready', ({ device_id }) => {
-      console.log('Device ID has gone offline', device_id);
-    });
-
-    player.addListener('initialization_error', ({ message }) => {
-      console.error(message);
-    });
-
-    player.addListener('authentication_error', ({ message }) => {
-      console.error(message);
-    });
-
-    player.addListener('account_error', ({ message }) => {
-      console.error(message);
-    });
-
-    // connect to our spotify instance 
-    player.connect();
+// } else {
+//   console.error(error);
+// }
 
 
-  }
+// //console.log("token in start screen", conn.token)
+
+// //-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
+// const isMusicPlaying = ref(true);
+// const changePlaySate = () => {
+//   isMusicPlaying.value = !isMusicPlaying.value;
+
+// };
+
+// const musicState = ref(true);
+// const changeMusicSate = () => {
+//   musicState.value = !musicState.value;
+//   player.togglePlay();
+
+// };
+// const musicPlayDuration = 5000;
+
+// let player: Spotify.Player | null = null;
+//   window.onSpotifyWebPlaybackSDKReady = () => {
+//     player = new Spotify.Player({
+//       name: 'Web Playback SDK Quick Start Player',
+//       getOAuthToken: cb => { cb(conn.token); },
+//       volume: 0.5
+//     });
+
+//     // Ready
+//     player.addListener('ready', ({ device_id }) => {
+//       console.log('Ready with Device ID', device_id);
+//     });
+
+//     // Not Ready
+//     player.addListener('not_ready', ({ device_id }) => {
+//       console.log('Device ID has gone offline', device_id);
+//     });
+
+//     player.addListener('initialization_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     player.addListener('authentication_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     player.addListener('account_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     // connect to our spotify instance 
+//     player.connect();
+
+
+//   }
 
 
 
