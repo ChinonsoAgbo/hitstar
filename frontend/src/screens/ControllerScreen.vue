@@ -14,16 +14,11 @@ import HAvatar from "../components/HAvatar.vue";
 
 import { ref } from "vue";
 
-<<<<<<< HEAD
 import mqtt from "mqtt";
 import { MQTTMessage } from "../types";
 const client = mqtt.connect("ws://localhost:9001");
 
 const isMusicPlaying = ref(false);
-=======
-
-const isMusicPlaying = ref(true);
->>>>>>> spotifyPlayer
 const changePlaySate = () => {
   isMusicPlaying.value = !isMusicPlaying.value;
 
@@ -113,15 +108,8 @@ const musicPlayDuration = 5000;
             </ChevronLeftIcon>
           </button>
 
-<<<<<<< HEAD
-          <button
-            type="button"
-            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-=======
           <button @click="changeMusicSate" type="button"
             class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
->>>>>>> spotifyPlayer
             <PauseIcon v-if="musicState" class="w-12 h-12 cursor-pointer" />
 
             <PlayIcon v-else class="w-12 h-12 cursor-pointer" />
@@ -140,17 +128,12 @@ const musicPlayDuration = 5000;
             </ChevronLeftIcon>
           </button>
 
-<<<<<<< HEAD
           <button
             @click='changePlaySate, client.publish("placeholder/main", JSON.stringify(turnMsg(GameStateNew.DRAWCARD)))'
             
             type="button"
             class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           >
-=======
-          <button @click="changePlaySate" type="button"
-            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
->>>>>>> spotifyPlayer
             <ChevronUpIcon class="w-10 h-10 text-slate-200"> </ChevronUpIcon>
           </button>
           <button type="button"
@@ -160,16 +143,11 @@ const musicPlayDuration = 5000;
           </button>
         </div>
         <!-- Rejection button-->
-<<<<<<< HEAD
         <button
         @click= 'client.publish(doubtMsg.topic, JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
           type="button"
           class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >
-=======
-        <button type="button"
-          class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
->>>>>>> spotifyPlayer
           <XMarkIcon class="w-10 h-10 text-slate-200"> </XMarkIcon>
           <!-- <img class="w-10 h-10 rounded-full" src="../assets/icons/unlike.png" alt=""> -->
         </button>
