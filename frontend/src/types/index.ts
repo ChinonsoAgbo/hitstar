@@ -17,7 +17,7 @@ export interface Player {
 }
 
 export enum GameStateNew {
-    NOTSTARTED = -1,
+        NOTSTARTED = -1,
         ANIMATE_GAMESTART,
     GAMESTART,
         ANIMATE_TURNSTART,
