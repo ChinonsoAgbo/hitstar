@@ -10,47 +10,13 @@ import { GameStateNew } from "../types";
 import { useAnimate } from "@vueuse/core";
 import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
-<<<<<<< HEAD
 import ConfettiExplosion from "vue-confetti-explosion";
 import HHeading from "../components/HHeading.vue";
 import { PauseIcon } from '@heroicons/vue/24/outline';
-=======
-import MusicPlayer from "../components/MusicPlayer.vue";
-import { useElementBounding } from '@vueuse/core'
-import mqtt from "mqtt";
-
-const client = mqtt.connect("ws://localhost:9001");
-
-client.subscribe("placeholder/#")
-client.on("message", function (_, message) {
-    const messageStr = message.toString();
-    const messageObj = JSON.parse(messageStr);
-    
-    console.log(messageObj)
-
-    if(messageObj.message.gameState ==2){
-        drawCard()
-    
-    } else if (messageObj.message.gameState ==5){
-        console.log("doubt")
-
-    }
-});
-
->>>>>>> feature/anzweifen
 
 const cardSize = ref(7);
 
-<<<<<<< HEAD
 const gameStore = useGameStore();
-=======
-interface Player {
-    name: string,
-    icon: string,
-    cards: Card[]
-
-}
->>>>>>> feature/anzweifen
 
 // mock players
 gameStore.players = [
@@ -275,27 +241,7 @@ watch(() => gameStore.activeGameState, () => {
       popRight.value = false;
       break;
   }
-<<<<<<< HEAD
 });
-=======
-}
-
-// hier die navigation bauen 
-onMounted(() => {
-    document.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-          insertCard()
-      } else if (e.key === 'ArrowLeft') {
-          stepLeft()
-      } else if (e.key === 'ArrowRight') {
-          stepRight()
-      }
-    }
-    setTimeout(() => {
-        newTurn()
-    }, animationDuration)
-})
->>>>>>> feature/anzweifen
 </script>
 
 <template>
