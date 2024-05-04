@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useGameStore } from "../stores/gameStore";
 import HButton from "../components/HButton.vue";
 import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
@@ -7,6 +8,15 @@ const isLoggedIn = ref(true);
 const changeLoginStatus = () => {
   isLoggedIn.value = !isLoggedIn.value;
 };
+// is used to create a gameStore instance
+const gameStore = useGameStore();
+//creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
+function createSessionId() {
+  if (gameStore.getSessionID() == "") { //currently only one game per started server
+    let SessionID = self.crypto.randomUUID();
+    gameStore.setSessionID(SessionID);
+  }
+}
 </script>
 
 <template>
@@ -32,7 +42,7 @@ const changeLoginStatus = () => {
       </RouterLink>
       <div class="items-center space-y-3 gap-4">
         <RouterLink v-show="isLoggedIn" to="/qr-code">
-          <HButton>Start game</HButton>
+          <HButton @click="createSessionId, gameStore.startGame">Start game</HButton>
         </RouterLink>
       </div>
     </div>

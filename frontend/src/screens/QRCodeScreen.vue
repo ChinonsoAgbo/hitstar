@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { useQRCode } from "@vueuse/integrations/useQRCode";
+import { useGameStore } from "../stores/gameStore";
 
 import HButton from "../components/HButton.vue";
 import HPlayerNameHorizontal from "../components/HPlayerNameHorizontal.vue";
 
 import HCopy from "../components/HCopy.vue";
 import { ref } from "vue";
+const gameStore = useGameStore();
 
-const url = window.location.href;
+const url = `${
+  window.location.origin
+}/controller-lobby/${gameStore.getSessionID()}`;
 const qrcode = useQRCode(url);
 
 interface Player {
@@ -41,38 +45,26 @@ const players = ref<Player[]>([
 
       <HCopy :url="url"></HCopy>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 items-stretch justify-center">
         <RouterLink to="/game">
-          <HButton>Start game</HButton>
+          <!-- A Button for starting a Game -->
+          <HButton @click="gameStore.startGame">Start game</HButton>
         </RouterLink>
         <RouterLink to="/start">
+          <!-- A button to cancel the game creation  -->
           <HButton>Cancel</HButton>
         </RouterLink>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
         <RouterLink to="/design-settings">
-          <HButton>
-            <div class="font-medium text-center inline-flex items-center">
-              <div>
-                <HSettings></HSettings>
-              </div>
-              <div>Design settings</div>
-            </div>
-          </HButton>
+          <!-- A button to go to  the Design settings  -->
+          <HButton>Design settings</HButton>
         </RouterLink>
         <RouterLink to="/game-settings">
-          <HButton>
-            <div class="font-medium text-center inline-flex items-center">
-              <div>
-                <HSettings></HSettings>
-              </div>
-              <div>Game settings</div>
-            </div>
-          </HButton>
+           <!-- A button to go to  the Game settings  -->
+          <HButton>Game settings</HButton>
         </RouterLink>
       </div>
     </div>
-
+           <!-- Creates a List of Users that are Connected to the server and are connceted  -->
     <ul class="max-w-md divide-y divide-secondary-900 dark:divide-gray-700">
       <p class="text-lg font-semibold">Players in the waiting lobby:</p>
       <li class="py-3 sm:py-4">
