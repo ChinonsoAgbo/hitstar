@@ -17,7 +17,7 @@ import mqtt from "mqtt";
 
 const client = mqtt.connect("ws://localhost:9001");
 
-
+// const playersToJoin = useGameStore().pla
 
 const playersReadyTojoin = ref<Player[]>([]);
 
