@@ -2,20 +2,29 @@ export interface Card {
     id: string,
     title: string,
     year: number,
+<<<<<<< HEAD
     interpreter: string,
     position: number,       // 1 - 10
     movedDown?: boolean,
     movedUp?: boolean
+=======
+    interpreter: string
+>>>>>>> feature/anzweifen
 }
 
 export interface Player {
     id: PlayerID,
     name: PlayerName,
+<<<<<<< HEAD
     iconURL: IconURL,
+=======
+    icon: IconURL,
+>>>>>>> feature/anzweifen
     tokens: TokenCount,
     cards: Card[]
 }
 
+<<<<<<< HEAD
 export enum GameStateNew {
         NOTSTARTED = -1,
         ANIMATE_GAMESTART,
@@ -35,6 +44,29 @@ export enum GameStateNew {
         EVALUATION_POSITIVE,
         ANIMATE_EVALUATION_NEGATIVE,
         EVALUATION_NEGATIVE,
+=======
+export enum GameState {
+    START_GAME,
+    START_TURN,
+    WAIT_FOR_DRAW_CARD,
+    DRAW_CARD,
+    CARD_DREW,
+    SHOW_SONG_MENU,
+    SORT_CARD,
+    WAIT_FOR_CARD_SORTED,
+    CARD_SORTED
+}
+
+export enum GameStateNew {
+    GAMESTART,
+    TURNSTART,
+    DRAWCARD,
+    LISTEN,
+    GUESS,
+    DOUBT,
+    MATEGUESS,
+    EVALUATION,
+>>>>>>> feature/anzweifen
     TURNEND,
     GAMEEND
 }
@@ -83,7 +115,11 @@ export interface MQTTMessage {
  *
  * qos: 1
  */
+<<<<<<< HEAD
 export const lobbyMsg: MQTTMessage = {
+=======
+export let lobbyMsg: MQTTMessage = {
+>>>>>>> feature/anzweifen
     topic: 'placeholder/lobby',
     message: {
         senderId: 'placeholder',
@@ -99,7 +135,11 @@ export const lobbyMsg: MQTTMessage = {
  *
  * qos:1
  */
+<<<<<<< HEAD
 export const gameStartMsg: MQTTMessage = {
+=======
+let gameStartMsg: MQTTMessage = {
+>>>>>>> feature/anzweifen
     topic: 'placeholder/main',
     message: {
         senderId: undefined,
@@ -146,7 +186,11 @@ export const gameStartMsg: MQTTMessage = {
  *
  */
 
+<<<<<<< HEAD
 export const turnMsg = (gameState: GameStateNew): MQTTMessage => {
+=======
+let turnMsg = (gameState: GameStateNew) => {
+>>>>>>> feature/anzweifen
     return {
         topic: 'placeholder/main',
         message: {
@@ -165,7 +209,11 @@ export const turnMsg = (gameState: GameStateNew): MQTTMessage => {
  * Wird vom Hauptgerät gesendet, wenn das Spiel zu Ende ist
  * qos: 1
  */
+<<<<<<< HEAD
 export const gameEndMsg: MQTTMessage = {
+=======
+let gameEndMsg: MQTTMessage = {
+>>>>>>> feature/anzweifen
     topic: 'placeholder/main',
     message: {
         senderId: undefined,
@@ -183,7 +231,11 @@ export const gameEndMsg: MQTTMessage = {
  * Wird vom Controller an das Hauptgerät gesendet,
  * um das Lied abzuspielen bzw. zu pausieren
  */
+<<<<<<< HEAD
 export const playPauseMsg: MQTTMessage = {
+=======
+let playPauseMsg: MQTTMessage = {
+>>>>>>> feature/anzweifen
     topic: 'placeholder/controller',
     message:{
         senderId: 'placeholder',
@@ -202,7 +254,11 @@ export const playPauseMsg: MQTTMessage = {
  * Wird von dem Spieler gesendetet, der das eingeloggte auswahl anzweifeln will. Man könnte das an alle (Hauptgerät und Controller) senden um ggf. ein Toast anzuzeigen, wer jetzt gerade anzweifelt
  * qos: 1
  */
+<<<<<<< HEAD
 export const doubtMsg: MQTTMessage ={
+=======
+let doubtMsg: MQTTMessage ={
+>>>>>>> feature/anzweifen
     topic: 'placeholder/controller',
     message: {
         senderId: "placeholder",
@@ -212,6 +268,7 @@ export const doubtMsg: MQTTMessage ={
     }
 }
 
+<<<<<<< HEAD
 /**
  * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
  * an die Controller gesendet
@@ -229,11 +286,18 @@ export const evaluationMsg: MQTTMessage = {
 
     }
 }
+=======
+
+>>>>>>> feature/anzweifen
 /**
  * Über diese Message werden die verschiedenen Züge während einem MateGuess oder der Guess Phase von Controller aus gesteuert
  */
 
+<<<<<<< HEAD
 export const guessMsg = (command: Command, gameState: GameStateNew): MQTTMessage => {
+=======
+let guessMsg = (command: String, gameState: GameStateNew) => {
+>>>>>>> feature/anzweifen
     return {
         topic: 'placeholder/controller',
         message: {
@@ -247,12 +311,36 @@ export const guessMsg = (command: Command, gameState: GameStateNew): MQTTMessage
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
+ * an die Controller gesendet
+ */
+let evaluationMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.EVALUATION,
+        currentPlayer: 'placeholder',
+        doubtWin: undefined,
+        evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
+        evaluationResultPassivePlayer: undefined, // false wenn nicht
+
+    }
+}
+/**
+>>>>>>> feature/anzweifen
  * Wird vom Controller des aktiven Spielers an das Hauptgerät gesendet, wenn
  * der Spieler das Karte ziehen bestätigt hat.
  *
  * qos:1
  */
+<<<<<<< HEAD
 export const drawConfirmMsg: MQTTMessage = {
+=======
+let drawConfirmMsg:MQTTMessage ={
+>>>>>>> feature/anzweifen
     topic: 'placeholder/controller',
     message: {
         senderId: 'placeholder',

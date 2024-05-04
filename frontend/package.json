@@ -13,8 +13,12 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/integrations": "^10.9.0",
     "@vueuse/sound": "^2.0.1",
+<<<<<<< HEAD
     "mqtt": "^5.5.5",
     "pinia": "^2.1.7",
+=======
+    "mqtt": "^5.5.4",
+>>>>>>> feature/anzweifen
     "qrcode": "^1.5.3",
     "vue": "^3.4.21",
     "vue-confetti": "^2.3.0",

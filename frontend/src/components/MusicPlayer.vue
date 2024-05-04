@@ -2,8 +2,12 @@
 // import {PauseIcon, PlayIcon, ArrowPathIcon} from "@heroicons/vue/24/outline";
 import {onMounted, ref, watch} from 'vue'
 import { useAnimate } from '@vueuse/core'
+<<<<<<< HEAD
 // import { useSound } from '@vueuse/sound'
 // import aveMaria from '../assets/music/Ave_Maria.mp3'
+=======
+// import trumpetSfx from '../assets/sounds/fanfare.mp3'
+>>>>>>> feature/anzweifen
 
 const props = defineProps<{
   timeDelta: number
