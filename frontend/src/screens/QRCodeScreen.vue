@@ -10,72 +10,61 @@ import { ref } from "vue";
 const url = window.location.href;
 const qrcode = useQRCode(url);
 
+import { lobbyMsg ,Player} from "../types/index.ts"
 
 import mqtt from "mqtt";
-import { MQTTMessage } from "../types";
+// import { MQTTMessage } from "../types";
 
 const client = mqtt.connect("ws://localhost:9001");
 
 
-interface Player {
-  name: string;
-  icon: string;
-  senderId:string;
-}
 
-const players = ref<Player[]>([]);
+const playersReadyTojoin = ref<Player[]>([]);
 
-// subscribing to players to join 
+// subscribing to players
+// wait for joining players to publich on joing  
 client.subscribe("placeholder/lobby")
 client.on("message", function (_, message) {
-    const messageStr = message.toString();
-    const messageObj = JSON.parse(messageStr);
-    
-    console.log("user ready to join ",messageObj)
+  const messageStr = message.toString();
+  const messageObj = JSON.parse(messageStr);
 
-  console.log( messageObj)
-if(messageObj){
-  const {playerName} =  messageObj
-      console.log("New player subscribed:", playerName);
-      addPlayer(playerName); // Add the new player to the list
-    
-}
+  console.log("user ready to join ", messageObj)
+  if (messageObj) {
+   // const { message } = messageObj
+
+    console.log("New player subscribed:", messageObj.playerName);
+    addPlayer(messageObj); // Add the new player to the list
+
+  }
 
 });
 
-let lobbyMsg: MQTTMessage = {
-    topic: 'placeholder/lobby',
-    message: {
-        senderId: 'placeholder',
-        token: 'placeholder',
-        playerName: 'placeholder',
-        avatarUrl: 'placeholder',
-    }
-}
 
-client.publish(lobbyMsg.topic, JSON.stringify(lobbyMsg.message))
 
-// Function to add a new player to the list
-function addPlayer(playerName: string) {
-  // Check if the player is already in the list
-  if (!players.value.some(player => player.name === playerName)) { // checking if player haas playerName attr
+// Function to add a new player to the lobby waaiting list
+function addPlayer(incomingPlayer: any) {
+  // could check if player is already in the list
+  //if (!players.value.some(player => player.name === playerName)) { 
+    if (incomingPlayer) {
     console.log("hallo")
-    players.value.push({
-      name: playerName,
-      icon: "/profile-picture-5.jpg", 
-      senderId:"",
+
+    playersReadyTojoin.value.push({
+      id: incomingPlayer.senderId,
+      name: incomingPlayer.playerName,
+      icon: "/profile-picture-5.jpg",
+      tokens: incomingPlayer.tokens,
+      cards: incomingPlayer.cards,
+     
     });
   }
-  console.log("Player lenth", players.value.length)
+  console.log("Player lenth", playersReadyTojoin.value.length)
 
 }
 
 </script>
 
 <template>
-  <div
-    class="grid grid-cols-2 gap-4 bg-primary-300 min-h-screen items-center justify-center p-8"
-  >
+  <div class="grid grid-cols-2 gap-4 bg-primary-300 min-h-screen items-center justify-center p-8">
     <div class="flex flex-col items-center space-y-8">
       <h1 class="text-xl font-bold">Join the game using this QR code</h1>
       <img class="rounded-lg w-64 h-64" :src="qrcode" alt="QR Code" />
@@ -119,7 +108,7 @@ function addPlayer(playerName: string) {
       <li class="py-3 sm:py-4">
         <div class="w-full divide-y divide-secondary-900 dark:divide-gray-700">
           <div class="flex flex-col space-y-4 rtl:space-x-reverse">
-            <HPlayerNameHorizontal v-for="player in players" :player="player">
+            <HPlayerNameHorizontal v-for="player in playersReadyTojoin" :player="player">
             </HPlayerNameHorizontal>
           </div>
         </div>

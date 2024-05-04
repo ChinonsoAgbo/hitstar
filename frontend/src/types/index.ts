@@ -82,7 +82,7 @@ export interface MQTTMessage {
  *
  * qos: 1
  */
-let lobbyMsg: MQTTMessage = {
+export let lobbyMsg: MQTTMessage = {
     topic: 'placeholder/lobby',
     message: {
         senderId: 'placeholder',
@@ -211,23 +211,7 @@ let doubtMsg: MQTTMessage ={
     }
 }
 
-/**
- * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
- * an die Controller gesendet
- */
-let evaluationMsg: MQTTMessage = {
-    topic: 'placeholder/main',
-    message: {
-        senderId: undefined,
-        token: 'placeholder',
-        gameState: GameStateNew.EVALUATION,
-        currentPlayer: 'placeholder',
-        doubtWin: undefined,
-        evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
-        evaluationResultPassivePlayer: undefined, // false wenn nicht
 
-    }
-}
 /**
  * Über diese Message werden die verschiedenen Züge während einem MateGuess oder der Guess Phase von Controller aus gesteuert
  */
@@ -245,6 +229,23 @@ let guessMsg = (command: String, gameState: GameStateNew) => {
     }
 }
 
+/**
+ * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
+ * an die Controller gesendet
+ */
+let evaluationMsg: MQTTMessage = {
+    topic: 'placeholder/main',
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.EVALUATION,
+        currentPlayer: 'placeholder',
+        doubtWin: undefined,
+        evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
+        evaluationResultPassivePlayer: undefined, // false wenn nicht
+
+    }
+}
 /**
  * Wird vom Controller des aktiven Spielers an das Hauptgerät gesendet, wenn
  * der Spieler das Karte ziehen bestätigt hat.

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import HButton from "../components/HButton.vue";
-import SearchInput from "../components/SearchInput.vue";
 
+import { lobbyMsg } from "../types/index.ts"
+import mqtt from "mqtt";
 
-
+const client = mqtt.connect("ws://localhost:9001");
+// Dummy publish player .> to be relaced by the server or qr code functionalitis ????
 
 
 </script>
@@ -12,11 +14,11 @@ import SearchInput from "../components/SearchInput.vue";
 <template>
 
 <div class="container ">
-  <SearchInput> </SearchInput>
 
   <div>
-    <HButton> Start Music   </HButton>
-  </div>j
+    
+    <HButton @click ="client.publish(lobbyMsg.topic, JSON.stringify(lobbyMsg.message)),{ retain: true }"> join Game </HButton>
+  </div>
   
 </div>
 </template>
