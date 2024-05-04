@@ -22,6 +22,11 @@ import {  redirectToAuthCodeFlow } from '../spotifyAPIAUTH/todos.ts'
   <div>
     <HButton @click="redirectToAuthCodeFlow(clientId)" > Authorization code   </HButton>
   </div>
+  
+  <div>
+    <HButton @click="redirectToAuthCodeFlow(clientId)" > Authorization code   </HButton>
+  </div>
+
 
 </div>
 </template>
