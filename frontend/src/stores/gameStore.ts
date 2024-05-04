@@ -22,13 +22,17 @@ export const useGameStore = defineStore('game', () => {
     const maxCardIndex = ref(10);
     const minCardIndex = ref(1);
 
+    const SONG_DURATION = 10000;
 
     const ANIMATION_DURATION = 1000;
+    const DRAW_CARD_DURATION = 500;
     const DOUBT_INTERVALL_STEP = 1000;
     const DOUBT_INTERVALL_ANNOUNCEMENT = 2000;
     const DOUBT_INTERVALL = DOUBT_INTERVALL_ANNOUNCEMENT + 5 * DOUBT_INTERVALL_STEP;
     const EVALUATION_ANIMATION_DURATION = 3000;
-    const doubtCountDown = ref<string | number>("Doubt-Phase 😱!");
+    const SHOW_CARD_DURATION = 5000;
+    const TURN_END_DURATION = 1000;
+    const doubtCountDown = ref<number>(0);
    
     // const currentCard: Ref<Card> = ref({id: 100, position: guessedCardIndex.value, title: "test", year: 2021, interpreter: "test"})
 
@@ -64,7 +68,8 @@ export const useGameStore = defineStore('game', () => {
                     Helpers.setNextPlayerAsActive();
                     break;
                 case "d":
-                    Actions.drawCard();
+                    if (activeGameState.value === GameStateNew.TURNSTART)
+                        Actions.drawCard();
                     break;
                 case "ArrowLeft":
                     if (activeGameState.value === GameStateNew.GUESS) 
@@ -99,6 +104,7 @@ export const useGameStore = defineStore('game', () => {
             let index = Math.floor(Math.random() * drawPile.value.length);
             currentCard.value = drawPile.value[index];
             drawPile.value.splice(index, 1);
+            console.log(currentCard.value);
         },
 
         send(message: MQTTMessage) {
@@ -135,12 +141,12 @@ export const useGameStore = defineStore('game', () => {
             if (!Helpers.hasCard(10)) {
                 activePlayer?.value.cards
                     .filter(c => c.position >= guessedCardIndex.value)
-                    .forEach(c => c.position++);
+                    .forEach(c => {c.position++; c.movedUp = true;});
             }
             else if (!Helpers.hasCard(1)) {
                 activePlayer?.value.cards
                     .filter(c => c.position <= guessedCardIndex.value)
-                    .forEach(c => c.position--);
+                    .forEach(c => {c.position--; c.movedDown = true;});
             }
         },
 
@@ -155,6 +161,15 @@ export const useGameStore = defineStore('game', () => {
                 }
                 lastGuessedCardIndex.value = guessedCardIndex.value;
             }
+        },
+
+        moveTimeLineCardsBack() {
+            activePlayer?.value.cards
+                .filter(c => c.movedUp === true)
+                .forEach(c => {c.position--; c.movedUp = false;});
+            activePlayer?.value.cards
+                .filter(c => c.movedDown === true)
+                .forEach(c => {c.position++; c.movedDown = false;});
         }
     }
 
@@ -180,6 +195,8 @@ export const useGameStore = defineStore('game', () => {
          */
         startTurn() {
             console.log("ANIMATE TURN START");
+            guessedCardIndex.value = 5;
+            lastGuessedCardIndex.value = 5;
             Helpers.setNextPlayerAsActive();
             Helpers.setGameState(GameStateNew.ANIMATE_TURNSTART);
             Helpers.drawNewRandomCard();
@@ -198,8 +215,20 @@ export const useGameStore = defineStore('game', () => {
             console.log("DRAW CARD");
             Helpers.setGameState(GameStateNew.DRAWCARD);
             setTimeout(() => {
+                this.listenToSong();
+            }, DRAW_CARD_DURATION);
+        },
+
+        
+        /**
+         * Starts the song. Called by the main device.
+         */
+        listenToSong() {
+            console.log("LISTEN TO SONG");
+            Helpers.setGameState(GameStateNew.LISTEN);
+            setTimeout(() => {
                 this.startGuessing();
-            }, ANIMATION_DURATION);
+            }, SONG_DURATION);
         },
 
         /**
@@ -254,12 +283,12 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 doubtCountDown.value = 5;
                 let countDown = setInterval(() => {
-                    (doubtCountDown.value as number)--;
+                    doubtCountDown.value--;
                     console.log(doubtCountDown.value);
-                    if ((doubtCountDown.value as number) <= 0) {
+                    if (doubtCountDown.value <= 0) {
                         clearInterval(countDown);
                         this.animateEvaluation();
-                        doubtCountDown.value = "Doubt-Phase 😱!"
+                        doubtCountDown.value = 0;
                     } 
                  }, DOUBT_INTERVALL_STEP);
             }, DOUBT_INTERVALL_ANNOUNCEMENT);
@@ -307,13 +336,14 @@ export const useGameStore = defineStore('game', () => {
         evaluatePositive() {
             console.log('POSITIVE');
             Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION_POSITIVE);
-            activePlayer.value.cards.push({ ...currentCard.value, position: guessedCardIndex.value });
             setTimeout(() => {
+                activePlayer.value.cards.push({ ...currentCard.value, position: guessedCardIndex.value });
                 Helpers.setGameState(GameStateNew.TURNEND);
                 setTimeout(() => {
-                    this.startTurn();
-                }, 500)
-            }, 3000);
+                    if (!this.checkWinner())
+                        this.startTurn();
+                }, TURN_END_DURATION)
+            }, SHOW_CARD_DURATION);
         },
 
         evaluateNegative() {
@@ -321,11 +351,20 @@ export const useGameStore = defineStore('game', () => {
             Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION_NEGATIVE);
             setTimeout(() => {
                 Helpers.setGameState(GameStateNew.TURNEND);
+                Helpers.moveTimeLineCardsBack();
                 setTimeout(() => {
                     this.startTurn();
-                }, 500)
-            }, 3000);
+                }, TURN_END_DURATION)
+            }, SHOW_CARD_DURATION);
         },
+
+        checkWinner() {
+            if (activePlayer.value.cards.length === 10) {
+                Helpers.setGameState(GameStateNew.GAMEEND);
+                return true;
+            }
+            return false;
+        }
     }
 
 
@@ -340,6 +379,7 @@ export const useGameStore = defineStore('game', () => {
         doubtCountDown,
         drawPile,
         discardPile,
-        currentCard
+        currentCard,
+        DRAW_CARD_DURATION
     }
 });

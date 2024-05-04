@@ -11,6 +11,8 @@ import { useAnimate } from "@vueuse/core";
 import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
 import ConfettiExplosion from "vue-confetti-explosion";
+import HHeading from "../components/HHeading.vue";
+import { PauseIcon } from '@heroicons/vue/24/outline';
 
 const cardSize = ref(7);
 
@@ -29,7 +31,7 @@ gameStore.players = [
                 year: 1960,
                 interpreter: "HITSTAR",
                 position: 5
-            }
+            },
         ],
         tokens: 3
     },
@@ -58,7 +60,63 @@ gameStore.players = [
                 title: "HITSTAR",
                 year: 1910,
                 interpreter: "HITSTAR",
-                position: 5
+                position: 1
+            },
+            {
+                id: "11",
+                title: "HITSTAR",
+                year: 1970,
+                interpreter: "HITSTAR",
+                position: 2
+            },
+            {
+                id: "12",
+                title: "HITSTAR",
+                year: 1980,
+                interpreter: "HITSTAR",
+                position: 3
+            },
+            {
+                id: "13",
+                title: "HITSTAR",
+                year: 1990,
+                interpreter: "HITSTAR",
+                position: 4
+            },
+            {
+                id: "14",
+                title: "HITSTAR",
+                year: 1993,
+                interpreter: "HITSTAR",
+                position: 6
+            },
+            {
+                id: "15",
+                title: "HITSTAR",
+                year: 2000,
+                interpreter: "HITSTAR",
+                position: 7
+            },
+            {
+                id: "16",
+                title: "HITSTAR",
+                year: 2002,
+                interpreter: "HITSTAR",
+                position: 8
+            },
+            {
+                id: "17",
+                title: "HITSTAR",
+                year: 2016,
+                interpreter: "HITSTAR",
+                position: 9
+            },
+            {
+                id: "18",
+                title: "HITSTAR",
+                year: 2018,
+                interpreter: "HITSTAR",
+                position: 10
             }
         ],
         tokens: 3
@@ -131,10 +189,10 @@ gameStore.drawPile = [
   },
 ];
 
-const drawPile = ref(null);
-const discardPile = ref(null);
+const drawPile = ref<HTMLElement>();
+const discardPile = ref<HTMLElement>();
 
-function popMinimize(ref: Ref<any>) {
+function popMinimize(ref: Ref<HTMLElement>) {
     return useAnimate(
         ref,
         [
@@ -144,29 +202,16 @@ function popMinimize(ref: Ref<any>) {
         ],
         {
           immediate: false,
-          duration: 500
+          duration: gameStore.DRAW_CARD_DURATION
         }
     );
 }
 
-// function popMaximize(ref: Ref<any>) {
-//     return useAnimate(
-//         ref,
-//         [
-//             { transform: 'scale(0)' },
-//             { transform: 'scale(1.2)' },
-//             { transform: 'scale(1)' }
-//         ],
-//         {
-//           immediate: false,
-//           duration: 500
-//         }
-//     );
-// }
+const drawPilePulse = popMinimize(drawPile as Ref<HTMLElement>);
 
-const drawPilePulse = popMinimize(drawPile);
 const flip = ref(false);
-
+const popLeft = ref(false);
+const popRight = ref(false);
 
 watch(() => gameStore.activeGameState, () => {
   switch (gameStore.activeGameState) {
@@ -177,15 +222,23 @@ watch(() => gameStore.activeGameState, () => {
     case GameStateNew.ANIMATE_EVALUATION_POSITIVE:
       setTimeout(() => {
         flip.value = true;
-      }, 500);
+      }, 2000);
       break;
     case GameStateNew.ANIMATE_EVALUATION_NEGATIVE:
       setTimeout(() => {
         flip.value = true;
-      }, 500);
+        setTimeout(() => {
+          popLeft.value = true;
+          setTimeout(() => {
+            popRight.value = true;
+          }, 500);
+        }, 500);
+      }, 2000);
       break;
     case GameStateNew.TURNEND:
       flip.value = false;
+      popLeft.value = false;
+      popRight.value = false;
       break;
   }
 });
@@ -235,10 +288,12 @@ watch(() => gameStore.activeGameState, () => {
         <HPopOver v-if="
             gameStore.activeGameState === GameStateNew.ANIMATE_GAMESTART ||
             gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART ||
+            gameStore.activeGameState === GameStateNew.LISTEN ||
             gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT ||
             gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION ||
             gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE ||
-            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE
+            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE ||
+            gameStore.activeGameState === GameStateNew.GAMEEND
         ">
 
             <!-- GAME_START ANIMATION -->
@@ -266,12 +321,29 @@ watch(() => gameStore.activeGameState, () => {
                 </Transition>
             </div>
 
+             <!-- LISTEN ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.LISTEN">
+                <HHeading class="fixed bottom-[20%] left-[20%] text-9xl animate-ping">🎵</HHeading>
+                <Transition name="pop" appear>
+                  <div class="flex flex-col justify-center items-center gap-3">
+                    <HHitstarCard :size="16" />
+                    <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-500">
+                        <PauseIcon class="w-20 h-20 cursor-pointer font-bold" />
+                    </div>
+                  </div>
+                </Transition>            
+                <HHeading class="fixed top-[20%] right-[20%] text-9xl animate-bounce">🎶</HHeading>
+            </div>
+
              <!-- WAIT FOR DOUBT ANIMATION -->
              <div v-if="gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT">
                 <Transition name="pop" appear>
-                  <h1 class="text-6xl font-bold tracking-tight text-white">
-                    {{ gameStore.doubtCountDown }}
-                  </h1>
+                  <HHeading v-if="gameStore.doubtCountDown == 0">Doubt-Phase 😮🤢😈</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 1">1</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 2">2</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 3">3</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 4">4</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 5">5</HHeading>
                 </Transition>
             </div>
 
@@ -286,7 +358,7 @@ watch(() => gameStore.activeGameState, () => {
 
             <!-- POSITIVE EVALUATE ANIMATION -->
             <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE">
-              <ConfettiExplosion :duration="5000" :stageHeight="8000" :stageWidth="5000" :particleCount="500"/>
+              <ConfettiExplosion v-if="flip" :duration="5000" :stageHeight="8000" :stageWidth="5000" :particleCount="500"/>
               <Transition name="pop" appear>
                 <VueFlip v-model="flip" width="248px" height="248px">
                   <template #front>
@@ -301,23 +373,37 @@ watch(() => gameStore.activeGameState, () => {
 
             <!-- NEGATIVE EVALUATE ANIMATION -->
             <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE">
-              <Transition name="pop" appear>
-                <VueFlip v-model="flip" width="248px" height="248px">
-                  <template #front>
-                    <HHitstarCard :size="16" />
-                  </template>
-                  <template #back>
-                    <HSongCard :size="16" :card="gameStore.currentCard" />
-                  </template>
-                </VueFlip>
-              </Transition>
+                <Transition name="pop" appear>
+                  <HHeading v-if="popLeft" class="fixed top-[30%] left-[30%] text-9xl">☠️</HHeading>
+                </Transition>
+            
+                <Transition name="pop" appear>
+                  <VueFlip v-model="flip" width="248px" height="248px"  >
+                    <template #front>
+                      <HHitstarCard :size="16" />
+                    </template>
+                    <template #back>
+                      <Transition name="getgray" appear>
+                        <HSongCard :size="16" :card="gameStore.currentCard" />
+                      </Transition>
+                    </template>
+                  </VueFlip>
+                </Transition>
+             
+                <Transition name="pop" appear>
+                  <HHeading v-if="popRight" class="fixed bottom-[30%] right-[30%] text-9xl">🤬</HHeading>
+                </Transition>
             </div>
 
-            <!-- <div v-if="activeState === GameStateNew.SHOW_SONG_MENU" class="w-full h-full flex justify-center items-center">
+             <!-- GAME_END ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.GAMEEND">
                 <Transition name="pop" appear>
-                    <MusicPlayer :time-delta="musicPlayDuration" @finished="startSorting()" />
+                    <h1 class="text-5xl font-bold tracking-tight text-white">
+                      Game finished!
+                    </h1>
                 </Transition>
-            </div> -->
+            </div>
+
         </HPopOver>
 
     </div>
@@ -327,9 +413,9 @@ watch(() => gameStore.activeGameState, () => {
 .pop-enter-active {
   animation: bounce-in 0.5s;
 }
-.pop-leave-active {
+/* .pop-leave-active {
   animation: bounce-in 0.5s reverse;
-}
+} */
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -342,15 +428,16 @@ watch(() => gameStore.activeGameState, () => {
   }
 }
 
-.draw-leave-active, .draw-enter-active {
-   animation: slide-in 1s ease;
- }
- @keyframes slide-in {
-    0% {
-        left: -50%;
-    }
-    100% {
-        left: 0;
-    }
- }
+.getgray-enter-active {
+  animation: getgray 5s;
+}
+
+@keyframes getgray {
+  0% {
+    filter: grayscale(0);
+  }
+  100% {
+    filter: grayscale(1);
+  }
+}
 </style>
