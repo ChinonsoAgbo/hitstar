@@ -1,271 +1,409 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { ref, watch, Ref } from 'vue';
 import HAvatar from '../components/HAvatar.vue';
 import HCard from '../components/HCard.vue'
+import Tokens from "../components/Tokens.vue";
+import { useGameStore } from "../stores/gameStore.ts";
+import HHitstarCard from "../components/HHitstarCard.vue";
+import HSongCard from "../components/HSongCard.vue";
+import { GameStateNew } from "../types";
+import { useAnimate } from "@vueuse/core";
 import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
-import MusicPlayer from "../components/MusicPlayer.vue";
-import { useElementBounding } from '@vueuse/core'
-import mqtt from "mqtt";
-import { GameStateNew, turnMsg } from '../types';
-const client = mqtt.connect("ws://localhost:9001");
+import ConfettiExplosion from "vue-confetti-explosion";
+import HHeading from "../components/HHeading.vue";
+import { PauseIcon } from '@heroicons/vue/24/outline';
 
+const cardSize = ref(7);
 
+const gameStore = useGameStore();
 
-
-
-interface Card {
-    title: string,
-    year: number,
-    interpreter: string
-}
-
-interface Player {
-    name: string,
-    icon: string,
-    cards: Card[]
-}
-
-enum GameCycle {
-    START_GAME,
-    START_TURN,
-    WAIT_FOR_DRAW_CARD,
-    DRAW_CARD, 
-    CARD_DREW,
-    SHOW_SONG_MENU,
-    SORT_CARD,
-    WAIT_FOR_CARD_SORTED,
-    CARD_SORTED
-}
-const activeState = ref(GameCycle.START_GAME);
-
-const players = ref<Player[]>([
+// mock players
+gameStore.players = [
     {
+        id: "a",
         name: "Harry",
-        icon: "/profile-picture-5.jpg",
-        cards: []
+        iconURL: "/profile-picture-5.jpg",
+        cards: [
+            {
+                id: "10",
+                title: "HITSTAR",
+                year: 1960,
+                interpreter: "HITSTAR",
+                position: 5
+            },
+        ],
+        tokens: 3
     },
     {
+        id: "b",
         name: "Hermione",
-        icon: "/profile-picture-3.jpg",
-        cards: []
+        iconURL: "/profile-picture-3.jpg",
+        cards: [
+            {
+                id: "11",
+                title: "HITSTAR",
+                year: 1980,
+                interpreter: "HITSTAR",
+                position: 5
+            }
+        ],
+        tokens: 3
     },
     {
+        id: "c",
         name: "Ron",
-        icon: "/profile-picture-2.jpg",
-        cards: []
+        iconURL: "/profile-picture-2.jpg",
+        cards: [
+            {
+                id: "12",
+                title: "HITSTAR",
+                year: 1910,
+                interpreter: "HITSTAR",
+                position: 1
+            },
+            {
+                id: "11",
+                title: "HITSTAR",
+                year: 1970,
+                interpreter: "HITSTAR",
+                position: 2
+            },
+            {
+                id: "12",
+                title: "HITSTAR",
+                year: 1980,
+                interpreter: "HITSTAR",
+                position: 3
+            },
+            {
+                id: "13",
+                title: "HITSTAR",
+                year: 1990,
+                interpreter: "HITSTAR",
+                position: 4
+            },
+            {
+                id: "14",
+                title: "HITSTAR",
+                year: 1993,
+                interpreter: "HITSTAR",
+                position: 6
+            },
+            {
+                id: "15",
+                title: "HITSTAR",
+                year: 2000,
+                interpreter: "HITSTAR",
+                position: 7
+            },
+            {
+                id: "16",
+                title: "HITSTAR",
+                year: 2002,
+                interpreter: "HITSTAR",
+                position: 8
+            },
+            {
+                id: "17",
+                title: "HITSTAR",
+                year: 2016,
+                interpreter: "HITSTAR",
+                position: 9
+            },
+            {
+                id: "18",
+                title: "HITSTAR",
+                year: 2018,
+                interpreter: "HITSTAR",
+                position: 10
+            }
+        ],
+        tokens: 3
     }
-]);
-const activePlayerIndex = ref(-1);
-const activePlayer = computed(() => activePlayerIndex.value > -1 ? players.value[activePlayerIndex.value] : null);
+];
 
-const cards = ref<Card[]>([
-    {
-      title: "HITSTAR",
-      year: 2024,
-      interpreter: "HITSTAR"
-    },
-    {
-      title: "We are the Champions",
-      year: 1978,
-      interpreter: "Queen"
-    },
-    {
-      title: "Watermelon Sugar",
-      year: 2020,
-      interpreter: "Harry Styles"
-    },
-    {
-      title: "Hallelujah",
-      year: 1648,
-      interpreter: "G. F. Händel"
-    }
-]);
-const drawnCard = ref<Card | null>(null);
-const insertionIndex = ref(0);
+gameStore.drawPile = [
+  {
+    id: "1",
+    title: "HITSTAR",
+    year: 1920,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "2",
+    title: "HITSTAR",
+    year: 1921,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "3",
+    title: "HITSTAR",
+    year: 1922,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "4",
+    title: "HITSTAR",
+    year: 1950,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "5",
+    title: "HITSTAR",
+    year: 1951,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "6",
+    title: "HITSTAR",
+    year: 1952,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "7",
+    title: "HITSTAR",
+    year: 1970,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "8",
+    title: "HITSTAR",
+    year: 1971,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+  {
+    id: "9",
+    title: "HITSTAR",
+    year: 1972,
+    interpreter: "HITSTAR",
+    position: 0,
+  },
+];
 
-const animationDuration = 3000;
-const musicPlayDuration = 5000;
+const drawPile = ref<HTMLElement>();
+const discardPile = ref<HTMLElement>();
 
-
-const timeline = ref<HTMLDivElement | null>(null);
-const timelineBounding = useElementBounding(timeline);
-
-function newTurn() {
-    activeState.value = GameCycle.START_TURN
-    activePlayerIndex.value = (activePlayerIndex.value + 1) % players.value.length
-
-    setTimeout(() => {
-        activeState.value = GameCycle.WAIT_FOR_DRAW_CARD
-    }, animationDuration)
+function popMinimize(ref: Ref<HTMLElement>) {
+    return useAnimate(
+        ref,
+        [
+            { transform: 'scale(1)' },
+            { transform: 'scale(2)' },
+            { transform: 'scale(1)' }
+        ],
+        {
+          immediate: false,
+          duration: gameStore.DRAW_CARD_DURATION
+        }
+    );
 }
 
-function drawCard() {
-    activeState.value = GameCycle.DRAW_CARD
-    drawnCard.value = cards.value[Math.floor(Math.random() * cards.value.length)];
+const drawPilePulse = popMinimize(drawPile as Ref<HTMLElement>);
 
-    setTimeout(() => {
-        activeState.value = GameCycle.CARD_DREW
-    }, 1000);
-}
+const flip = ref(false);
+const popLeft = ref(false);
+const popRight = ref(false);
 
-function showSongMenu() {
-    activeState.value = GameCycle.SHOW_SONG_MENU
-}
-
-
-function startSorting() {
-    activeState.value = GameCycle.SORT_CARD
-    insertionIndex.value = Math.floor(activePlayer.value?.cards.length / 2)
-    console.log(insertionIndex.value)
-}
-
-function stepRight() {
-  insertionIndex.value = (insertionIndex.value - 1 + activePlayer.value?.cards.length) % (activePlayer.value?.cards.length + 1)
-  console.log(insertionIndex.value)
-  timeline.value.style.left = timelineBounding.left.value + 80 + 'px'
-}
-
-function stepLeft() {
-  insertionIndex.value = (insertionIndex.value + 1) % (activePlayer.value?.cards.length + 1)
-
-  console.log(insertionIndex.value)
-  timeline.value.style.left = timelineBounding.left.value - 80 + 'px'
-}
-
-function insertCard() {
-  if (activeState.value === GameCycle.SORT_CARD) {
-    activePlayer.value?.cards.splice(insertionIndex.value, 0, drawnCard.value!);
-    drawnCard.value = null;
-    activeState.value = GameCycle.WAIT_FOR_CARD_SORTED;
-    timeline.value.style.left = '10%'
-    setTimeout(() => {
-      activeState.value = GameCycle.CARD_SORTED;
-    }, 1000);
+watch(() => gameStore.activeGameState, () => {
+  switch (gameStore.activeGameState) {
+    case GameStateNew.DRAWCARD:
+      console.log("DRAW CARD 2");
+      drawPilePulse.play();
+      break;
+    case GameStateNew.ANIMATE_EVALUATION_POSITIVE:
+      setTimeout(() => {
+        flip.value = true;
+      }, 2000);
+      break;
+    case GameStateNew.ANIMATE_EVALUATION_NEGATIVE:
+      setTimeout(() => {
+        flip.value = true;
+        setTimeout(() => {
+          popLeft.value = true;
+          setTimeout(() => {
+            popRight.value = true;
+          }, 500);
+        }, 500);
+      }, 2000);
+      break;
+    case GameStateNew.TURNEND:
+      flip.value = false;
+      popLeft.value = false;
+      popRight.value = false;
+      break;
   }
-}
-
-onMounted(() => {
-    document.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-          insertCard()
-      } else if (e.key === 'ArrowLeft') {
-          stepLeft()
-      } else if (e.key === 'ArrowRight') {
-          stepRight()
-      }
-    }
-    setTimeout(() => {
-        newTurn()
-    }, animationDuration)
-})
-
-
-
-client.subscribe("placeholder/controller")
-
-client.on("message", function (_, message) {
-    const messageStr = message.toString();
-    const messageObj = JSON.parse(messageStr);
-    console.log(messageObj)
-    if(messageObj.gameState == 2 && messageObj.senderId == "placeholder" && messageObj.command == "commit" && (activeState.value == GameCycle.WAIT_FOR_DRAW_CARD || activeState.value == GameCycle.START_GAME)){
-    drawCard()
-    client.publish(turnMsg(GameStateNew.DRAWCARD).topic, JSON.stringify(turnMsg(GameStateNew.DRAWCARD).message))
-}
-
-    else if(messageObj.gameState == 4 && activeState.value == GameCycle.CARD_DREW){
-        startSorting()
-    }
-        
 });
-
 </script>
 
 <template>
     <div class="bg-primary-500 absolute w-full h-full">
 
-        <!-- Players -->
-        <div class="fixed right-2 top-2">
-            <div v-for="player in players" class=" my-2 flex items-center justify-between gap-2" >
-                <h5 v-if="player === activePlayer" class="text-lg font-bold dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
-                <h5 v-else class="text-md dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
+        <!-- Players at top right corner -->
+        <div class="fixed right-2 top-2 grid" :style="{ 'grid-template-columns': `repeat(${gameStore.players.length}, 1fr)` }">
+            <div 
+                v-for="player in gameStore.players" 
+                class="m-2 gap-2 flex flex-col items-center border-2 p-1 pt-3 rounded-md" 
+                :class="player === gameStore.activePlayer ? 'border-secondary-500 animate-pulse' : 'border-gray-400'" >
 
-                <HAvatar v-if="player === activePlayer" :active="true" :size="4" :url="player.icon" />
-                <HAvatar v-else :size="3" :url="player.icon" />
+                <HAvatar :active="player === gameStore.activePlayer" :size="3" :url="player.iconURL" />
+                <Tokens :amount="player.tokens" />
+                <h5 v-if="player === gameStore.activePlayer" class="text-lg font-bold dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
+                <h5 v-else class="text-md dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
             </div>
         </div>
 
-        <!-- Zeitstrahl -->
-        <div ref="timeline" class="fixed top-[30%] left-[10%] w-[80%] h-[40%] flex items-center justify-center gap-2">
-            <HCard
-                v-for="card in activePlayer?.cards" 
-                :size="10">
-                <h5 class="text-md text-gray-900 dark:text-white text-center">{{ card.title }}</h5>
-                <h1 class="text-3xl font-bold tracking-tight text-center">{{ card.year }}</h1>
-                <h5 class="text-md text-gray-900 dark:text- text-center">{{ card.interpreter }}</h5>
+        <!-- Timeline -->
+        <div ref="timeline" class="fixed top-[50%] left-[2%] w-[96%] h-[40%] flex items-center justify-center overflow-x-auto">
+          <div class="relative h-min grid grid-cols-10 gap-2">
+            <HCard v-for="position in 10" :size="cardSize" class="bg-transparent border-dashed border-slate-400 flex justify-center items-center">
+              <HSongCard v-if="gameStore.hasCard(position) && gameStore.getCard(position)?.title !== 'GUESS'" :size="cardSize" :card="gameStore.getCard(position)!" />
+              <HHitstarCard v-else-if="gameStore.hasCard(position) && gameStore.getCard(position)?.title === 'GUESS'" :size="cardSize" />
             </HCard>
+            <HCard v-for="position in 10" :size="cardSize" class="bg-transparent border-transparent flex justify-center items-center">
+              <HHitstarCard v-if="gameStore.activeGameState === GameStateNew.GUESS && position == gameStore.guessedCardIndex" :size="cardSize" class="mt-10 animate-bounce" />
+            </HCard>
+          </div>
         </div>
 
-        <!-- Aktuelle Karte -->
-        <div
-            v-if="activeState >= GameCycle.CARD_DREW && activeState <= GameCycle.SORT_CARD"
-            @click="showSongMenu()"
-            class="fixed bottom-4 left-0 w-full flex justify-center"
-            :class="[activeState === GameCycle.SORT_CARD ? 'animate-pulse' : '']">
-
-            <HCard :size="10" :padding="false" class="">
-                <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
-            </HCard>
-        </div>
-
-        <!-- Gezogene Karte -->
-        <div v-if="activeState === GameCycle.DRAW_CARD" class="fixed bottom-4 left-0 w-full flex justify-center">
-            <Transition appear name="draw">
-                <HCard :size="10" :padding="false" class="relative">
-                    <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
-                </HCard>
-            </Transition>
+        <!-- Ablagestapel -->
+        <div class="fixed top-4 left-4 hover:cursor-pointer grayscale">
+          <HHitstarCard ref="discardPile" :size="cardSize" />
         </div>
 
         <!-- Nachziehstapel -->
-        <div class="fixed bottom-4 left-4 hover:cursor-pointer" @click="drawCard()">
-            <HCard :size="10" :padding="false" :class="[activeState === GameCycle.WAIT_FOR_DRAW_CARD ? 'animate-pulse' : '']">
-                <img class="rounded-xl h-[9.5em]" src="../../public/hitstar.jpg" alt="" />
-            </HCard>
+        <div class="fixed top-4 left-36 hover:cursor-pointer" :class="{ 'animate-pulse': gameStore.activeGameState === GameStateNew.TURNSTART }">
+            <HHitstarCard ref="drawPile" :size="cardSize" />
         </div>
 
-        <!-- v-if="activeState === GameCycle.NEW_GAME || activeState === GameCycle.NEW_TURN" -->
+        
         <HPopOver v-if="
-            activeState === GameCycle.START_GAME ||
-            activeState === GameCycle.START_TURN ||
-            activeState == GameCycle.SHOW_SONG_MENU
+            gameStore.activeGameState === GameStateNew.ANIMATE_GAMESTART ||
+            gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART ||
+            gameStore.activeGameState === GameStateNew.LISTEN ||
+            gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT ||
+            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION ||
+            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE ||
+            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE ||
+            gameStore.activeGameState === GameStateNew.GAMEEND
         ">
-            <div v-if="activeState === GameCycle.START_TURN">
-                <Transition name="pop" appear>
-                    <div class="flex flex-col justify-center items-center gap-3">
-                        <HAvatar 
-                            :active="true" 
-                            :size="10" 
-                            :url="activePlayer?.icon!" />
 
-                        <h1 class="text-5xl font-bold tracking-tight text-white">
-                            {{ activePlayer?.name }}
-                        </h1>
-                    </div>
-                </Transition>
-            </div>
-            <div v-if="activeState === GameCycle.START_GAME">
+            <!-- GAME_START ANIMATION -->
+            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_GAMESTART">
                 <Transition name="pop" appear>
                     <h1 class="text-5xl font-bold tracking-tight text-white">
                       New Game!
                     </h1>
                 </Transition>
             </div>
-            <div v-if="activeState === GameCycle.SHOW_SONG_MENU" class="w-full h-full flex justify-center items-center">
+
+            <!-- TURN_START ANIMATION -->
+            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART">
                 <Transition name="pop" appear>
-                    <MusicPlayer :time-delta="musicPlayDuration" @finished="startSorting()" />
+                    <div class="flex flex-col justify-center items-center gap-3">
+                        <HAvatar
+                            :active="true"
+                            :size="cardSize"
+                            :url="gameStore.activePlayer?.iconURL!" />
+
+                        <h1 class="text-5xl font-bold tracking-tight text-white">
+                            {{ gameStore.activePlayer?.name }}'s Turn
+                        </h1>
+                    </div>
                 </Transition>
             </div>
+
+             <!-- LISTEN ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.LISTEN">
+                <HHeading class="fixed bottom-[20%] left-[20%] text-9xl animate-ping">🎵</HHeading>
+                <Transition name="pop" appear>
+                  <div class="flex flex-col justify-center items-center gap-3">
+                    <HHitstarCard :size="16" />
+                    <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-500">
+                        <PauseIcon class="w-20 h-20 cursor-pointer font-bold" />
+                    </div>
+                  </div>
+                </Transition>            
+                <HHeading class="fixed top-[20%] right-[20%] text-9xl animate-bounce">🎶</HHeading>
+            </div>
+
+             <!-- WAIT FOR DOUBT ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT">
+                <Transition name="pop" appear>
+                  <HHeading v-if="gameStore.doubtCountDown == 0">Doubt-Phase 😮🤢😈</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 1">1</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 2">2</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 3">3</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 4">4</HHeading>
+                  <HHeading v-else-if="gameStore.doubtCountDown == 5">5</HHeading>
+                </Transition>
+            </div>
+
+             <!-- EVALUATE ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION">
+                <Transition name="pop" appear>
+                  <h1 class="text-8xl font-bold tracking-tight text-white">
+                    🤔???
+                  </h1>
+                </Transition>
+            </div>
+
+            <!-- POSITIVE EVALUATE ANIMATION -->
+            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE">
+              <ConfettiExplosion v-if="flip" :duration="5000" :stageHeight="8000" :stageWidth="5000" :particleCount="500"/>
+              <Transition name="pop" appear>
+                <VueFlip v-model="flip" width="248px" height="248px">
+                  <template #front>
+                    <HHitstarCard :size="16" />
+                  </template>
+                  <template #back>
+                    <HSongCard :size="16" :card="gameStore.currentCard" />
+                  </template>
+                </VueFlip>
+              </Transition>
+            </div>
+
+            <!-- NEGATIVE EVALUATE ANIMATION -->
+            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE">
+                <Transition name="pop" appear>
+                  <HHeading v-if="popLeft" class="fixed top-[30%] left-[30%] text-9xl">☠️</HHeading>
+                </Transition>
+            
+                <Transition name="pop" appear>
+                  <VueFlip v-model="flip" width="248px" height="248px"  >
+                    <template #front>
+                      <HHitstarCard :size="16" />
+                    </template>
+                    <template #back>
+                      <Transition name="getgray" appear>
+                        <HSongCard :size="16" :card="gameStore.currentCard" />
+                      </Transition>
+                    </template>
+                  </VueFlip>
+                </Transition>
+             
+                <Transition name="pop" appear>
+                  <HHeading v-if="popRight" class="fixed bottom-[30%] right-[30%] text-9xl">🤬</HHeading>
+                </Transition>
+            </div>
+
+             <!-- GAME_END ANIMATION -->
+             <div v-if="gameStore.activeGameState === GameStateNew.GAMEEND">
+                <Transition name="pop" appear>
+                    <h1 class="text-5xl font-bold tracking-tight text-white">
+                      Game finished!
+                    </h1>
+                </Transition>
+            </div>
+
         </HPopOver>
 
     </div>
@@ -275,9 +413,9 @@ client.on("message", function (_, message) {
 .pop-enter-active {
   animation: bounce-in 0.5s;
 }
-.pop-leave-active {
+/* .pop-leave-active {
   animation: bounce-in 0.5s reverse;
-}
+} */
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -290,15 +428,16 @@ client.on("message", function (_, message) {
   }
 }
 
-.draw-leave-active, .draw-enter-active {
-   animation: slide-in 1s ease;
- }
- @keyframes slide-in {
-    0% {
-        left: -50%;
-    }
-    100% {
-        left: 0;
-    }
- }
+.getgray-enter-active {
+  animation: getgray 5s;
+}
+
+@keyframes getgray {
+  0% {
+    filter: grayscale(0);
+  }
+  100% {
+    filter: grayscale(1);
+  }
+}
 </style>

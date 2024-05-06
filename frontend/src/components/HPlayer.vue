@@ -1,6 +1,6 @@
 
 <script setup lang="ts" >
-import HAvatar from '../components/HAvatar.vue';
+import HAvatar from './HAvatar.vue';
 
 
 defineProps<{
