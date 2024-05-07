@@ -1,21 +1,21 @@
-import { createWebHistory, createRouter } from "vue-router";
-import ControllerLobbyScreen from "../screens/ControllerLobbyScreen.vue";
-import ControllerScreen from "../screens/ControllerScreen.vue";
-import DesignSettingsScreen from "../screens/DesignSettingsScreen.vue";
-import EndScreen from "../screens/EndScreen.vue";
-import GameScreen from "../screens/GameScreen.vue";
-import GameSettingsScreen from "../screens/GameSettingsScreen.vue";
-import LoginScreen from "../screens/LoginScreen.vue";
-import QRCodeScreen from "../screens/QRCodeScreen.vue";
-import RegisterScreen from "../screens/RegisterScreen.vue";
-import StartScreen from "../screens/StartScreen.vue";
-import Test from "../screens/Test.vue";
+import { createWebHashHistory, createRouter } from 'vue-router'
+import ControllerLobbyScreen from '../screens/ControllerLobbyScreen.vue'
+import ControllerScreen from '../screens/ControllerScreen.vue'
+import DesignSettingsScreen from '../screens/DesignSettingsScreen.vue'
+import EndScreen from '../screens/EndScreen.vue'
+import GameScreen from '../screens/GameScreen.vue'
+import GameSettingsScreen from '../screens/GameSettingsScreen.vue'
+import LoginScreen from '../screens/LoginScreen.vue'
+import QRCodeScreen from '../screens/QRCodeScreen.vue'
+import RegisterScreen from '../screens/RegisterScreen.vue'
+import StartScreen from '../screens/StartScreen.vue'
+import Test from '../screens/Test.vue'
 
 export const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/start' },
-    { path: '/controller-lobby', component: ControllerLobbyScreen },
+    { path: '/controller-lobby/:sessionId', component: ControllerLobbyScreen },
     { path: '/controller', component: ControllerScreen },
     { path: '/design-settings', component: DesignSettingsScreen },
     { path: '/end', component: EndScreen },
@@ -29,4 +29,4 @@ export const router = createRouter({
 
 
   ],
-});
+})

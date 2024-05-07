@@ -1,29 +1,28 @@
-<script setup lang="ts" >
-import WaitingGamers from '../components/WaitingGamers.vue';
+<script setup lang="ts">
+import WaitingGamers from "../components/WaitingGamers.vue";
 
-import HButton from '../components/HButton.vue'
-
-import {ref, defineProps, computed} from 'vue';
+import HButton from "../components/HButton.vue";
+import { useSessionStore } from "../stores/sessionStore";
+import { ref, defineProps, computed } from "vue";
 import HAvatar from "../components/HAvatar.vue";
+
+import { useRoute } from "vue-router";
 
 const showDropdown = ref(false);
 const username = ref("Chinonso Agbo"); // Defined the username variable
-//create a instance of route so a access sessionId from URL
-const route = useRoute();
-//create a instance of gamestore to store sessionId
-const gameStore = useGameStore();
-//stores sessionId into the gameStore so is accessable
-gameStore.setSessionID(route.params.sessionId.toString());
-
-
+const sessionStore = useSessionStore();
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value; // close dropdown button
 };
+const route = useRoute();
+sessionStore.setSessionID(route.params.sessionId.toString());
 
 //  property to invert the value of showDropdown
 const invertedShowDropdown = computed(() => !showDropdown.value);
 // property to dynamically change the toggle text
-const toggleText = computed(() => invertedShowDropdown.value ? 'Ready to join' : 'Not Ready to join');
+const toggleText = computed(() =>
+  invertedShowDropdown.value ? "Ready to join" : "Not Ready to join"
+);
 
 defineProps({
   toggleDropdown: Function,
@@ -32,7 +31,7 @@ defineProps({
 });
 
 const updateUsername = () => {
-  return username.value
+  return username.value;
 };
 
 const avatersForSettings = ref([
@@ -49,6 +48,7 @@ const avatersForSettings = ref([
     icon: "/image4.png",
   },
 ]);
+console.log(sessionStore.getSessionID());
 </script>
 
 <template>
@@ -70,16 +70,24 @@ const avatersForSettings = ref([
           <HAvatar url="/profile-picture-5.jpg"></HAvatar>
         </button>
 
-     
+        <label class="inline-flex items-center m-6 cursor-pointer">
+          <input
+            type="checkbox"
+            v-model="invertedShowDropdown"
+            class="sr-only peer"
+            checked
+            disabled
+          />
 
-          <label class="inline-flex items-center m-6 cursor-pointer">
-            <input type="checkbox" v-model="invertedShowDropdown" class="sr-only peer" checked disabled>
-         
-
-            <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"> {{toggleText }}</span>
-          </label>
-
+          <div
+            class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+          ></div>
+          <span
+            class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            {{ toggleText }}</span
+          >
+        </label>
 
         <!--      Event listener to for profile to toggle Dropdown -->
         <div
@@ -100,12 +108,25 @@ const avatersForSettings = ref([
             />
           </div>
 
-            <!-- List of dropdown avaters for settings  -->
-            <div  class="flex flex-wrap">
-              <div v-for="avater in avatersForSettings"  class="flex items-center me-4">
-                <input :id="avater.name" type="radio" value="" name="colored-radio" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label :for="avater.name" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"> <HAvatar :url="avater.icon"></HAvatar>{{avater.name}}</label>
-              </div>
+          <!-- List of dropdown avaters for settings  -->
+          <div class="flex flex-wrap">
+            <div
+              v-for="avater in avatersForSettings"
+              class="flex items-center me-4"
+            >
+              <input
+                :id="avater.name"
+                type="radio"
+                value=""
+                name="colored-radio"
+                class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                :for="avater.name"
+                class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                <HAvatar :url="avater.icon"></HAvatar>{{ avater.name }}</label
+              >
             </div>
           </div>
         </div>
