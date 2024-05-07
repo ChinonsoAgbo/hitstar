@@ -14,17 +14,19 @@ import Test from "../screens/Test.vue";
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", redirect: "/start" },
-    { path: "/controller-lobby/:sessionId", component: ControllerLobbyScreen },
-    { path: "/controller", component: ControllerScreen },
-    { path: "/design-settings", component: DesignSettingsScreen },
-    { path: "/end", component: EndScreen },
-    { path: "/game", component: GameScreen },
-    { path: "/game-settings", component: GameSettingsScreen },
-    { path: "/login", component: LoginScreen },
-    { path: "/qr-code", component: QRCodeScreen },
-    { path: "/register", component: RegisterScreen },
-    { path: "/start", component: StartScreen },
-    { path: "/test", component: Test },
+    { path: '/', redirect: '/start' },
+    { path: '/controller-lobby', component: ControllerLobbyScreen },
+    { path: '/controller', component: ControllerScreen },
+    { path: '/design-settings', component: DesignSettingsScreen },
+    { path: '/end', component: EndScreen },
+    { path: '/game', component: GameScreen },
+    { path: '/game-settings', component: GameSettingsScreen },
+    { path: '/login', component: LoginScreen },
+    { path: '/qr-code', component: QRCodeScreen },
+    { path: '/register', component: RegisterScreen },
+    { path: '/start', component: StartScreen },
+    { path: '/test', component: Test },
+
+
   ],
 });
