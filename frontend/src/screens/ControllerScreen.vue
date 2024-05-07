@@ -11,43 +11,18 @@ import {
 
 import { ChevronUpIcon } from "@heroicons/vue/24/outline";
 import HAvatar from "../components/HAvatar.vue";
+import { GameStateNew } from "../types";
+import { useControllerStore } from "../stores/controllerStore";
 
-import { ref } from "vue";
-
-import mqtt from "mqtt";
-import { GameStateNew, drawConfirmMsg, turnMsg } from "../types";
-const client = mqtt.connect("ws://localhost:9001");
-
-const isMusicPlaying = ref(false);
-const changePlaySate = () => {
-  isMusicPlaying.value = !isMusicPlaying.value;
-
-};
-const musicState = ref(true);
-const changeMusicSate = () => {
-  musicState.value = !musicState.value;
- 
-
-};
-
-
-
-
-
-
-
-const musicPlayDuration = 5000;
-
-
-
-
-
+const controllerStore = useControllerStore();
 </script>
 
 <template>
   <div class="container mx-auto mt-7 flex justify-center items-center">
     <!-- Controller card -->
-    <div class="w-full max-w-sm rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div
+      class="w-full max-w-sm rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+    >
       <!-- Profile and Settings -->
       <div class="grid grid-cols-2 mx-4 mt-2">
         <div class="flex justify-start m-3">
@@ -72,50 +47,65 @@ const musicPlayDuration = 5000;
 
       <div class="flex flex-col items-center w-full py-20">
         <!-- Navigation button-->
-        <div v-if="isMusicPlaying">
-          <button type="button"
-            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
-            <ChevronLeftIcon class="w-10 h-10 text-slate-200">
-            </ChevronLeftIcon>
-          </button>
-
-          <button @click="changeMusicSate" type="button"
-            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-            <PauseIcon v-if="musicState" class="w-12 h-12 cursor-pointer" />
-
-            <PlayIcon v-else class="w-12 h-12 cursor-pointer" />
-          </button>
-
-          <button type="button"
-            class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
-            <ChevronRightIcon class="w-10 h-10 text-slate-200">
-            </ChevronRightIcon>
-          </button>
-        </div>
-        <div v-else class="flex mt-4 md:mt-12 sm:mt-12">
-          <button type="button"
-            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+        <div v-if="controllerStore.activeGameState === GameStateNew.LISTEN">
+          <button
+            type="button"
+            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+          >
             <ChevronLeftIcon class="w-10 h-10 text-slate-200">
             </ChevronLeftIcon>
           </button>
 
           <button
-            @click='client.publish(drawConfirmMsg.topic, JSON.stringify(drawConfirmMsg.message))'
-            
+            @click="controllerStore.commit(), console.log('commit')"
+            type="button"
+            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          >
+            <PauseIcon
+              v-if="!controllerStore.isMusicPlaying"
+              class="w-12 h-12 cursor-pointer"
+            />
+
+            <PlayIcon v-else class="w-12 h-12 cursor-pointer" />
+          </button>
+
+          <button
+            type="button"
+            class="text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900"
+          >
+            <ChevronRightIcon class="w-10 h-10 text-slate-200">
+            </ChevronRightIcon>
+          </button>
+        </div>
+        <div v-else class="flex mt-4 md:mt-12 sm:mt-12">
+          <button
+            @click="controllerStore.turnLeft(), console.log('left')"
+            type="button"
+            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+          >
+            <ChevronLeftIcon class="w-10 h-10 text-slate-200">
+            </ChevronLeftIcon>
+          </button>
+
+          <button
+            @click="controllerStore.commit()"
             type="button"
             class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           >
             <ChevronUpIcon class="w-10 h-10 text-slate-200"> </ChevronUpIcon>
           </button>
-          <button type="button"
-            class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+          <button
+            @click="controllerStore.turnRight(), console.log('right')"
+            type="button"
+            class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+          >
             <ChevronRightIcon class="w-10 h-10 text-slate-200">
             </ChevronRightIcon>
           </button>
         </div>
         <!-- Rejection button-->
         <button
-        @click= 'client.publish(doubtMsg.topic, JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
+          @click="controllerStore.makeDoubt()"
           type="button"
           class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >
