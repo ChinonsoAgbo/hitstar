@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
-import {Card, GameStateNew, MQTTMessage, Player} from "../types";
+import {Card, GameStateNew, MQTTMessage, Player, guessMsg} from "../types";
 import {computed, onMounted, ref, Ref} from "vue";
-// import mqtt from "mqtt";
-// import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "../types";
+import mqtt from "mqtt";
+import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "../types";
 
 export const useGameStore = defineStore('game', () => {
 
@@ -15,7 +15,7 @@ export const useGameStore = defineStore('game', () => {
     const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
     const playerIndex: Ref<number> = ref(-1);
     const activePlayer = computed(() => players.value[playerIndex.value] || { cards: [{}] } as Player);
-    // const client = mqtt.connect("ws://localhost:8000/mqtt");
+    const client = mqtt.connect("ws://localhost:9001");
 
     const guessedCardIndex = ref(5);
     const lastGuessedCardIndex = ref(5);
@@ -39,28 +39,29 @@ export const useGameStore = defineStore('game', () => {
 
     onMounted(() => {
 
-        // client.on("connect", () => {
-        //     client.subscribe("placeholder/controller", { qos: 0 });
-        // });
-        //
-        // client.on("message", (topic, message) => {
-        //     switch (message.gameState) {
-        //         case GameStateNew.DRAWCARD:
-        //             Actions.drawCard();
-        //             break;
-        //         case GameStateNew.GUESS:
-        //             switch (message.command) {
-        //                 case "left":
-        //                     break;
-        //                 case "right":
-        //                     break;
-        //                 case "commit":
-        //                     break;
-        //             }
-        //             break;
-        //
-        //     }
-        // });
+         client.on("connect", () => {
+             client.subscribe("placeholder/controller", { qos: 0 });
+         });
+        
+         client.on("message", (topic, message) => {
+            let msg = JSON.parse(message)
+             switch (msg.gameState) {
+                 case GameStateNew.DRAWCARD:
+                     Actions.drawCard();
+                     break;
+                 case GameStateNew.GUESS:
+                     switch (msg.command) {
+                         case "left":
+                             break;
+                         case "right":
+                             break;
+                         case "commit":
+                             break;
+                    }
+                     break;
+        
+             }
+         });
 
         document.onkeydown = (e: KeyboardEvent) => {
             switch (e.key) {
@@ -108,7 +109,7 @@ export const useGameStore = defineStore('game', () => {
         },
 
         send(message: MQTTMessage) {
-            // client.publish(message.topic, message.message);
+            client.publish(message.topic, JSON.stringify(message.message));
         },
 
         /**
@@ -185,7 +186,7 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("GAME START");
                 Helpers.setGameState(GameStateNew.GAMESTART);
-                // Helpers.send(gameStartMsg);
+                Helpers.send(gameStartMsg);
                 this.startTurn();
             }, ANIMATION_DURATION);
         },
@@ -203,8 +204,8 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("TURN START");
                 Helpers.setGameState(GameStateNew.TURNSTART);
-                // Helpers.send(turnMsg(GameStateNew.TURNSTART));
-                // Helpers.send(turnMsg(GameStateNew.DRAWCARD));
+                 Helpers.send(turnMsg(GameStateNew.TURNSTART));
+                 Helpers.send(turnMsg(GameStateNew.DRAWCARD));
             }, ANIMATION_DURATION);
         },
 
@@ -237,7 +238,7 @@ export const useGameStore = defineStore('game', () => {
         startGuessing() {
             console.log("START GUESSING");
             Helpers.setGameState(GameStateNew.GUESS);
-            // Helpers.send(turnMsg(GameStateNew.GUESS));
+             Helpers.send(turnMsg(GameStateNew.GUESS));
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
         },
@@ -249,7 +250,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD LEFT");
             guessedCardIndex.value = Math.max(minCardIndex.value, guessedCardIndex.value - 1);
             Helpers.switchTimeLineCards();
-            // Helpers.send(guessMsg("left", GameStateNew.GUESS));
+             Helpers.send(guessMsg("left", GameStateNew.GUESS));
         },
 
         /**
@@ -259,7 +260,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD RIGHT");
             guessedCardIndex.value = Math.min(maxCardIndex.value, guessedCardIndex.value + 1);
             Helpers.switchTimeLineCards();
-            // Helpers.send(guessMsg("right", GameStateNew.GUESS));
+             Helpers.send(guessMsg("right", GameStateNew.GUESS));
         },
 
         /**
@@ -268,7 +269,7 @@ export const useGameStore = defineStore('game', () => {
         commitGuess() {
             console.log("COMMIT GUESS");
             activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: guessedCardIndex.value });
-            // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
+            Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             Helpers.setGameState(GameStateNew.WAIT_FOR_DOUBT);
             this.startDoubtCountDown();
             setTimeout(() => {
