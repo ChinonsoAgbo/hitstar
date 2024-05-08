@@ -13,8 +13,12 @@ import {
   PlayIcon,
 } from "@heroicons/vue/24/outline";
 
-
 const isLoggedIn = ref(true);
+const changeLoginStatus = () => {
+  isLoggedIn.value = !isLoggedIn.value;
+
+}
+
 
 
 
