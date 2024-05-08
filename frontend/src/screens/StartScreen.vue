@@ -36,7 +36,7 @@ const code = new URLSearchParams(window.location.search).get('code'); // get acc
 const error = new URLSearchParams(window.location.search).get('error') // get acees denied 
 // console.log(code)
 if (!code) {
-  redirectToAuthCodeFlow(clientId); // make sure the user accepts 
+  //redirectToAuthCodeFlow(clientId); // make sure the user accepts 
 } else if (code) { //  fetch token
 
   getLocalToken(clientId, code)
@@ -67,7 +67,7 @@ if (!code) {
 
     //   console.log("body",searchTerm.uri)
 
-    // });
+     });
     });
 
   }).catch(error => {
@@ -133,7 +133,6 @@ if (!code) {
 
 
 //   }
-
 
 
 
