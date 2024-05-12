@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, Ref } from "vue";
+import { ref, Ref, computed } from "vue";
 import {
   Player,
   GameStateNew,
@@ -13,8 +13,13 @@ import { onMounted } from "vue";
 import mqtt from "mqtt";
 
 export const useControllerStore = defineStore("controller", () => {
+  const playerIndex: Ref<number> = ref(-1);
+  const activePlayer = computed(
+    () => players.value[playerIndex.value] || ({ cards: [{}] } as Player)
+  );
+  const controllerPlayer: Ref<Player | null> = ref(null);
   const players: Ref<Player[]> = ref([] as Player[]);
-  const itsTurn = ref(true);
+  const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
   const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
 
@@ -22,7 +27,7 @@ export const useControllerStore = defineStore("controller", () => {
 
   onMounted(() => {
     client.on("connect", () => {
-      client.subscribe("placeholder/main", { qos: 1 });
+      client.subscribe("placeholder/main", { qos: 0 });
     });
 
     client.on("message", (__, message) => {
@@ -33,14 +38,17 @@ export const useControllerStore = defineStore("controller", () => {
           players.value = msg.playerOrder;
           break;
         case GameStateNew.TURNSTART:
+          //if (activePlayer.value.id === controllerPlayer.value.id) {
           itsTurn.value = true;
-          //else itsTurn.value = false;
+          // }
+
+         // itsTurn.value = false;
           break;
-        case GameStateNew.LISTEN && itsTurn:
+        case GameStateNew.LISTEN: //&& itsTurn:
           isMusicPlaying.value = true;
           break;
         case GameStateNew.TURNEND:
-          //  itsTurn.value = false;
+          itsTurn.value = false;
           break;
       }
     });
@@ -67,13 +75,13 @@ export const useControllerStore = defineStore("controller", () => {
       }
     },
 
-    turnLeft() {
+    left() {
       if (activeGameState.value === GameStateNew.GUESS) {
         Actions.turnLeft();
       }
     },
 
-    turnRight() {
+    right() {
       if (activeGameState.value === GameStateNew.GUESS) {
         Actions.turnRight();
       }
@@ -85,24 +93,37 @@ export const useControllerStore = defineStore("controller", () => {
       activeGameState.value = gameState;
     },
     commitGuess() {
-      if (itsTurn.value) Helpers.send(guessMsg("commit", GameStateNew.GUESS));
+      //if (itsTurn.value)
+      Helpers.send(guessMsg("commit", GameStateNew.GUESS));
     },
     turnLeft() {
-      if (itsTurn.value) Helpers.send(guessMsg("left", GameStateNew.GUESS));
+      if (
+        //itsTurn.value &&
+        activeGameState.value === GameStateNew.GUESS
+      )
+        Helpers.send(guessMsg("left", GameStateNew.GUESS));
     },
     turnRight() {
-      if (itsTurn.value && GameStateNew.GUESS)
+      if (
+        //itsTurn.value &&
+        activeGameState.value === GameStateNew.GUESS
+      )
         Helpers.send(guessMsg("right", GameStateNew.GUESS));
     },
     drawCard() {
-      if (itsTurn.value) Helpers.send(drawConfirmMsg);
+      //if (itsTurn.value)
+      Helpers.send(drawConfirmMsg);
     },
     makeDoubt() {
-      if (!itsTurn.value) Helpers.send(doubtMsg);
+      if (
+        // !itsTurn.value &&
+        activeGameState.value === GameStateNew.WAIT_FOR_DOUBT
+      )
+        Helpers.send(doubtMsg);
     },
     commitDoubtGuess() {
-      if (!itsTurn.value)
-        Helpers.send(guessMsg("commit", GameStateNew.MATEGUESS));
+      //if (itsTurn.value)
+      Helpers.send(guessMsg("commit", GameStateNew.MATEGUESS));
     },
     playMusic() {
       Helpers.send(playPauseMsg("play"));
@@ -111,7 +132,10 @@ export const useControllerStore = defineStore("controller", () => {
       Helpers.send(playPauseMsg("pause"));
     },
     changeMusicState() {
-      if (itsTurn.value) {
+      if (
+        //itsTurn.value &&
+        activeGameState.value === GameStateNew.LISTEN
+      ) {
         if (isMusicPlaying.value) this.playMusic();
         else this.stopMusic();
       }
@@ -122,8 +146,8 @@ export const useControllerStore = defineStore("controller", () => {
     isMusicPlaying,
     commit: Helpers.commit,
     makeDoubt: Actions.makeDoubt,
-    turnRight: Helpers.turnRight,
-    turnLeft: Helpers.turnLeft,
+    turnRight: Helpers.right,
+    turnLeft: Helpers.left,
     changeMusicState: Actions.changeMusicState,
   };
 });

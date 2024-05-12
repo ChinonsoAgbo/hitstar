@@ -43,19 +43,29 @@ export const useGameStore = defineStore('game', () => {
              client.subscribe("placeholder/controller", { qos: 0 });
          });
         
-         client.on("message", (topic, message) => {
+         client.on("message", (__, message) => {
             let msg = JSON.parse(message)
              switch (msg.gameState) {
                  case GameStateNew.DRAWCARD:
                      Actions.drawCard();
                      break;
+                 case GameStateNew.LISTEN:
+                    switch(msg.command){
+                        case "pause":
+                            break;
+                        case "play":
+                            break;
+                    }
                  case GameStateNew.GUESS:
                      switch (msg.command) {
                          case "left":
+                            Actions.moveCardLeft();
                              break;
                          case "right":
+                            Actions.moveCardRight();
                              break;
                          case "commit":
+                            Actions.commitGuess();
                              break;
                     }
                      break;
@@ -204,8 +214,8 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("TURN START");
                 Helpers.setGameState(GameStateNew.TURNSTART);
-                 Helpers.send(turnMsg(GameStateNew.TURNSTART));
-                 Helpers.send(turnMsg(GameStateNew.DRAWCARD));
+                Helpers.send(turnMsg(GameStateNew.TURNSTART));
+                Helpers.send(turnMsg(GameStateNew.DRAWCARD));
             }, ANIMATION_DURATION);
         },
 
@@ -217,6 +227,7 @@ export const useGameStore = defineStore('game', () => {
             Helpers.setGameState(GameStateNew.DRAWCARD);
             setTimeout(() => {
                 this.listenToSong();
+                Helpers.send(turnMsg(GameStateNew.LISTEN))
             }, DRAW_CARD_DURATION);
         },
 
@@ -238,7 +249,7 @@ export const useGameStore = defineStore('game', () => {
         startGuessing() {
             console.log("START GUESSING");
             Helpers.setGameState(GameStateNew.GUESS);
-             Helpers.send(turnMsg(GameStateNew.GUESS));
+            Helpers.send(turnMsg(GameStateNew.GUESS));
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
         },
@@ -250,7 +261,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD LEFT");
             guessedCardIndex.value = Math.max(minCardIndex.value, guessedCardIndex.value - 1);
             Helpers.switchTimeLineCards();
-             Helpers.send(guessMsg("left", GameStateNew.GUESS));
+            //Helpers.send(guessMsg("left", GameStateNew.GUESS));
         },
 
         /**
@@ -260,7 +271,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD RIGHT");
             guessedCardIndex.value = Math.min(maxCardIndex.value, guessedCardIndex.value + 1);
             Helpers.switchTimeLineCards();
-             Helpers.send(guessMsg("right", GameStateNew.GUESS));
+            //Helpers.send(guessMsg("right", GameStateNew.GUESS));
         },
 
         /**
@@ -269,7 +280,7 @@ export const useGameStore = defineStore('game', () => {
         commitGuess() {
             console.log("COMMIT GUESS");
             activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: guessedCardIndex.value });
-            Helpers.send(guessMsg("commit", GameStateNew.GUESS));
+            //Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             Helpers.setGameState(GameStateNew.WAIT_FOR_DOUBT);
             this.startDoubtCountDown();
             setTimeout(() => {

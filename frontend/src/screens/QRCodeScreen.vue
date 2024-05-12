@@ -7,7 +7,7 @@ import HPlayerNameHorizontal from "../components/HPlayerNameHorizontal.vue";
 import HCopy from "../components/HCopy.vue";
 import { ref } from "vue";
 
-const url = window.location.href;
+const url = "http://localhost/#/controller";
 const qrcode = useQRCode(url);
 
 import { lobbyMsg ,Player} from "../types/index.ts"

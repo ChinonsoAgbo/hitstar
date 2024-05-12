@@ -48,16 +48,13 @@ const controllerStore = useControllerStore();
       <div class="flex flex-col items-center w-full py-20">
         <!-- Navigation button-->
         <div v-if="controllerStore.activeGameState === GameStateNew.LISTEN">
-          <button
-            type="button"
-            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-          >
+          <button type="button" class="bg-gray-500 rounded-full px-5 py-5 mb-2">
             <ChevronLeftIcon class="w-10 h-10 text-slate-200">
             </ChevronLeftIcon>
           </button>
 
           <button
-            @click="controllerStore.commit(), console.log('commit')"
+            @click="controllerStore.changeMusicState(), console.log('commit')"
             type="button"
             class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
           >
@@ -69,35 +66,62 @@ const controllerStore = useControllerStore();
             <PlayIcon v-else class="w-12 h-12 cursor-pointer" />
           </button>
 
-          <button
-            type="button"
-            class="text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-900"
-          >
+          <button type="button" class="bg-gray-500 rounded-full px-5 py-5 mb-2">
             <ChevronRightIcon class="w-10 h-10 text-slate-200">
             </ChevronRightIcon>
           </button>
         </div>
         <div v-else class="flex mt-4 md:mt-12 sm:mt-12">
+          <!--turnRight-Button-->
           <button
+            :class="{
+              'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
+                controllerStore.activeGameState === GameStateNew.GUESS ||
+                controllerStore.activeGameState === GameStateNew.MATEGUESS,
+              'bg-gray-500':
+                controllerStore.activeGameState !== GameStateNew.GUESS ||
+                controllerStore.activeGameState !== GameStateNew.MATEGUESS,
+            }"
             @click="controllerStore.turnLeft(), console.log('left')"
             type="button"
-            class="bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+            class="rounded-full px-5 py-5 mb-2"
           >
             <ChevronLeftIcon class="w-10 h-10 text-slate-200">
             </ChevronLeftIcon>
           </button>
-
+          <!--commit-Button-->
           <button
+            :class="{
+              ' bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800':
+                controllerStore.activeGameState === GameStateNew.DRAWCARD ||
+                controllerStore.activeGameState === GameStateNew.MATEGUESS ||
+                controllerStore.activeGameState === GameStateNew.GUESS ||
+                controllerStore.activeGameState === GameStateNew.TURNSTART,
+              'bg-gray-500':
+                controllerStore.activeGameState !== GameStateNew.DRAWCARD ||
+                controllerStore.activeGameState === GameStateNew.GUESS ||
+                controllerStore.activeGameState !== GameStateNew.MATEGUESS ||
+                controllerStore.activeGameState !== GameStateNew.TURNSTART,
+            }"
             @click="controllerStore.commit()"
             type="button"
-            class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            class="text-white rounded-full px-10 py-2.5 mx-3 mb-2"
           >
             <ChevronUpIcon class="w-10 h-10 text-slate-200"> </ChevronUpIcon>
+            <!--turnLeft-Button-->
           </button>
           <button
+            :class="{
+              'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
+                controllerStore.activeGameState === GameStateNew.GUESS ||
+                controllerStore.activeGameState === GameStateNew.MATEGUESS,
+              'bg-gray-500':
+                controllerStore.activeGameState !== GameStateNew.GUESS ||
+                controllerStore.activeGameState !== GameStateNew.MATEGUESS,
+            }"
             @click="controllerStore.turnRight(), console.log('right')"
             type="button"
-            class="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 rounded-full px-5 py-5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+            class="rounded-full px-5 py-5 mb-2"
           >
             <ChevronRightIcon class="w-10 h-10 text-slate-200">
             </ChevronRightIcon>
@@ -105,9 +129,15 @@ const controllerStore = useControllerStore();
         </div>
         <!-- Rejection button-->
         <button
+          :class="{
+            'bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900':
+              controllerStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT,
+            'bg-gray-500':
+              controllerStore.activeGameState !== GameStateNew.WAIT_FOR_DOUBT,
+          }"
           @click="controllerStore.makeDoubt()"
           type="button"
-          class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          class="font-medium rounded-full px-20 py-4 pt-"
         >
           <XMarkIcon class="w-10 h-10 text-slate-200"> </XMarkIcon>
           <!-- <img class="w-10 h-10 rounded-full" src="../assets/icons/unlike.png" alt=""> -->
