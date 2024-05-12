@@ -83,15 +83,17 @@ export interface MQTTMessage {
  *
  * qos: 1
  */
-export const lobbyMsg: MQTTMessage = {
-  topic: "placeholder/lobby",
-  message: {
-    senderId: "placeholder",
-    token: "placeholder",
-    playerName: "placeholder",
-    avatarUrl: "placeholder",
-  },
-};
+export const lobbyMsg = (sessionId : string): MQTTMessage => {
+  return{
+    topic: `${sessionId}/lobby`,
+    message: {
+        senderId: 'placeholder',
+        token: 'placeholder',
+        playerName: 'placeholder',
+        avatarUrl: 'placeholder',
+    }
+  }
+}
 
 /**
  * Wird vom Hauptgerät an alle Controller gesendet, wenn der
@@ -99,15 +101,17 @@ export const lobbyMsg: MQTTMessage = {
  *
  * qos:1
  */
-export const gameStartMsg: MQTTMessage = {
-  topic: "placeholder/main",
-  message: {
-    senderId: undefined,
-    token: "placeholder",
-    gameState: GameStateNew.GAMESTART,
-    playerOrder: ["placeholder1", "placeholder2"],
-  },
-};
+export const gameStartMsg = (sessionId : string): MQTTMessage => {
+  return{
+    topic: `${sessionId}/main`,
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.GAMESTART,
+        playerOrder : ["placeholder1", "placeholder2"],
+    }
+  }
+}
 
 /**
  * Wird vom Hauptgerät an alle Controller gesendet,
@@ -146,99 +150,113 @@ export const gameStartMsg: MQTTMessage = {
  *
  */
 
-export const turnMsg = (gameState: GameStateNew): MQTTMessage => {
-  return {
-    topic: "placeholder/main",
-    message: {
-      senderId: undefined,
-      token: "placeholder",
-      gameState: gameState, //TURNSTART, DRAWCARD, GUESS,LISTEN, TURNEND, oder DOUBT
-      currentPlayer: "placeholder",
-    },
-  };
-};
+export const turnMsg = (sessionId: string, gameState: GameStateNew): MQTTMessage => {
+    return {
+        topic: `${sessionId}/main`,
+        message: {
+            senderId: undefined,
+            token: 'placeholder',
+            gameState: gameState, //TURNSTART, DRAWCARD, GUESS,LISTEN, TURNEND, oder DOUBT
+            currentPlayer: "placeholder",
+        }
+    }
+}
+
+
+
 
 /**
  * Wird vom Hauptgerät gesendet, wenn das Spiel zu Ende ist
  * qos: 1
  */
-export const gameEndMsg: MQTTMessage = {
-  topic: "placeholder/main",
-  message: {
-    senderId: undefined,
-    token: "placeholder",
-    gameState: GameStateNew.GAMEEND,
-    playerRanking: undefined,
-  },
-};
+export const gameEndMsg = (sessionId: string): MQTTMessage => {
+  return{
+    topic: `${sessionId}/main`,
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.GAMEEND,
+        playerRanking: undefined,
+
+
+    }
+  }
+}
+
+
 
 /**
  * Wird vom Controller an das Hauptgerät gesendet,
  * um das Lied abzuspielen bzw. zu pausieren
  */
-export const playPauseMsg = (command: Command): MQTTMessage => {
-  return {
-    topic: "placeholder/controller",
-    message: {
-      senderId: "placeholder",
-      token: "placeholder",
-      gameState: GameStateNew.LISTEN,
-      command: command, // play wenn auf Play gedrückt wird, Pause wenn auf Pause gedrückt wird
-      finishedListening: false, // True wenn der aktive Spieler
-      // den Zuhören beenden Button gedrückt hat, false wenn nicht
-    },
-  };
-};
+export const playPauseMsg = (sessionId: string, command: Command): MQTTMessage => {
+  return{
+    topic: `${sessionId}/controller`,
+    message:{
+        senderId: 'placeholder',
+        token: 'placeholder',
+        gameState: GameStateNew.LISTEN,
+        command:`${command}`, // play wenn auf Play gedrückt wird, Pause wenn auf Pause gedrückt wird
+        finishedListening : false // True wenn der aktive Spieler
+        // den Zuhören beenden Button gedrückt hat, false wenn nicht
+    }
+  }
+}
+
+
+
 
 /**
  * Wird von dem Spieler gesendetet, der das eingeloggte auswahl anzweifeln will. Man könnte das an alle (Hauptgerät und Controller) senden um ggf. ein Toast anzuzeigen, wer jetzt gerade anzweifelt
  * qos: 1
  */
-export const doubtMsg: MQTTMessage = {
-  topic: "placeholder/controller",
-  message: {
-    senderId: "placeholder",
-    token: "placeholder",
-    currentPlayer: "placeholder",
-    gameState: GameStateNew.DOUBT,
-  },
-};
+export const doubtMsg = (sessionId: string): MQTTMessage => {
+    return{
+      topic: `${sessionId}/controller`,
+      message: {
+        senderId: "placeholder",
+        token: 'placeholder',
+        currentPlayer:'placeholder',
+        gameState: GameStateNew.DOUBT,
+    }
+  }
+}
 
 /**
  * Wird vom Hauptgerät an alle Controller gesendet, nachdem der Rateversuch ausgewertet wurde. Das Ergebnis davon wird
  * an die Controller gesendet
  */
-export const evaluationMsg: MQTTMessage = {
-  topic: "placeholder/main",
-  message: {
-    senderId: undefined,
-    token: "placeholder",
-    gameState: GameStateNew.EVALUATION,
-    currentPlayer: "placeholder",
-    doubtWin: undefined,
-    evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
-    evaluationResultPassivePlayer: undefined, // false wenn nicht
-  },
-};
+export const evaluationMsg = (sessionId : string): MQTTMessage => {
+  return{
+    topic: `${sessionId}/main`,
+    message: {
+        senderId: undefined,
+        token: 'placeholder',
+        gameState: GameStateNew.EVALUATION,
+        currentPlayer: 'placeholder',
+        doubtWin: undefined,
+        evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
+        evaluationResultPassivePlayer: undefined, // false wenn nicht
+
+    }
+  }
+}
 /**
  * Über diese Message werden die verschiedenen Züge während einem MateGuess oder der Guess Phase von Controller aus gesteuert
  */
 
-export const guessMsg = (
-  command: Command,
-  gameState: GameStateNew
-): MQTTMessage => {
-  return {
-    topic: "placeholder/controller",
-    message: {
-      senderId: "placeholder",
-      token: "placeholder",
-      gameState: gameState, //MATEGUESS oder GUESS
-      command: command, //left, right, commit
-      currentPlayer: "placeholder",
-    },
-  };
-};
+export const guessMsg = (sessionId : string, command: Command, gameState: GameStateNew): MQTTMessage => {
+    return {
+        topic: `${sessionId}/controller`,
+        message: {
+            senderId: "placeholder",
+            token: 'placeholder',
+            gameState: gameState, //MATEGUESS oder GUESS
+            command: command, //left, right, commit
+            currentPlayer: "placeholder",
+        }
+    }
+}
 
 /**
  * Wird vom Controller des aktiven Spielers an das Hauptgerät gesendet, wenn
@@ -246,12 +264,14 @@ export const guessMsg = (
  *
  * qos:1
  */
-export const drawConfirmMsg: MQTTMessage = {
-  topic: "placeholder/controller",
-  message: {
-    senderId: "placeholder",
-    token: "placeholder",
-    gameState: GameStateNew.DRAWCARD,
-    command: "commit",
-  },
-};
+export const drawConfirmMsg = (sessionId : string): MQTTMessage => {
+  return{
+    topic: `${sessionId}/controller`,
+    message: {
+        senderId: 'placeholder',
+        token: 'placeholder',
+        gameState: GameStateNew.DRAWCARD,
+        command:'commit'
+    }
+  }
+}

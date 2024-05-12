@@ -15,7 +15,7 @@ export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/start' },
-    { path: '/controller-lobby', component: ControllerLobbyScreen },
+    { path: '/controller-lobby/:sessionId', component: ControllerLobbyScreen },
     { path: '/controller', component: ControllerScreen },
     { path: '/design-settings', component: DesignSettingsScreen },
     { path: '/end', component: EndScreen },

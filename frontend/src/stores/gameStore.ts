@@ -3,6 +3,8 @@ import {Card, GameStateNew, MQTTMessage, Player, guessMsg} from "../types";
 import {computed, onMounted, ref, Ref} from "vue";
 import mqtt from "mqtt";
 import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "../types";
+import { useSessionStore } from "../stores/sessionStore";
+
 
 export const useGameStore = defineStore('game', () => {
 
@@ -15,7 +17,8 @@ export const useGameStore = defineStore('game', () => {
     const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
     const playerIndex: Ref<number> = ref(-1);
     const activePlayer = computed(() => players.value[playerIndex.value] || { cards: [{}] } as Player);
-    const client = mqtt.connect("ws://localhost:9001");
+    const sessionStore = useSessionStore();
+    const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
     const guessedCardIndex = ref(5);
     const lastGuessedCardIndex = ref(5);
@@ -33,14 +36,14 @@ export const useGameStore = defineStore('game', () => {
     const SHOW_CARD_DURATION = 5000;
     const TURN_END_DURATION = 1000;
     const doubtCountDown = ref<number>(0);
-   
+  
     // const currentCard: Ref<Card> = ref({id: 100, position: guessedCardIndex.value, title: "test", year: 2021, interpreter: "test"})
 
 
     onMounted(() => {
 
          client.on("connect", () => {
-             client.subscribe("placeholder/controller", { qos: 0 });
+             client.subscribe(`${sessionStore.getSessionID()}/controller`, { qos: 0 });
          });
         
          client.on("message", (__, message) => {
@@ -119,7 +122,7 @@ export const useGameStore = defineStore('game', () => {
         },
 
         send(message: MQTTMessage) {
-            client.publish(message.topic, JSON.stringify(message.message));
+            client.publish(message.topic, JSON.stringify(message.message), {retain: true});
         },
 
         /**
@@ -196,7 +199,7 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("GAME START");
                 Helpers.setGameState(GameStateNew.GAMESTART);
-                Helpers.send(gameStartMsg);
+                Helpers.send(gameStartMsg(sessionStore.getSessionID()));
                 this.startTurn();
             }, ANIMATION_DURATION);
         },
@@ -214,8 +217,8 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("TURN START");
                 Helpers.setGameState(GameStateNew.TURNSTART);
-                Helpers.send(turnMsg(GameStateNew.TURNSTART));
-                Helpers.send(turnMsg(GameStateNew.DRAWCARD));
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.TURNSTART));
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
             }, ANIMATION_DURATION);
         },
 
@@ -227,7 +230,7 @@ export const useGameStore = defineStore('game', () => {
             Helpers.setGameState(GameStateNew.DRAWCARD);
             setTimeout(() => {
                 this.listenToSong();
-                Helpers.send(turnMsg(GameStateNew.LISTEN))
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.LISTEN))
             }, DRAW_CARD_DURATION);
         },
 
@@ -249,7 +252,7 @@ export const useGameStore = defineStore('game', () => {
         startGuessing() {
             console.log("START GUESSING");
             Helpers.setGameState(GameStateNew.GUESS);
-            Helpers.send(turnMsg(GameStateNew.GUESS));
+            Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.GUESS));
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
         },
@@ -261,7 +264,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD LEFT");
             guessedCardIndex.value = Math.max(minCardIndex.value, guessedCardIndex.value - 1);
             Helpers.switchTimeLineCards();
-            //Helpers.send(guessMsg("left", GameStateNew.GUESS));
+            Helpers.send(guessMsg("left", GameStateNew.GUESS));
         },
 
         /**

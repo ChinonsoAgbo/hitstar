@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useSessionStore } from "../stores/sessionStore";
+
 import HButton from "../components/HButton.vue";
 import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
@@ -19,105 +21,113 @@ import {
 import { PauseIcon, PlayIcon } from "@heroicons/vue/24/outline";
 
 const isLoggedIn = ref(true);
+const changeLoginStatus = () => {
+  isLoggedIn.value = !isLoggedIn.value;
+};
+
+// is used to create a sessionStore  instance
+const sessionStore = useSessionStore();
+
+//creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
 
 // parse the URL to retrieve the code parameter
 const code = new URLSearchParams(window.location.search).get("code"); // get access code
 const error = new URLSearchParams(window.location.search).get("error"); // get acees denied
 // console.log(code)
-if (!code) {
-  // redirectToAuthCodeFlow(clientId); // make sure the user accepts
-} else if (code) {
-  //  fetch token
+//if (!code) {
+// redirectToAuthCodeFlow(clientId); // make sure the user accepts
+//} else if (code) { //  fetch token
 
-  getLocalToken(clientId, code)
-    .then((accessToken) => {
-      console.log("Access Token", accessToken);
+// getLocalToken(clientId, code)
+//   .then((accessToken) => {
+//   console.log("Access Token", accessToken);
+//
+//conn.token = accessToken;
+//console.log("token:" + token)
+//   fetchUserProfile(conn.token!).then((value) => {
+//     console.log(value);
+//  });
 
-      conn.token = accessToken;
-      //console.log("token:" + token)
-      fetchUserProfile(conn.token!).then((value) => {
-        console.log(value);
-      });
+//   fetchUserPlaylist(conn.token!).then((value) => {
+//   console.log(value);
+//   });
 
-      fetchUserPlaylist(conn.token!).then((value) => {
-        console.log(value);
-      });
+//    fetchSerch(conn.token!, "Sam smit").then((value) => {
+//    console.log("seachFetch:  ", value);
 
-      fetchSerch(conn.token!, "Sam smit").then((value) => {
-        console.log("seachFetch:  ", value);
+//   console.log("body", searchTerm.uri);
 
-        console.log("body", searchTerm.uri);
+// call play here to see
+//   play(conn.token!,searchTerm.uri!).then((value) => {
+//   console.log("player:  ",value)
 
-        // call play here to see
-        //   play(conn.token!,searchTerm.uri!).then((value) => {
-        //   console.log("player:  ",value)
+//   console.log("body",searchTerm.uri)
 
-        //   console.log("body",searchTerm.uri)
+// });
+// });
 
-        // });
-      });
-    })
-    .catch((error) => {
-      console.error("Error fetching access token:", error);
-    });
-} else {
-  console.error(error);
-}
+//}).catch(error => {
+//  console.error("Error fetching access token:", error);
 
-//console.log("token in start screen", conn.token)
+// });
 
-//-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
-const isMusicPlaying = ref(true);
-const changePlaySate = () => {
-  isMusicPlaying.value = !isMusicPlaying.value;
-};
+//} else {
+//console.error(error);
+//}
 
-const musicState = ref(true);
-const changeMusicSate = () => {
-  musicState.value = !musicState.value;
-  player.togglePlay();
-};
-const musicPlayDuration = 5000;
+// //console.log("token in start screen", conn.token)
 
-let player: Spotify.Player | null = null;
-window.onSpotifyWebPlaybackSDKReady = () => {
-  player = new Spotify.Player({
-    name: "Web Playback SDK Quick Start Player",
-    getOAuthToken: (cb) => {
-      cb(conn.token);
-    },
-    volume: 0.5,
-  });
+// //-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
+// const isMusicPlaying = ref(true);
+// const changePlaySate = () => {
+//   isMusicPlaying.value = !isMusicPlaying.value;
 
-  // Ready
-  player.addListener("ready", ({ device_id }) => {
-    console.log("Ready with Device ID", device_id);
-  });
+// };
 
-  // Not Ready
-  player.addListener("not_ready", ({ device_id }) => {
-    console.log("Device ID has gone offline", device_id);
-  });
+// const musicState = ref(true);
+// const changeMusicSate = () => {
+//   musicState.value = !musicState.value;
+//   player.togglePlay();
 
-  player.addListener("initialization_error", ({ message }) => {
-    console.error(message);
-  });
+// };
+// const musicPlayDuration = 5000;
 
-  player.addListener("authentication_error", ({ message }) => {
-    console.error(message);
-  });
+// let player: Spotify.Player | null = null;
+//   window.onSpotifyWebPlaybackSDKReady = () => {
+//     player = new Spotify.Player({
+//       name: 'Web Playback SDK Quick Start Player',
+//       getOAuthToken: cb => { cb(conn.token); },
+//       volume: 0.5
+//     });
 
-  player.addListener("account_error", ({ message }) => {
-    console.error(message);
-  });
+//     // Ready
+//     player.addListener('ready', ({ device_id }) => {
+//       console.log('Ready with Device ID', device_id);
+//     });
 
-  // connect to our spotify instance
-  player.connect();
-};
+//     // Not Ready
+//     player.addListener('not_ready', ({ device_id }) => {
+//       console.log('Device ID has gone offline', device_id);
+//     });
+
+//     player.addListener('initialization_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     player.addListener('authentication_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     player.addListener('account_error', ({ message }) => {
+//       console.error(message);
+//     });
+
+//     // connect to our spotify instance
+//     player.connect();
 </script>
 
 <template>
-  <div @click="" class="absolute top-5 right-5 h-16 w-16">
+  <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
     <HAvatar url="/profile-picture-5.jpg"> </HAvatar>
   </div>
   <div
@@ -139,7 +149,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       </RouterLink>
       <div class="items-center space-y-3 gap-4">
         <RouterLink v-show="isLoggedIn" to="/qr-code">
-          <HButton>Start game</HButton>
+          <HButton @click="sessionStore.createSessionID">Start game</HButton>
         </RouterLink>
       </div>
     </div>

@@ -11,6 +11,9 @@ import {
 } from "../types";
 import { onMounted } from "vue";
 import mqtt from "mqtt";
+import { useSessionStore } from "../stores/sessionStore";
+
+
 
 export const useControllerStore = defineStore("controller", () => {
   const playerIndex: Ref<number> = ref(-1);
@@ -22,12 +25,13 @@ export const useControllerStore = defineStore("controller", () => {
   const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
   const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
-
-  const client = mqtt.connect("ws://localhost:9001");
-
+  
+  const sessionStore = useSessionStore();
+  const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
+  
   onMounted(() => {
     client.on("connect", () => {
-      client.subscribe("placeholder/main", { qos: 0 });
+      client.subscribe(`${sessionStore.getSessionID()}/main`, { qos: 1 });
     });
 
     client.on("message", (__, message) => {
@@ -94,42 +98,42 @@ export const useControllerStore = defineStore("controller", () => {
     },
     commitGuess() {
       //if (itsTurn.value)
-      Helpers.send(guessMsg("commit", GameStateNew.GUESS));
+      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameStateNew.GUESS));
     },
     turnLeft() {
       if (
         //itsTurn.value &&
         activeGameState.value === GameStateNew.GUESS
       )
-        Helpers.send(guessMsg("left", GameStateNew.GUESS));
+        Helpers.send(guessMsg(sessionStore.getSessionID(),"left", GameStateNew.GUESS));
     },
     turnRight() {
       if (
         //itsTurn.value &&
         activeGameState.value === GameStateNew.GUESS
       )
-        Helpers.send(guessMsg("right", GameStateNew.GUESS));
+        Helpers.send(guessMsg(sessionStore.getSessionID(),"right", GameStateNew.GUESS));
     },
     drawCard() {
       //if (itsTurn.value)
-      Helpers.send(drawConfirmMsg);
+      Helpers.send(drawConfirmMsg(sessionStore.getSessionID()));
     },
     makeDoubt() {
       if (
         // !itsTurn.value &&
         activeGameState.value === GameStateNew.WAIT_FOR_DOUBT
       )
-        Helpers.send(doubtMsg);
+        Helpers.send(doubtMsg(sessionStore.getSessionID()));
     },
     commitDoubtGuess() {
       //if (itsTurn.value)
-      Helpers.send(guessMsg("commit", GameStateNew.MATEGUESS));
+      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameStateNew.MATEGUESS));
     },
     playMusic() {
-      Helpers.send(playPauseMsg("play"));
+      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"play"));
     },
     stopMusic() {
-      Helpers.send(playPauseMsg("pause"));
+      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"pause"));
     },
     changeMusicState() {
       if (
