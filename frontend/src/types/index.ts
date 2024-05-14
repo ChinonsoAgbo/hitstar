@@ -4,8 +4,6 @@ export interface Card {
     year: number,
     interpreter: string,
     position: number,       // 1 - 10
-    movedDown?: boolean,
-    movedUp?: boolean
 }
 
 export interface Player {
@@ -13,7 +11,12 @@ export interface Player {
     name: PlayerName,
     iconURL: IconURL,
     tokens: TokenCount,
-    cards: Card[]
+    cards: Card[],
+
+    guessedCardIndex: number,
+    lastGuessedCardIndex: number,
+    maxCardIndex: number,
+    minCardIndex: number,
 }
 
 export enum GameStateNew {

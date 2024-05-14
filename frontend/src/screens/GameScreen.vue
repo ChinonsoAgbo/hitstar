@@ -9,185 +9,20 @@ import HSongCard from "../components/HSongCard.vue";
 import { GameStateNew } from "../types";
 import { useAnimate } from "@vueuse/core";
 import HPopOver from '../components/HPopOver.vue';
+//@ts-ignore
 import { VueFlip } from 'vue-flip';
 import ConfettiExplosion from "vue-confetti-explosion";
 import HHeading from "../components/HHeading.vue";
-import { PauseIcon } from '@heroicons/vue/24/outline';
+import { BoltIcon, PauseIcon } from '@heroicons/vue/24/outline';
 
 const cardSize = ref(7);
 
 const gameStore = useGameStore();
 
 // mock players
-gameStore.players = [
-    {
-        id: "a",
-        name: "Harry",
-        iconURL: "/profile-picture-5.jpg",
-        cards: [
-            {
-                id: "10",
-                title: "HITSTAR",
-                year: 1960,
-                interpreter: "HITSTAR",
-                position: 5
-            },
-        ],
-        tokens: 3
-    },
-    {
-        id: "b",
-        name: "Hermione",
-        iconURL: "/profile-picture-3.jpg",
-        cards: [
-            {
-                id: "11",
-                title: "HITSTAR",
-                year: 1980,
-                interpreter: "HITSTAR",
-                position: 5
-            }
-        ],
-        tokens: 3
-    },
-    {
-        id: "c",
-        name: "Ron",
-        iconURL: "/profile-picture-2.jpg",
-        cards: [
-            {
-                id: "12",
-                title: "HITSTAR",
-                year: 1910,
-                interpreter: "HITSTAR",
-                position: 1
-            },
-            {
-                id: "11",
-                title: "HITSTAR",
-                year: 1970,
-                interpreter: "HITSTAR",
-                position: 2
-            },
-            {
-                id: "12",
-                title: "HITSTAR",
-                year: 1980,
-                interpreter: "HITSTAR",
-                position: 3
-            },
-            {
-                id: "13",
-                title: "HITSTAR",
-                year: 1990,
-                interpreter: "HITSTAR",
-                position: 4
-            },
-            {
-                id: "14",
-                title: "HITSTAR",
-                year: 1993,
-                interpreter: "HITSTAR",
-                position: 6
-            },
-            {
-                id: "15",
-                title: "HITSTAR",
-                year: 2000,
-                interpreter: "HITSTAR",
-                position: 7
-            },
-            {
-                id: "16",
-                title: "HITSTAR",
-                year: 2002,
-                interpreter: "HITSTAR",
-                position: 8
-            },
-            {
-                id: "17",
-                title: "HITSTAR",
-                year: 2016,
-                interpreter: "HITSTAR",
-                position: 9
-            },
-            {
-                id: "18",
-                title: "HITSTAR",
-                year: 2018,
-                interpreter: "HITSTAR",
-                position: 10
-            }
-        ],
-        tokens: 3
-    }
-];
+// gameStore.players = 
 
-gameStore.drawPile = [
-  {
-    id: "1",
-    title: "HITSTAR",
-    year: 1920,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "2",
-    title: "HITSTAR",
-    year: 1921,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "3",
-    title: "HITSTAR",
-    year: 1922,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "4",
-    title: "HITSTAR",
-    year: 1950,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "5",
-    title: "HITSTAR",
-    year: 1951,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "6",
-    title: "HITSTAR",
-    year: 1952,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "7",
-    title: "HITSTAR",
-    year: 1970,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "8",
-    title: "HITSTAR",
-    year: 1971,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-  {
-    id: "9",
-    title: "HITSTAR",
-    year: 1972,
-    interpreter: "HITSTAR",
-    position: 0,
-  },
-];
+// gameStore.drawPile = ;
 
 const drawPile = ref<HTMLElement>();
 const discardPile = ref<HTMLElement>();
@@ -219,6 +54,25 @@ watch(() => gameStore.activeGameState, () => {
       console.log("DRAW CARD 2");
       drawPilePulse.play();
       break;
+    case GameStateNew.GUESS:
+      flip.value = false;
+      popLeft.value = false;
+      popRight.value = false;
+      break;
+    case GameStateNew.DOUBT:
+      popLeft.value = true;
+      setTimeout(() => {
+        popRight.value = true;
+        setTimeout(() => {
+          flip.value = true;
+        }, 1000);
+      }, 1000);
+      break;
+    case GameStateNew.ANIMATE_EVALUATION:
+      flip.value = false;
+      popLeft.value = false;
+      popRight.value = false;
+      break;
     case GameStateNew.ANIMATE_EVALUATION_POSITIVE:
       setTimeout(() => {
         flip.value = true;
@@ -248,29 +102,89 @@ watch(() => gameStore.activeGameState, () => {
     <div class="bg-primary-500 absolute w-full h-full">
 
         <!-- Players at top right corner -->
-        <div class="fixed right-2 top-2 grid" :style="{ 'grid-template-columns': `repeat(${gameStore.players.length}, 1fr)` }">
+        <div 
+            class="fixed right-2 top-2 grid" 
+            :style="{ 'grid-template-columns': `repeat(${gameStore.players.length}, 1fr)` }">
+
             <div 
                 v-for="player in gameStore.players" 
                 class="m-2 gap-2 flex flex-col items-center border-2 p-1 pt-3 rounded-md" 
-                :class="player === gameStore.activePlayer ? 'border-secondary-500 animate-pulse' : 'border-gray-400'" >
+                :class="player === gameStore.playerOnTurn ? 
+                      'border-secondary-500 animate-pulse' : 'border-gray-400'" >
 
-                <HAvatar :active="player === gameStore.activePlayer" :size="3" :url="player.iconURL" />
+                <HAvatar :active="player === gameStore.playerOnTurn" :size="3" :url="player.iconURL" />
                 <Tokens :amount="player.tokens" />
-                <h5 v-if="player === gameStore.activePlayer" class="text-lg font-bold dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
-                <h5 v-else class="text-md dark:text-gray-900 text-white text-center">{{ player.name }}</h5>
+                
+                <h5 
+                    v-if="player === gameStore.playerOnTurn" 
+                    class="text-lg font-bold dark:text-gray-900 text-white text-center">
+                    {{ player.name }}
+                </h5>
+                <h5 
+                    v-else 
+                    class="text-md dark:text-gray-900 text-white text-center">
+                    {{ player.name }}
+                </h5>
             </div>
         </div>
 
+        <!-- Big players at middle -->
+        <div class="fixed left-0 top-[20%] w-full flex items-center justify-center gap-5">
+          <HAvatar 
+              :active="gameStore.activeGameState !== GameStateNew.MATEGUESS" 
+              :size="7" 
+              :url="gameStore.playerOnTurn.iconURL" />
+
+          <BoltIcon 
+              v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
+              class="h-20 text-secondary-500" />
+
+          <HAvatar 
+              v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
+              :active="true" 
+              :size="7" 
+              :url="gameStore.activePlayer.iconURL" class="animate-pulse" />
+
+        </div>
+
         <!-- Timeline -->
-        <div ref="timeline" class="fixed top-[50%] left-[2%] w-[96%] h-[40%] flex items-center justify-center overflow-x-auto">
-          <div class="relative h-min grid grid-cols-10 gap-2">
-            <HCard v-for="position in 10" :size="cardSize" class="bg-transparent border-dashed border-slate-400 flex justify-center items-center">
-              <HSongCard v-if="gameStore.hasCard(position) && gameStore.getCard(position)?.title !== 'GUESS'" :size="cardSize" :card="gameStore.getCard(position)!" />
-              <HHitstarCard v-else-if="gameStore.hasCard(position) && gameStore.getCard(position)?.title === 'GUESS'" :size="cardSize" />
+        <div 
+            ref="timeline" 
+            class="fixed top-[50%] left-[2%] w-[96%] h-[40%] flex items-center justify-center overflow-x-auto">
+            
+            <div class="relative h-min grid grid-cols-10 gap-2">
+            
+            <HCard 
+                v-for="position in 10" 
+                :size="cardSize" 
+                class="bg-transparent border-dashed border-slate-400 flex justify-center items-center">
+              
+                <HSongCard 
+                    v-if="gameStore.hasCard(position, gameStore.activePlayer) 
+                          && gameStore.getCard(position, gameStore.activePlayer)?.title !== 'GUESS'" 
+                    :size="cardSize" 
+                    :card="gameStore.getCard(position, gameStore.activePlayer)!" />
+
+                <HHitstarCard 
+                    v-else-if="gameStore.hasCard(position, gameStore.activePlayer) 
+                          && gameStore.getCard(position, gameStore.activePlayer)?.title === 'GUESS'" 
+                    :size="cardSize" />
+
             </HCard>
-            <HCard v-for="position in 10" :size="cardSize" class="bg-transparent border-transparent flex justify-center items-center">
-              <HHitstarCard v-if="gameStore.activeGameState === GameStateNew.GUESS && position == gameStore.guessedCardIndex" :size="cardSize" class="mt-10 animate-bounce" />
-            </HCard>
+
+            <HCard
+                v-for="position in 10" 
+                :size="cardSize" 
+                class="bg-transparent border-transparent flex justify-center items-center">
+
+                <HHitstarCard 
+                  v-if="(gameStore.activeGameState === GameStateNew.GUESS 
+                        || gameStore.activeGameState === GameStateNew.MATEGUESS)
+                        && position == gameStore.activePlayer.guessedCardIndex" 
+                  :size="cardSize" 
+                  class="animate-bounce" />
+              </HCard>
+
           </div>
         </div>
 
@@ -280,7 +194,9 @@ watch(() => gameStore.activeGameState, () => {
         </div>
 
         <!-- Nachziehstapel -->
-        <div class="fixed top-4 left-36 hover:cursor-pointer" :class="{ 'animate-pulse': gameStore.activeGameState === GameStateNew.TURNSTART }">
+        <div 
+            class="fixed top-4 left-36 hover:cursor-pointer" 
+            :class="{ 'animate-pulse': gameStore.activeGameState === GameStateNew.TURNSTART }">
             <HHitstarCard ref="drawPile" :size="cardSize" />
         </div>
 
@@ -290,6 +206,7 @@ watch(() => gameStore.activeGameState, () => {
             gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART ||
             gameStore.activeGameState === GameStateNew.LISTEN ||
             gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT ||
+            gameStore.activeGameState === GameStateNew.DOUBT ||
             gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION ||
             gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE ||
             gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE ||
@@ -312,10 +229,10 @@ watch(() => gameStore.activeGameState, () => {
                         <HAvatar
                             :active="true"
                             :size="cardSize"
-                            :url="gameStore.activePlayer?.iconURL!" />
+                            :url="gameStore.playerOnTurn?.iconURL!" />
 
                         <h1 class="text-5xl font-bold tracking-tight text-white">
-                            {{ gameStore.activePlayer?.name }}'s Turn
+                            {{ gameStore.playerOnTurn?.name }}'s Turn
                         </h1>
                     </div>
                 </Transition>
@@ -347,8 +264,39 @@ watch(() => gameStore.activeGameState, () => {
                 </Transition>
             </div>
 
+            <!-- DOUBT ANIMATION -->
+            <div v-if="gameStore.activeGameState === GameStateNew.DOUBT">
+                <Transition name="pop" appear>
+                  <HAvatar 
+                      v-if="popLeft" 
+                      :active="true" 
+                      :size="7" 
+                      :url="gameStore.playerOnTurn.iconURL" 
+                      class="fixed top-[30%] left-[30%]" />
+                </Transition>
+                <Transition name="pop" appear>
+                  <BoltIcon v-if="flip" class="h-40 text-secondary-500" />
+                </Transition>
+                <Transition name="pop" appear>
+                  <HAvatar 
+                      v-if="popRight" 
+                      :active="true" 
+                      :size="7" 
+                      :url="gameStore.activePlayer.iconURL" 
+                      class="fixed bottom-[30%] right-[30%]" />
+                </Transition>
+            </div>
+
              <!-- EVALUATE ANIMATION -->
              <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION">
+
+                <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
+                  <HAvatar 
+                    :active="true" 
+                    :size="7" 
+                    :url="gameStore.activePlayer.iconURL" />
+                </div>
+
                 <Transition name="pop" appear>
                   <h1 class="text-8xl font-bold tracking-tight text-white">
                     🤔???
@@ -358,7 +306,21 @@ watch(() => gameStore.activeGameState, () => {
 
             <!-- POSITIVE EVALUATE ANIMATION -->
             <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE">
-              <ConfettiExplosion v-if="flip" :duration="5000" :stageHeight="8000" :stageWidth="5000" :particleCount="500"/>
+
+              <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
+                  <HAvatar 
+                    :active="true" 
+                    :size="7" 
+                    :url="gameStore.activePlayer.iconURL" />
+              </div>
+                
+
+              <ConfettiExplosion 
+                  v-if="flip" 
+                  :duration="5000" 
+                  :stageHeight="8000" 
+                  :stageWidth="5000" 
+                  :particleCount="500"/>
               <Transition name="pop" appear>
                 <VueFlip v-model="flip" width="248px" height="248px">
                   <template #front>
@@ -376,7 +338,14 @@ watch(() => gameStore.activeGameState, () => {
                 <Transition name="pop" appear>
                   <HHeading v-if="popLeft" class="fixed top-[30%] left-[30%] text-9xl">☠️</HHeading>
                 </Transition>
-            
+
+                <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
+                  <HAvatar 
+                    :active="true" 
+                    :size="7" 
+                    :url="gameStore.activePlayer.iconURL" />
+                </div>
+                
                 <Transition name="pop" appear>
                   <VueFlip v-model="flip" width="248px" height="248px"  >
                     <template #front>
