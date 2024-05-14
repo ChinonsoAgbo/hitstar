@@ -13,7 +13,8 @@ import HPopOver from '../components/HPopOver.vue';
 import { VueFlip } from 'vue-flip';
 import ConfettiExplosion from "vue-confetti-explosion";
 import HHeading from "../components/HHeading.vue";
-import { BoltIcon, PauseIcon } from '@heroicons/vue/24/outline';
+import { BoltIcon } from '@heroicons/vue/24/outline';
+import MusicPlayer from '../components/MusicPlayer.vue';
 
 const cardSize = ref(7);
 
@@ -244,9 +245,12 @@ watch(() => gameStore.activeGameState, () => {
                 <Transition name="pop" appear>
                   <div class="flex flex-col justify-center items-center gap-3">
                     <HHitstarCard :size="16" />
-                    <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-500">
+                    <!-- <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-500">
                         <PauseIcon class="w-20 h-20 cursor-pointer font-bold" />
-                    </div>
+                    </div> -->
+
+                    <MusicPlayer :timeDelta="gameStore.SONG_DURATION" />
+
                   </div>
                 </Transition>            
                 <HHeading class="fixed top-[20%] right-[20%] text-9xl animate-bounce">🎶</HHeading>

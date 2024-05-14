@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia';
 import {Card, GameStateNew, MQTTMessage, Player} from "../types";
 import {computed, onMounted, ref, Ref} from "vue";
-import { setEmitFlags } from 'typescript';
 // import mqtt from "mqtt";
 // import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "../types";
 
@@ -200,7 +199,7 @@ export const useGameStore = defineStore('game', () => {
     var activePlayerCardsCopy: { [playerID: string]: Card[] } = {};
     // const client = mqtt.connect("ws://192.188.0.102:8000/mqtt");
 
-    const SONG_DURATION = 100; // 10000
+    const SONG_DURATION = 10000; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -630,6 +629,7 @@ export const useGameStore = defineStore('game', () => {
         hasCard: Helpers.hasCard,
         doubtCountDown,
         currentCard,
-        DRAW_CARD_DURATION
+        DRAW_CARD_DURATION,
+        SONG_DURATION
     }
 });
