@@ -1,19 +1,22 @@
 export interface Card {
-  id: string;
-  title: string;
-  year: number;
-  interpreter: string;
-  position: number; // 1 - 10
-  movedDown?: boolean;
-  movedUp?: boolean;
+    id: string,
+    title: string,
+    year: number,
+    interpreter: string,
+    position: number,       // 1 - 10
 }
 
 export interface Player {
-  id: PlayerID;
-  name: PlayerName;
-  iconURL: IconURL;
-  tokens: TokenCount;
-  cards: Card[];
+    id: PlayerID,
+    name: PlayerName,
+    iconURL: IconURL,
+    tokens: TokenCount,
+    cards: Card[],
+
+    guessedCardIndex: number,
+    lastGuessedCardIndex: number,
+    maxCardIndex: number,
+    minCardIndex: number,
 }
 
 export enum GameStateNew {
