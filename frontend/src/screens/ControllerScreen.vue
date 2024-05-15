@@ -15,10 +15,12 @@ import HAvatar from "../components/HAvatar.vue";
 import { ref } from "vue";
 
 import mqtt from "mqtt";
-import { MQTTMessage } from "../types";
+import {  turnMsg, GameStateNew, doubtMsg } from "../types";
 const client = mqtt.connect("ws://localhost:9001");
 
 const isMusicPlaying = ref(false);
+
+
 const changePlaySate = () => {
   isMusicPlaying.value = !isMusicPlaying.value;
 
@@ -29,41 +31,23 @@ const changeMusicSate = () => {
  
 
 };
-enum GameStateNew {
-  GAMESTART,
-  TURNSTART,
-  DRAWCARD,
-  LISTEN,
-  GUESS,
-  DOUBT,
-  MATEGUESS,
-  EVALUATION,
-  TURNEND,
-  GAMEEND,
-}
+const playerCanDoubt = ref(true);
 
-let doubtMsg: MQTTMessage ={
-    topic: 'placeholder/controller',
-    message: {
-        senderId: "placeholder",
-        token: 'placeholder',
-        currentPlayer:'placeholder',
-        gameState: GameStateNew.DOUBT,
-    }
-}
+client.subscribe("placeholder/controller")
+
+client.on("message", function (_, message) {
+  const messageStr = message.toString();
+  const messageObj = JSON.parse(messageStr);
+  
+
+  if (messageObj.gameState === 9 ) {
+
+    console.log(" incoming doubt message  ", messageObj);
+     playerCanDoubt.value = true;
+  }
+});
 
 
-let turnMsg = (gameState: GameStateNew) => {
-  return {
-
-    message: {
-      senderId: undefined,
-      token: "placeholder",
-      gameState: gameState, //TURNSTART, DRAWCARD, GUESS,LISTEN, TURNEND, oder DOUBT
-      currentPlayer: "placeholder",
-    },
-  };
-};
 
 const musicPlayDuration = 5000;
 
@@ -141,11 +125,13 @@ const musicPlayDuration = 5000;
             <ChevronRightIcon class="w-10 h-10 text-slate-200">
             </ChevronRightIcon>
           </button>
-        </div>
-        <!-- Rejection button-->
+        </div> 
+        <!-- Doubt button-->
+          <!-- send doubt message to doubt  -->
         <button
-        @click= 'client.publish(doubtMsg.topic, JSON.stringify(turnMsg(GameStateNew.DOUBT)))'
+        @click= 'client.publish(doubtMsg.topic, JSON.stringify(doubtMsg.message))'
           type="button"
+          :disabled=playerCanDoubt
           class="bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full px-20 py-4 pt- dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >
           <XMarkIcon class="w-10 h-10 text-slate-200"> </XMarkIcon>
