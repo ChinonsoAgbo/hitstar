@@ -17,8 +17,9 @@ export const useSessionStore = defineStore("session", () => {
     sessionID.value = self.crypto.randomUUID();
   }
   function getIPAddress() {
-    return "localhost:5173";
+    return "192.168.53.252";
   }
+ 
   return {
     setSessionID,
     getSessionID,

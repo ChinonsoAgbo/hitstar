@@ -8,6 +8,7 @@ import { useSessionStore } from "../stores/sessionStore";
 
 export const useGameStore = defineStore('game', () => {
 
+
     const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
 
     const players: Ref<Player[]> = ref([
@@ -124,71 +125,71 @@ export const useGameStore = defineStore('game', () => {
             minCardIndex: 0,
             maxCardIndex: 0
         }
-    ]);
+    ]);  
     const drawPile: Ref<Card[]> = ref([
         {
           id: "1",
           title: "HITSTAR",
           year: 1920,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "2",
           title: "HITSTAR",
           year: 1921,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "3",
           title: "HITSTAR",
           year: 1922,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "4",
           title: "HITSTAR",
           year: 1950,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "5",
           title: "HITSTAR",
           year: 1951,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "6",
           title: "HITSTAR",
           year: 1952,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "7",
           title: "HITSTAR",
           year: 1970,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "8",
           title: "HITSTAR",
           year: 1971,
           interpreter: "HITSTAR",
-          position: 0,
+          position: 5,
         },
         {
           id: "9",
           title: "HITSTAR",
           year: 1972,
           interpreter: "HITSTAR",
-          position: 0,
-        },
+          position: 5,
+      },
       ]);
     const discardPile: Ref<Card[]> = ref([] as Card[]);
 
@@ -199,7 +200,8 @@ export const useGameStore = defineStore('game', () => {
     const playerOnTurn = computed(() => players.value[playerOnTurnIndex.value] || { cards: [{}] } as Player);
 
     var activePlayerCardsCopy: { [playerID: string]: Card[] } = {};
-    // const client = mqtt.connect("ws://192.188.0.102:8000/mqtt");
+    const sessionStore = useSessionStore()
+    const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
     const SONG_DURATION = 10000; // 10000
 
@@ -237,7 +239,10 @@ export const useGameStore = defineStore('game', () => {
                             break;
                         case "play":
                             break;
-                    }
+                    } break;
+                 case GameStateNew.DOUBT:
+                    Actions.startDoubtPhase(players.value[2])
+                    break;
                  case GameStateNew.GUESS:
                      switch (msg.command) {
                          case "left":
@@ -309,6 +314,7 @@ export const useGameStore = defineStore('game', () => {
 
         initPlayers() {
             for (let player of players.value) {
+                //player.cards.push(drawPile.value.pop()!)
                 player.guessedCardIndex = 5;
                 player.lastGuessedCardIndex = 5;
                 player.maxCardIndex = 10;
@@ -439,7 +445,7 @@ export const useGameStore = defineStore('game', () => {
                 console.log("TURN START");
                 Helpers.setGameState(GameStateNew.TURNSTART);
                 Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.TURNSTART));
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
+                //Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
             }, ANIMATION_DURATION);
         },
 
@@ -449,6 +455,7 @@ export const useGameStore = defineStore('game', () => {
         drawCard() {
             console.log("DRAW CARD");
             Helpers.setGameState(GameStateNew.DRAWCARD);
+            Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
             setTimeout(() => {
                 this.listenToSong();
                 Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.LISTEN))
@@ -473,7 +480,7 @@ export const useGameStore = defineStore('game', () => {
         startGuessing(gameState: GameStateNew = GameStateNew.GUESS) {
             console.log("START GUESSING");
             Helpers.setGameState(gameState);
-            // Helpers.send(turnMsg(GameStateNew.GUESS));
+            Helpers.send(turnMsg(sessionStore.getSessionID(), GameStateNew.GUESS));
             Helpers.saveCopyOfCards();
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
@@ -486,7 +493,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD LEFT");
             activePlayer.value.guessedCardIndex = Math.max(activePlayer.value.minCardIndex, activePlayer.value.guessedCardIndex - 1);
             Helpers.switchTimeLineCards();
-            Helpers.send(guessMsg("left", GameStateNew.GUESS));
+           // Helpers.send(guessMsg(sessionStore.getSessionID(), "left", GameStateNew.GUESS));
         },
 
         /**
@@ -508,6 +515,7 @@ export const useGameStore = defineStore('game', () => {
             // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             if (activeGameState.value === GameStateNew.GUESS) {
                 Helpers.setGameState(GameStateNew.WAIT_FOR_DOUBT);
+                Helpers.send(turnMsg(sessionStore.getSessionID(), GameStateNew.WAIT_FOR_DOUBT))
                 this.startDoubtCountDown();
             }
             else if (activeGameState.value === GameStateNew.MATEGUESS) {

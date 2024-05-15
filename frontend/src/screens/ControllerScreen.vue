@@ -29,7 +29,7 @@ const controllerStore = useControllerStore();
           <!-- Link to Game instructions -->
           <HAvatar url="/profile-picture-5.jpg"></HAvatar>
           <span class="text-sm m-2 text-gray-500 dark:text-gray-400">
-            Chinonso A
+            {{ controllerStore.PlayerID }}
           </span>
         </div>
 

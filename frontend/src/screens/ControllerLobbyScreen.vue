@@ -3,14 +3,19 @@ import WaitingGamers from "../components/WaitingGamers.vue";
 
 import HButton from "../components/HButton.vue";
 import { useSessionStore } from "../stores/sessionStore";
-import { ref, defineProps, computed } from "vue";
+import { ref, defineProps, computed, onMounted } from "vue";
+import { watch } from "vue"
 import HAvatar from "../components/HAvatar.vue";
 
 import { useRoute } from "vue-router";
+import { useControllerStore } from "../stores/controllerStore";
+import { GameStateNew } from "../types";
+import { router } from "../router";
 
 const showDropdown = ref(false);
 const username = ref("Chinonso Agbo"); // Defined the username variable
 const sessionStore = useSessionStore();
+const controllerStore = useControllerStore()
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value; // close dropdown button
 };
@@ -49,6 +54,15 @@ const avatersForSettings = ref([
   },
 ]);
 
+watch(() =>controllerStore.activeGameState, (newState, oldState) => {
+  if(newState !== oldState){
+    router.push("/controller")
+  }
+})
+onMounted(()=> {
+  controllerStore.addToLobby()
+
+})
 </script>
 
 <template>

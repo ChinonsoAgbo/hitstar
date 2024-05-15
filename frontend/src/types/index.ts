@@ -1,3 +1,5 @@
+import { getRandomValues, randomBytes } from "crypto";
+
 export interface Card {
     id: string,
     title: string,
@@ -79,6 +81,7 @@ export interface MQTTMessage {
   message: Message;
 }
 
+const playerNames= ["Bananenbrei", "Carl Gustav", "Schwitziger Axel", "Jesus"]
 /**
  * Wird an alle Geräte gesendet, wenn ein Spieler
  * - der Lobby beitritt
@@ -86,14 +89,14 @@ export interface MQTTMessage {
  *
  * qos: 1
  */
-export const lobbyMsg = (sessionId : string): MQTTMessage => {
+export const lobbyMsg = (sessionId : string, playerId : string): MQTTMessage => {
   return{
     topic: `${sessionId}/lobby`,
     message: {
-        senderId: 'placeholder',
-        token: 'placeholder',
-        playerName: 'placeholder',
-        avatarUrl: 'placeholder',
+        senderId: playerId,
+        token: 'abc',
+        playerName: playerNames[Math.floor(Math.random()*playerNames.length)] ,
+        avatarUrl: `/image${Math.floor(Math.random()*6)+1}.png`,
     }
   }
 }
@@ -189,7 +192,7 @@ export const gameEndMsg = (sessionId: string): MQTTMessage => {
 
 
 /**
- * Wird vom Controller an das Hauptgerät gesendet,
+ *Wird vom Controller an das Hauptgerät gesendet,
  * um das Lied abzuspielen bzw. zu pausieren
  */
 export const playPauseMsg = (sessionId: string, command: Command): MQTTMessage => {

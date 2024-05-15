@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useQRCode } from "@vueuse/integrations/useQRCode";
 import { useSessionStore } from "../stores/sessionStore";
-
+import { useGameStore } from "../stores/gameStore";
 import HButton from "../components/HButton.vue";
 import HPlayerNameHorizontal from "../components/HPlayerNameHorizontal.vue";
 
 import HCopy from "../components/HCopy.vue";
 import { ref } from "vue";
 const sessionStore = useSessionStore();
-
-const url = `${sessionStore.getIPAddress()}/#/controller-lobby/${sessionStore.getSessionID()}`;
+const gameStore = useGameStore()
+const url = `http://${sessionStore.getIPAddress()}:5173/#/controller-lobby/${sessionStore.getSessionID()}`;
 const qrcode = useQRCode(url);
 
 import { Player } from "../types/index.ts";
@@ -17,7 +17,7 @@ import { Player } from "../types/index.ts";
 import mqtt from "mqtt";
 // import { MQTTMessage } from "../types";
 
-const client = mqtt.connect("ws://localhost:9001");
+const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
 // const playersToJoin = useGameStore().pla
 
@@ -25,8 +25,30 @@ const playersReadyTojoin = ref<Player[]>([]);
 
 // subscribing to players
 // wait for joining players to publich on joing
-client.subscribe("placeholder/lobby");
+client.subscribe(`${sessionStore.getSessionID()}/lobby`);
+
 client.on("message", function (_, message) {
+  let msg = JSON.parse(message)
+  let player : Player = {
+    id : msg.senderId, 
+    name : msg.playerName, 
+    iconURL : msg.avatarUrl,
+    tokens : 3, 
+    cards:[    {
+          id: "1",
+          title: "HITSTAR",
+          year: 1920,
+          interpreter: "HITSTAR",
+          position: 5,
+        }],
+    guessedCardIndex : 5,
+    lastGuessedCardIndex: 5,
+    minCardIndex : 0,
+    maxCardIndex : 10,    
+  }
+  if(gameStore.players.filter(p=> p.id === player.id).length === 0){
+    gameStore.players.push(player)
+  }
   const messageStr = message.toString();
   const messageObj = JSON.parse(messageStr);
 
@@ -94,7 +116,7 @@ function addPlayer(incomingPlayer: any) {
         <div class="w-full divide-y divide-secondary-900 dark:divide-gray-700">
           <div class="flex flex-col space-y-4 rtl:space-x-reverse">
             <HPlayerNameHorizontal
-              v-for="player in playersReadyTojoin"
+              v-for="player in gameStore.players"
               :player="player"
             >
             </HPlayerNameHorizontal>

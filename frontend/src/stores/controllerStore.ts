@@ -8,10 +8,14 @@ import {
   guessMsg,
   drawConfirmMsg,
   doubtMsg,
+  lobbyMsg,
 } from "../types";
 import { onMounted } from "vue";
 import mqtt from "mqtt";
 import { useSessionStore } from "../stores/sessionStore";
+import { randomUUID } from "crypto";
+//@ts-ignore
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -20,7 +24,7 @@ export const useControllerStore = defineStore("controller", () => {
   const activePlayer = computed(
     () => players.value[playerIndex.value] || ({ cards: [{}] } as Player)
   );
-  const controllerPlayer: Ref<Player | null> = ref(null);
+  const PlayerID = uuidv4();
   const players: Ref<Player[]> = ref([] as Player[]);
   const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
@@ -96,6 +100,9 @@ export const useControllerStore = defineStore("controller", () => {
     setCurrentState(gameState: GameStateNew) {
       activeGameState.value = gameState;
     },
+    addToLobby(){
+      Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID))
+    },
     commitGuess() {
       //if (itsTurn.value)
       Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameStateNew.GUESS));
@@ -153,5 +160,7 @@ export const useControllerStore = defineStore("controller", () => {
     turnRight: Helpers.right,
     turnLeft: Helpers.left,
     changeMusicState: Actions.changeMusicState,
+    addToLobby: Actions.addToLobby,
+    PlayerID
   };
 });
