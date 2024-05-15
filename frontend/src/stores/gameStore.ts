@@ -11,8 +11,8 @@ export const useGameStore = defineStore('game', () => {
 
     const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
 
-    const players: Ref<Player[]> = ref([
-        {
+    const players: Ref<Player[]> = ref([])
+        /*{
             id: "a",
             name: "Harry",
             iconURL: "/profile-picture-5.jpg",
@@ -125,7 +125,7 @@ export const useGameStore = defineStore('game', () => {
             minCardIndex: 0,
             maxCardIndex: 0
         }
-    ]);  
+    ]); */ 
     const drawPile: Ref<Card[]> = ref([
         {
           id: "1",
@@ -223,42 +223,6 @@ export const useGameStore = defineStore('game', () => {
 
     onMounted(() => {
 
-         client.on("connect", () => {
-             client.subscribe(`${sessionStore.getSessionID()}/controller`, { qos: 0 });
-         });
-        
-         client.on("message", (__, message) => {
-            let msg = JSON.parse(message)
-             switch (msg.gameState) {
-                 case GameStateNew.DRAWCARD:
-                     Actions.drawCard();
-                     break;
-                 case GameStateNew.LISTEN:
-                    switch(msg.command){
-                        case "pause":
-                            break;
-                        case "play":
-                            break;
-                    } break;
-                 case GameStateNew.DOUBT:
-                    Actions.startDoubtPhase(players.value[2])
-                    break;
-                 case GameStateNew.GUESS:
-                     switch (msg.command) {
-                         case "left":
-                            Actions.moveCardLeft();
-                             break;
-                         case "right":
-                            Actions.moveCardRight();
-                             break;
-                         case "commit":
-                            Actions.commitGuess();
-                             break;
-                    }
-                     break;
-        
-             }
-         });
 
         document.onkeydown = (e: KeyboardEvent) => {
             switch (e.key) {
@@ -304,11 +268,50 @@ export const useGameStore = defineStore('game', () => {
                     break;
             }
         }
-        Helpers.initPlayers();
-        Actions.startGame();
+       
     });
 
-
+function startGame(){
+    
+    client.on("connect", () => {
+        client.subscribe(`${sessionStore.getSessionID()}/controller`, { qos: 0 });
+    });
+   
+    client.on("message", (__, message) => {
+       let msg = JSON.parse(message)
+        switch (msg.gameState) {
+            case GameStateNew.DRAWCARD:
+                Actions.drawCard();
+                break;
+            case GameStateNew.LISTEN:
+               switch(msg.command){
+                   case "pause":
+                       break;
+                   case "play":
+                       break;
+               } break;
+            case GameStateNew.DOUBT:
+               Actions.startDoubtPhase(players.value[2])
+               break;
+            case GameStateNew.GUESS:
+                switch (msg.command) {
+                    case "left":
+                       Actions.moveCardLeft();
+                        break;
+                    case "right":
+                       Actions.moveCardRight();
+                        break;
+                    case "commit":
+                       Actions.commitGuess();
+                        break;
+               }
+                break;
+   
+        }
+    });
+    Helpers.initPlayers();
+    Actions.startGame();
+}
 
     const Helpers = {
 
@@ -652,6 +655,7 @@ export const useGameStore = defineStore('game', () => {
         doubtCountDown,
         currentCard,
         DRAW_CARD_DURATION,
-        SONG_DURATION
+        SONG_DURATION,
+        startGame
     }
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, Ref } from 'vue';
+import { ref, watch, Ref, onMounted } from 'vue';
 import HAvatar from '../components/HAvatar.vue';
 import HCard from '../components/HCard.vue'
 import Tokens from "../components/Tokens.vue";
@@ -97,6 +97,9 @@ watch(() => gameStore.activeGameState, () => {
       break;
   }
 });
+onMounted(() =>{
+  gameStore.startGame();
+})
 </script>
 
 <template>

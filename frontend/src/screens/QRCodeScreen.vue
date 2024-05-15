@@ -66,7 +66,7 @@ function addPlayer(incomingPlayer: any) {
   // could check if player is already in the list
   //if (!players.value.some(player => player.name === playerName)) {
   if (incomingPlayer) {
-    console.log("hallo");
+  
 
     playersReadyTojoin.value.push({
       id: incomingPlayer.senderId,
