@@ -63,6 +63,7 @@ export const useControllerStore = defineStore("controller", () => {
   });
   const Helpers = {
     send(message: MQTTMessage) {
+      console.log(message)
       client.publish(message.topic, JSON.stringify(message.message));
     },
 
