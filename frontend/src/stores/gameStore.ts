@@ -241,7 +241,7 @@ export const useGameStore = defineStore('game', () => {
                            break;
                    } break;
                 case GameStateNew.DOUBT:
-                   Actions.startDoubtPhase(players.value[2])
+                   Actions.startDoubtPhase(players.value[0])
                    break;
                 case GameStateNew.GUESS:
                     switch (msg.command) {

@@ -13,7 +13,7 @@ import { GameStateNew } from "../types";
 import { router } from "../router";
 
 const showDropdown = ref(false);
-const username = ref("Chinonso Agbo"); // Defined the username variable
+const username = ref(""); // Defined the username variable
 const sessionStore = useSessionStore();
 const controllerStore = useControllerStore()
 const toggleDropdown = () => {

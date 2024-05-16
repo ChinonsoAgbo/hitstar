@@ -157,14 +157,4 @@ const error = new URLSearchParams(window.location.search).get("error"); // get a
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
-
-  <button
-    @click="changeMusicSate"
-    type="button"
-    class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full px-10 py-2.5 mx-3 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-  >
-    <PauseIcon v-if="musicState" class="w-12 h-12 cursor-pointer" />
-
-    <PlayIcon v-else class="w-12 h-12 cursor-pointer" />
-  </button>
 </template>
