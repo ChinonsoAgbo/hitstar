@@ -19,3 +19,11 @@ services:
         - "9001:9001"
     volumes:
       - "./mosquitto:/mosquitto"
+
+  # nginx for serving images in backend
+  web:
+    image: nginx:latest
+    ports:
+      - "8081:80"
+    volumes:
+      - ./images:/usr/share/nginx/html/images
