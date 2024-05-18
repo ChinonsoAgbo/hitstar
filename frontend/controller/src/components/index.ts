@@ -10,7 +10,6 @@ import HPlayer from "@components/HPlayer.vue";
 import HPlayerNameHorizontal from "@components/HPlayerNameHorizontal.vue";
 import HPopOver from "@components/HPopOver.vue";
 import HSubmitButton from "@components/HSubmitButton.vue";
-import MusicPlayer from "@components/MusicPlayer.vue";
 import MusicYear from "@components/MusicYear.vue";
 import RangYearSlider from "@components/RangYearSlider.vue";
 import SearchInput from "@components/SearchInput.vue";
@@ -31,7 +30,6 @@ export {
     HPlayerNameHorizontal,
     HPopOver,
     HSubmitButton,
-    MusicPlayer,
     MusicYear,
     RangYearSlider,
     SearchInput,
