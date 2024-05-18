@@ -419,12 +419,13 @@ export const useGameStore = defineStore('game', () => {
          * Starts a new game. Called by the main device.
          */
         startGame() {
+          
             console.log("ANIMATE GAME START");
             gameCycleStore.setGameState(GameState.ANIMATE_GAMESTART);
             setTimeout(() => {
                 console.log("GAME START");
                 gameCycleStore.setGameState(GameState.GAMESTART);
-                Helpers.send(gameStartMsg(sessionStore.getSessionID()));
+                Helpers.send(gameStartMsg(sessionStore.getSessionID(), players.value.map(id => id.id)));
                 this.startTurn();
             }, ANIMATION_DURATION);
         },
@@ -442,8 +443,8 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("TURN START");
                 gameCycleStore.setGameState(GameState.TURNSTART);
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.TURNSTART));
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.DRAWCARD));
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.TURNSTART, activePlayer.value.id));
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.DRAWCARD, activePlayer.value.id));
             }, ANIMATION_DURATION);
         },
 
@@ -456,7 +457,7 @@ export const useGameStore = defineStore('game', () => {
             //Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
             setTimeout(() => {
                 this.listenToSong();
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.LISTEN))
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.LISTEN, activePlayer.value.id))
             }, DRAW_CARD_DURATION);
         },
 
@@ -478,7 +479,7 @@ export const useGameStore = defineStore('game', () => {
         startGuessing(gameState: GameState = GameState.GUESS) {
             console.log("START GUESSING");
             gameCycleStore.setGameState(gameState);
-            Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.GUESS));
+            Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.GUESS, activePlayer.value.id));
             Helpers.saveCopyOfCards();
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
@@ -513,7 +514,7 @@ export const useGameStore = defineStore('game', () => {
             // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             if (gameCycleStore.activeGameState === GameState.GUESS) {
                 gameCycleStore.setGameState(GameState.WAIT_FOR_DOUBT);
-                Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.WAIT_FOR_DOUBT))
+                Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.WAIT_FOR_DOUBT, activePlayer.value.id))
                 this.startDoubtCountDown();
             }
             else if (gameCycleStore.activeGameState === GameState.MATEGUESS) {
