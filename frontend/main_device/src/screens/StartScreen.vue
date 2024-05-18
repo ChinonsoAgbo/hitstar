@@ -105,7 +105,7 @@ const error = new URLSearchParams(window.location.search).get("error"); // get a
 
 <template>
   <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
-    <HAvatar url="/profile-picture-5.jpg"> </HAvatar>
+    <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
   </div>
   <div
     class="flex flex-col items-center justify-center space-y-3s bg-primary-300 min-h-screen"

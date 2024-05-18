@@ -11,11 +11,11 @@ export const useGameStore = defineStore('game', () => {
 
     const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
 
-    const players: Ref<Player[]> = ref([])
-        /*{
+    const players: Ref<Player[]> = ref([
+        {
             id: "a",
             name: "Harry",
-            iconURL: "/profile-picture-5.jpg",
+            iconURL: "profile-picture-1.jpg",
             cards: [
                 {
                     id: "10",
@@ -34,7 +34,7 @@ export const useGameStore = defineStore('game', () => {
         {
             id: "b",
             name: "Hermione",
-            iconURL: "/profile-picture-3.jpg",
+            iconURL: "profile-picture-3.jpg",
             cards: [
                 {
                     id: "11",
@@ -53,7 +53,7 @@ export const useGameStore = defineStore('game', () => {
         {
             id: "c",
             name: "Ron",
-            iconURL: "/profile-picture-2.jpg",
+            iconURL: "profile-picture-2.jpg",
             cards: [
                 {
                     id: "12",
@@ -125,7 +125,7 @@ export const useGameStore = defineStore('game', () => {
             minCardIndex: 0,
             maxCardIndex: 0
         }
-    ]); */ 
+    ]);
     const drawPile: Ref<Card[]> = ref([
         {
           id: "1",
@@ -203,7 +203,7 @@ export const useGameStore = defineStore('game', () => {
     const sessionStore = useSessionStore()
     const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
-    const SONG_DURATION = 10000; // 10000
+    const SONG_DURATION = 1000; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -596,16 +596,20 @@ function startGame(){
             // console.log(currentCard.value.year);
 
             if (currentCard.value.year >= lowerBound && currentCard.value.year <= upperBound) {
-                this.evaluatePositive();
+                this.evaluatePositive(wasDoubt);
             } else {
                 this.evaluateNegative(wasDoubt);
             }
         },
 
-        evaluatePositive() {
+        evaluatePositive(wasDoubt: boolean) {
             console.log('POSITIVE');
             Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION_POSITIVE);
             setTimeout(() => {
+                if (wasDoubt) {
+                    Helpers.resetTimeLineCards(playerOnTurn.value);
+                }
+                // Helpers.resetTimeLineCards(activePlayer.value);
                 activePlayer.value.cards.push({ ...currentCard.value, position: activePlayer.value.guessedCardIndex });
                 Helpers.setGameState(GameStateNew.TURNEND);
                 setTimeout(() => {

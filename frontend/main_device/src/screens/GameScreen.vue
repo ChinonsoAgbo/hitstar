@@ -8,6 +8,7 @@ import { useAnimate } from "@vueuse/core";
 import { ref, watch, Ref, onMounted } from 'vue';
 import { useGameStore } from "@stores/gameStore.ts";
 import { GameStateNew } from "@shared/types";
+import { IMAGE_URL } from "@shared/urls";
 
 const cardSize = ref(7);
 
@@ -109,7 +110,7 @@ onMounted(() =>{
                 :class="player === gameStore.playerOnTurn ? 
                       'border-secondary-500 animate-pulse' : 'border-gray-400'" >
 
-                <HAvatar :active="player === gameStore.playerOnTurn" :size="3" :url="player.iconURL" />
+                <HAvatar :active="player === gameStore.playerOnTurn" :size="3" :url="IMAGE_URL + player.iconURL" />
                 <Tokens :amount="player.tokens" />
                 
                 <h5 
@@ -130,7 +131,7 @@ onMounted(() =>{
           <HAvatar 
               :active="gameStore.activeGameState !== GameStateNew.MATEGUESS" 
               :size="7" 
-              :url="gameStore.playerOnTurn.iconURL" />
+              :url="IMAGE_URL + gameStore.playerOnTurn.iconURL" />
 
           <BoltIcon 
               v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
@@ -140,7 +141,7 @@ onMounted(() =>{
               v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
               :active="true" 
               :size="7" 
-              :url="gameStore.activePlayer.iconURL" class="animate-pulse" />
+              :url="IMAGE_URL + gameStore.activePlayer.iconURL" class="animate-pulse" />
 
         </div>
 
@@ -226,7 +227,7 @@ onMounted(() =>{
                         <HAvatar
                             :active="true"
                             :size="cardSize"
-                            :url="gameStore.playerOnTurn?.iconURL!" />
+                            :url="IMAGE_URL + gameStore.playerOnTurn?.iconURL!" />
 
                         <h1 class="text-5xl font-bold tracking-tight text-white">
                             {{ gameStore.playerOnTurn?.name }}'s Turn
@@ -271,7 +272,7 @@ onMounted(() =>{
                       v-if="popLeft" 
                       :active="true" 
                       :size="7" 
-                      :url="gameStore.playerOnTurn.iconURL" 
+                      :url="IMAGE_URL + gameStore.playerOnTurn.iconURL"
                       class="fixed top-[30%] left-[30%]" />
                 </Transition>
                 <Transition name="pop" appear>
@@ -282,7 +283,7 @@ onMounted(() =>{
                       v-if="popRight" 
                       :active="true" 
                       :size="7" 
-                      :url="gameStore.activePlayer.iconURL" 
+                      :url="IMAGE_URL + gameStore.activePlayer.iconURL"
                       class="fixed bottom-[30%] right-[30%]" />
                 </Transition>
             </div>
@@ -294,7 +295,7 @@ onMounted(() =>{
                   <HAvatar 
                     :active="true" 
                     :size="7" 
-                    :url="gameStore.activePlayer.iconURL" />
+                    :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
                 </div>
 
                 <Transition name="pop" appear>
@@ -311,7 +312,7 @@ onMounted(() =>{
                   <HAvatar 
                     :active="true" 
                     :size="7" 
-                    :url="gameStore.activePlayer.iconURL" />
+                    :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
               </div>
                 
 
@@ -343,7 +344,7 @@ onMounted(() =>{
                   <HAvatar 
                     :active="true" 
                     :size="7" 
-                    :url="gameStore.activePlayer.iconURL" />
+                    :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
                 </div>
                 
                 <Transition name="pop" appear>
