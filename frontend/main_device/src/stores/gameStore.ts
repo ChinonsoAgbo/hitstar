@@ -11,8 +11,8 @@ export const useGameStore = defineStore('game', () => {
 
     const gameCycleStore = useGameCycleStore();
 
-    const players: Ref<Player[]> = ref([
-        {
+    const players: Ref<Player[]> = ref([])
+        /*{
             id: "a",
             name: "Harry",
             iconURL: "profile-picture-1.jpg",
@@ -125,7 +125,7 @@ export const useGameStore = defineStore('game', () => {
             minCardIndex: 0,
             maxCardIndex: 0
         }
-    ]);
+    ]);*/
     const drawPile: Ref<Card[]> = ref([
         {
           id: "1",
@@ -492,7 +492,6 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD LEFT");
             activePlayer.value.guessedCardIndex = Math.max(activePlayer.value.minCardIndex, activePlayer.value.guessedCardIndex - 1);
             Helpers.switchTimeLineCards();
-           // Helpers.send(guessMsg(sessionStore.getSessionID(), "left", GameStateNew.GUESS));
         },
 
         /**
@@ -502,7 +501,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("MOVE CARD RIGHT");
             activePlayer.value.guessedCardIndex = Math.min(activePlayer.value.maxCardIndex, activePlayer.value.guessedCardIndex + 1);
             Helpers.switchTimeLineCards();
-            //Helpers.send(guessMsg("right", GameStateNew.GUESS));
+
         },
 
         /**

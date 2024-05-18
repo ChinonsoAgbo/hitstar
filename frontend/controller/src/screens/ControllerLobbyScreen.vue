@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { WaitingGamers, HButton, HAvatar } from "@components/";
+import { WaitingGamers, HButton, HAvatar } from "../components/";
 import { useSessionStore } from "@shared/stores/sessionStore.ts";
 import { ref, defineProps, computed, onMounted } from "vue";
-import { watch } from "vue"
+import { watch } from "vue";
 import { useRoute } from "vue-router";
 import { useControllerStore } from "@stores/controllerStore";
 import { router } from "../router";
-import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
+import { useGameCycleStore } from "@shared/stores/gameCycleStore.ts";
 
 const controllerStore = useControllerStore();
 const gameCycle = useGameCycleStore();
@@ -53,14 +53,17 @@ const avatersForSettings = ref([
   },
 ]);
 
-watch(() => gameCycle.activeGameState, (newState, oldState) => {
-  if(newState !== oldState){
-    router.push("/controller")
+watch(
+  () => gameCycle.activeGameState,
+  (newState, oldState) => {
+    if (newState !== oldState) {
+      router.push("/controller");
+    }
   }
-})
-onMounted(()=> {
-  controllerStore.addToLobby()
-})
+);
+onMounted(() => {
+  controllerStore.addToLobby();
+});
 </script>
 
 <template>
