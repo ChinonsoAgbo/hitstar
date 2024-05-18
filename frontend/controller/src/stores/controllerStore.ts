@@ -9,6 +9,7 @@ import {
   drawConfirmMsg,
   doubtMsg,
   lobbyMsg,
+  turnMsg,
 } from "@shared/types";
 import { onMounted } from "vue";
 import mqtt from "mqtt";
@@ -76,19 +77,25 @@ export const useControllerStore = defineStore("controller", () => {
           Actions.commitGuess();
           break;
         case GameState.MATEGUESS:
-          Actions.commitGuess();
+          Actions.commitDoubtGuess();
           break;
       }
     },
 
     left() {
-      if (gameCycle.activeGameState === GameState.GUESS) {
+      if (
+        (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) ||
+        (!itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS)
+      ) {
         Actions.turnLeft();
       }
     },
 
     right() {
-      if (gameCycle.activeGameState === GameState.GUESS) {
+      if (
+        (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) ||
+        (!itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS)
+      ) {
         Actions.turnRight();
       }
     },
@@ -99,7 +106,6 @@ export const useControllerStore = defineStore("controller", () => {
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID));
     },
     commitGuess() {
-      if (itsTurn.value)
         Helpers.send(
           guessMsg(
             sessionStore.getSessionID(),
@@ -111,28 +117,26 @@ export const useControllerStore = defineStore("controller", () => {
         );
     },
     turnLeft() {
-      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS)
-        Helpers.send(
-          guessMsg(
-            sessionStore.getSessionID(),
-            "left",
-            GameState.GUESS,
-            PlayerID,
-            activePlayer.value.id
-          )
-        );
+      Helpers.send(
+        guessMsg(
+          sessionStore.getSessionID(),
+          "left",
+          GameState.GUESS,
+          PlayerID,
+          activePlayer.value.id
+        )
+      );
     },
     turnRight() {
-      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS)
-        Helpers.send(
-          guessMsg(
-            sessionStore.getSessionID(),
-            "right",
-            GameState.GUESS,
-            PlayerID,
-            activePlayer.value.id
-          )
-        );
+      Helpers.send(
+        guessMsg(
+          sessionStore.getSessionID(),
+          "right",
+          GameState.GUESS,
+          PlayerID,
+          activePlayer.value.id
+        )
+      );
     },
     drawCard() {
       if (itsTurn.value)
@@ -148,7 +152,7 @@ export const useControllerStore = defineStore("controller", () => {
         );
     },
     commitDoubtGuess() {
-      if (itsTurn.value)
+      if (!itsTurn.value)
         Helpers.send(
           guessMsg(
             sessionStore.getSessionID(),
@@ -183,5 +187,6 @@ export const useControllerStore = defineStore("controller", () => {
     changeMusicState: Actions.changeMusicState,
     addToLobby: Actions.addToLobby,
     PlayerID,
+    itsTurn,
   };
 });

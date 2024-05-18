@@ -241,8 +241,12 @@ export const useGameStore = defineStore('game', () => {
                            break;
                    } break;
                 case GameState.DOUBT:
-                   Actions.startDoubtPhase(players.value[0])
-                   break;
+                    if(msg.playerId !== activePlayer.value.id){
+                    const doubtPlayer = players.value.find(player => player.id === msg.senderId);
+                    console.log(doubtPlayer)
+                    Actions.startDoubtPhase(doubtPlayer!)
+                    }
+                break;
                 case GameState.GUESS:
                     switch (msg.command) {
                         case "left":
@@ -255,6 +259,18 @@ export const useGameStore = defineStore('game', () => {
                            Actions.commitGuess();
                             break;
                    }
+                   break;
+                   case GameState.MATEGUESS:
+                    switch (msg.command) {
+                        case "left":
+                           Actions.moveCardLeft();
+                            break;
+                        case "right":
+                           Actions.moveCardRight();
+                            break;
+                        case "commit":
+                           Actions.commitGuess();
+                            break;}
                     break;
        
             }
@@ -469,17 +485,17 @@ export const useGameStore = defineStore('game', () => {
             console.log("LISTEN TO SONG");
             gameCycleStore.setGameState(GameState.LISTEN);
             setTimeout(() => {
-                this.startGuessing();
+                this.startGuessing(GameState.GUESS);
             }, SONG_DURATION);
         },
 
         /**
          * Starts the guessing phase. Called by the main device.
          */
-        startGuessing(gameState: GameState = GameState.GUESS) {
+        startGuessing(gameState: GameState) {
             console.log("START GUESSING");
             gameCycleStore.setGameState(gameState);
-            Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.GUESS, activePlayer.value.id));
+            Helpers.send(turnMsg(sessionStore.getSessionID(), gameState, activePlayer.value.id));
             Helpers.saveCopyOfCards();
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
