@@ -37,6 +37,10 @@ import Tokens from '@components/Tokens.vue';<br>
 Immer, wenn ihr neue Komponenten anlegt, registriert sie bitte in der index.ts-Datei im Komponenten-Ordner, damit das auch
 für neue Komponenten funktioniert.
 
+#### 3. GameCycleStore
+Es gibt jetzt einen GameCycleStore, der für den GameCycle zuständig ist. Alles, was den GameCycle betrifft also bitte darüber
+machen. Ich hoffe, ich hab alles getestet, aber wenn noch was falsch ist, verbessert es bitte.
+
 ### Backend
 Ich hab das Backend um Nginx erweitert, das als File-Server für alle Images fungiert. Damit kommt man jetzt so an alle
 Bilder: <code>http://localhost:8081/images/hitstar.jpg</code>. Der Nginx-Server ist einfach ein weiterer Service in
