@@ -1,4 +1,4 @@
-package com.example.hitstar_backend;
+package de.hhn.labsw.hitstar_backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
