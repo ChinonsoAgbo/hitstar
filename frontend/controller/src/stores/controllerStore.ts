@@ -13,7 +13,6 @@ import {
 import { onMounted } from "vue";
 import mqtt from "mqtt";
 import { useSessionStore } from "@shared/stores/sessionStore.ts";
-import { randomUUID } from "crypto";
 //@ts-ignore
 import { v4 as uuidv4 } from 'uuid';
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
@@ -49,13 +48,12 @@ export const useControllerStore = defineStore("controller", () => {
           players.value = msg.playerOrder;
           break;
         case GameState.TURNSTART:
-          //if (activePlayer.value.id === controllerPlayer.value.id) {
+          if (activePlayer.value.id === PlayerID) {
           itsTurn.value = true;
-          // }
-
-         // itsTurn.value = false;
+          }
+          else itsTurn.value = false;
           break;
-        case GameState.LISTEN: //&& itsTurn:
+        case GameState.LISTEN && itsTurn:
           isMusicPlaying.value = true;
           break;
         case GameState.TURNEND:
@@ -105,47 +103,47 @@ export const useControllerStore = defineStore("controller", () => {
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID))
     },
     commitGuess() {
-      //if (itsTurn.value)
-      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameState.GUESS));
+      if (itsTurn.value)
+      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameState.GUESS, PlayerID, activePlayer.value.id));
     },
     turnLeft() {
       if (
-        //itsTurn.value &&
+        itsTurn.value &&
         gameCycle.activeGameState === GameState.GUESS
       )
-        Helpers.send(guessMsg(sessionStore.getSessionID(),"left", GameState.GUESS));
+        Helpers.send(guessMsg(sessionStore.getSessionID(),"left", GameState.GUESS, PlayerID, activePlayer.value.id));
     },
     turnRight() {
       if (
-        //itsTurn.value &&
+        itsTurn.value &&
         gameCycle.activeGameState === GameState.GUESS
       )
-        Helpers.send(guessMsg(sessionStore.getSessionID(),"right", GameState.GUESS));
+        Helpers.send(guessMsg(sessionStore.getSessionID(),"right", GameState.GUESS, PlayerID, activePlayer.value.id));
     },
     drawCard() {
-      //if (itsTurn.value)
-      Helpers.send(drawConfirmMsg(sessionStore.getSessionID()));
+      if (itsTurn.value)
+      Helpers.send(drawConfirmMsg(sessionStore.getSessionID(), PlayerID));
     },
     makeDoubt() {
       if (
-        // !itsTurn.value &&
+        !itsTurn.value &&
         gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT
       )
-        Helpers.send(doubtMsg(sessionStore.getSessionID()));
+        Helpers.send(doubtMsg(sessionStore.getSessionID(),PlayerID, activePlayer.value.id));
     },
     commitDoubtGuess() {
-      //if (itsTurn.value)
-      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameState.MATEGUESS));
+      if (itsTurn.value)
+      Helpers.send(guessMsg(sessionStore.getSessionID(),"commit", GameState.MATEGUESS, PlayerID, activePlayer.value.id));
     },
     playMusic() {
-      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"play"));
+      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"play", PlayerID));
     },
     stopMusic() {
-      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"pause"));
+      Helpers.send(playPauseMsg(sessionStore.getSessionID(),"pause", PlayerID));
     },
     changeMusicState() {
       if (
-        //itsTurn.value &&
+        itsTurn.value &&
         gameCycle.activeGameState === GameState.LISTEN
       ) {
         if (isMusicPlaying.value) this.playMusic();
@@ -154,7 +152,6 @@ export const useControllerStore = defineStore("controller", () => {
     },
   };
   return {
-    activeGameState,
     isMusicPlaying,
     commit: Helpers.commit,
     makeDoubt: Actions.makeDoubt,
