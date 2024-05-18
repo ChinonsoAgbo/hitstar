@@ -7,12 +7,14 @@ import { BoltIcon } from '@heroicons/vue/24/outline';
 import { useAnimate } from "@vueuse/core";
 import { ref, watch, Ref, onMounted } from 'vue';
 import { useGameStore } from "@stores/gameStore.ts";
-import { GameStateNew } from "@shared/types";
+import { GameState } from "@shared/types";
 import { IMAGE_URL } from "@shared/urls";
+import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 
 const cardSize = ref(7);
 
 const gameStore = useGameStore();
+const gameCycle = useGameCycleStore();
 
 // mock players
 // gameStore.players = 
@@ -43,18 +45,18 @@ const flip = ref(false);
 const popLeft = ref(false);
 const popRight = ref(false);
 
-watch(() => gameStore.activeGameState, () => {
-  switch (gameStore.activeGameState) {
-    case GameStateNew.DRAWCARD:
+watch(() => gameCycle.activeGameState, () => {
+  switch (gameCycle.activeGameState) {
+    case GameState.DRAWCARD:
       console.log("DRAW CARD 2");
       drawPilePulse.play();
       break;
-    case GameStateNew.GUESS:
+    case GameState.GUESS:
       flip.value = false;
       popLeft.value = false;
       popRight.value = false;
       break;
-    case GameStateNew.DOUBT:
+    case GameState.DOUBT:
       popLeft.value = true;
       setTimeout(() => {
         popRight.value = true;
@@ -63,17 +65,17 @@ watch(() => gameStore.activeGameState, () => {
         }, 1000);
       }, 1000);
       break;
-    case GameStateNew.ANIMATE_EVALUATION:
+    case GameState.ANIMATE_EVALUATION:
       flip.value = false;
       popLeft.value = false;
       popRight.value = false;
       break;
-    case GameStateNew.ANIMATE_EVALUATION_POSITIVE:
+    case GameState.ANIMATE_EVALUATION_POSITIVE:
       setTimeout(() => {
         flip.value = true;
       }, 2000);
       break;
-    case GameStateNew.ANIMATE_EVALUATION_NEGATIVE:
+    case GameState.ANIMATE_EVALUATION_NEGATIVE:
       setTimeout(() => {
         flip.value = true;
         setTimeout(() => {
@@ -84,7 +86,7 @@ watch(() => gameStore.activeGameState, () => {
         }, 500);
       }, 2000);
       break;
-    case GameStateNew.TURNEND:
+    case GameState.TURNEND:
       flip.value = false;
       popLeft.value = false;
       popRight.value = false;
@@ -127,18 +129,20 @@ onMounted(() =>{
         </div>
 
         <!-- Big players at middle -->
-        <div class="fixed left-0 top-[20%] w-full flex items-center justify-center gap-5">
-          <HAvatar 
-              :active="gameStore.activeGameState !== GameStateNew.MATEGUESS" 
+        <div
+            v-if="gameCycle.activeGameState > 0"
+            class="fixed left-0 top-[20%] w-full flex items-center justify-center gap-5">
+          <HAvatar
+              :active="gameCycle.activeGameState !== GameState.MATEGUESS"
               :size="7" 
               :url="IMAGE_URL + gameStore.playerOnTurn.iconURL" />
 
           <BoltIcon 
-              v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
+              v-if="gameCycle.activeGameState === GameState.MATEGUESS"
               class="h-20 text-secondary-500" />
 
           <HAvatar 
-              v-if="gameStore.activeGameState === GameStateNew.MATEGUESS" 
+              v-if="gameCycle.activeGameState === GameState.MATEGUESS"
               :active="true" 
               :size="7" 
               :url="IMAGE_URL + gameStore.activePlayer.iconURL" class="animate-pulse" />
@@ -176,8 +180,8 @@ onMounted(() =>{
                 class="bg-transparent border-transparent flex justify-center items-center">
 
                 <HHitstarCard 
-                  v-if="(gameStore.activeGameState === GameStateNew.GUESS 
-                        || gameStore.activeGameState === GameStateNew.MATEGUESS)
+                  v-if="(gameCycle.activeGameState === GameState.GUESS
+                        || gameCycle.activeGameState === GameState.MATEGUESS)
                         && position == gameStore.activePlayer.guessedCardIndex" 
                   :size="cardSize" 
                   class="animate-bounce" />
@@ -194,25 +198,25 @@ onMounted(() =>{
         <!-- Nachziehstapel -->
         <div 
             class="fixed top-4 left-36 hover:cursor-pointer" 
-            :class="{ 'animate-pulse': gameStore.activeGameState === GameStateNew.TURNSTART }">
+            :class="{ 'animate-pulse': gameCycle.activeGameState === GameState.TURNSTART }">
             <HHitstarCard ref="drawPile" :size="cardSize" />
         </div>
 
         
         <HPopOver v-if="
-            gameStore.activeGameState === GameStateNew.ANIMATE_GAMESTART ||
-            gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART ||
-            gameStore.activeGameState === GameStateNew.LISTEN ||
-            gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT ||
-            gameStore.activeGameState === GameStateNew.DOUBT ||
-            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION ||
-            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE ||
-            gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE ||
-            gameStore.activeGameState === GameStateNew.GAMEEND
+            gameCycle.activeGameState === GameState.ANIMATE_GAMESTART ||
+            gameCycle.activeGameState === GameState.ANIMATE_TURNSTART ||
+            gameCycle.activeGameState === GameState.LISTEN ||
+            gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT ||
+            gameCycle.activeGameState === GameState.DOUBT ||
+            gameCycle.activeGameState === GameState.ANIMATE_EVALUATION ||
+            gameCycle.activeGameState === GameState.ANIMATE_EVALUATION_POSITIVE ||
+            gameCycle.activeGameState === GameState.ANIMATE_EVALUATION_NEGATIVE ||
+            gameCycle.activeGameState === GameState.GAMEEND
         ">
 
             <!-- GAME_START ANIMATION -->
-            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_GAMESTART">
+            <div v-if="gameCycle.activeGameState === GameState.ANIMATE_GAMESTART">
                 <Transition name="pop" appear>
                     <h1 class="text-5xl font-bold tracking-tight text-white">
                       New Game!
@@ -221,7 +225,7 @@ onMounted(() =>{
             </div>
 
             <!-- TURN_START ANIMATION -->
-            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_TURNSTART">
+            <div v-if="gameCycle.activeGameState === GameState.ANIMATE_TURNSTART">
                 <Transition name="pop" appear>
                     <div class="flex flex-col justify-center items-center gap-3">
                         <HAvatar
@@ -237,7 +241,7 @@ onMounted(() =>{
             </div>
 
              <!-- LISTEN ANIMATION -->
-             <div v-if="gameStore.activeGameState === GameStateNew.LISTEN">
+             <div v-if="gameCycle.activeGameState === GameState.LISTEN">
                 <HHeading class="fixed bottom-[20%] left-[20%] text-9xl animate-ping">🎵</HHeading>
                 <Transition name="pop" appear>
                   <div class="flex flex-col justify-center items-center gap-3">
@@ -254,7 +258,7 @@ onMounted(() =>{
             </div>
 
              <!-- WAIT FOR DOUBT ANIMATION -->
-             <div v-if="gameStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT">
+             <div v-if="gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT">
                 <Transition name="pop" appear>
                   <HHeading v-if="gameStore.doubtCountDown == 0">Doubt-Phase 😮🤢😈</HHeading>
                   <HHeading v-else-if="gameStore.doubtCountDown == 1">1</HHeading>
@@ -266,7 +270,7 @@ onMounted(() =>{
             </div>
 
             <!-- DOUBT ANIMATION -->
-            <div v-if="gameStore.activeGameState === GameStateNew.DOUBT">
+            <div v-if="gameCycle.activeGameState === GameState.DOUBT">
                 <Transition name="pop" appear>
                   <HAvatar 
                       v-if="popLeft" 
@@ -289,7 +293,7 @@ onMounted(() =>{
             </div>
 
              <!-- EVALUATE ANIMATION -->
-             <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION">
+             <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION">
 
                 <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
                   <HAvatar 
@@ -306,7 +310,7 @@ onMounted(() =>{
             </div>
 
             <!-- POSITIVE EVALUATE ANIMATION -->
-            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_POSITIVE">
+            <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION_POSITIVE">
 
               <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
                   <HAvatar 
@@ -335,7 +339,7 @@ onMounted(() =>{
             </div>
 
             <!-- NEGATIVE EVALUATE ANIMATION -->
-            <div v-if="gameStore.activeGameState === GameStateNew.ANIMATE_EVALUATION_NEGATIVE">
+            <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION_NEGATIVE">
                 <Transition name="pop" appear>
                   <HHeading v-if="popLeft" class="fixed top-[30%] left-[30%] text-9xl">☠️</HHeading>
                 </Transition>
@@ -366,7 +370,7 @@ onMounted(() =>{
             </div>
 
              <!-- GAME_END ANIMATION -->
-             <div v-if="gameStore.activeGameState === GameStateNew.GAMEEND">
+             <div v-if="gameCycle.activeGameState === GameState.GAMEEND">
                 <Transition name="pop" appear>
                     <h1 class="text-5xl font-bold tracking-tight text-white">
                       Game finished!

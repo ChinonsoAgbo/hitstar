@@ -1,4 +1,3 @@
-import { getRandomValues, randomBytes } from "crypto";
 
 export interface Card {
     id: string,
@@ -21,7 +20,7 @@ export interface Player {
     minCardIndex: number,
 }
 
-export enum GameStateNew {
+export enum GameState {
   NOTSTARTED = -1,
   ANIMATE_GAMESTART,
   GAMESTART,
@@ -55,7 +54,7 @@ type Command = "left" | "right" | "commit" | "play" | "pause";
 interface Message {
   senderId: PlayerID | undefined;
   token: string;
-  gameState?: GameStateNew;
+  gameState?: GameState;
   command?: Command;
   playerName?: PlayerName;
   avatarUrl?: IconURL;
@@ -110,7 +109,7 @@ export const gameStartMsg = (sessionId : string): MQTTMessage => {
     message: {
         senderId: undefined,
         token: 'placeholder',
-        gameState: GameStateNew.GAMESTART,
+        gameState: GameState.GAMESTART,
         playerOrder : ["placeholder1", "placeholder2"],
     }
   }
@@ -153,7 +152,7 @@ export const gameStartMsg = (sessionId : string): MQTTMessage => {
  *
  */
 
-export const turnMsg = (sessionId: string, gameState: GameStateNew): MQTTMessage => {
+export const turnMsg = (sessionId: string, gameState: GameState): MQTTMessage => {
     return {
         topic: `${sessionId}/main`,
         message: {
@@ -178,7 +177,7 @@ export const gameEndMsg = (sessionId: string): MQTTMessage => {
     message: {
         senderId: undefined,
         token: 'placeholder',
-        gameState: GameStateNew.GAMEEND,
+        gameState: GameState.GAMEEND,
         playerRanking: undefined,
 
 
@@ -198,7 +197,7 @@ export const playPauseMsg = (sessionId: string, command: Command): MQTTMessage =
     message:{
         senderId: 'placeholder',
         token: 'placeholder',
-        gameState: GameStateNew.LISTEN,
+        gameState: GameState.LISTEN,
         command:`${command}`, // play wenn auf Play gedrückt wird, Pause wenn auf Pause gedrückt wird
         finishedListening : false // True wenn der aktive Spieler
         // den Zuhören beenden Button gedrückt hat, false wenn nicht
@@ -220,7 +219,7 @@ export const doubtMsg = (sessionId: string): MQTTMessage => {
         senderId: "placeholder",
         token: 'placeholder',
         currentPlayer:'placeholder',
-        gameState: GameStateNew.DOUBT,
+        gameState: GameState.DOUBT,
     }
   }
 }
@@ -235,7 +234,7 @@ export const evaluationMsg = (sessionId : string): MQTTMessage => {
     message: {
         senderId: undefined,
         token: 'placeholder',
-        gameState: GameStateNew.EVALUATION,
+        gameState: GameState.EVALUATION,
         currentPlayer: 'placeholder',
         doubtWin: undefined,
         evaluationResultActivePlayer: true, // ture die richtige position erraten wurde
@@ -248,7 +247,7 @@ export const evaluationMsg = (sessionId : string): MQTTMessage => {
  * Über diese Message werden die verschiedenen Züge während einem MateGuess oder der Guess Phase von Controller aus gesteuert
  */
 
-export const guessMsg = (sessionId : string, command: Command, gameState: GameStateNew): MQTTMessage => {
+export const guessMsg = (sessionId : string, command: Command, gameState: GameState): MQTTMessage => {
     return {
         topic: `${sessionId}/controller`,
         message: {
@@ -273,7 +272,7 @@ export const drawConfirmMsg = (sessionId : string): MQTTMessage => {
     message: {
         senderId: 'placeholder',
         token: 'placeholder',
-        gameState: GameStateNew.DRAWCARD,
+        gameState: GameState.DRAWCARD,
         command:'commit'
     }
   }

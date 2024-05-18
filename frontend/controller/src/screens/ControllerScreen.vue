@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import { ChevronLeftIcon } from "@heroicons/vue/24/outline";
-
-import { XMarkIcon } from "@heroicons/vue/24/outline";
-
-import {
-  ChevronRightIcon,
-  PauseIcon,
-  PlayIcon,
-} from "@heroicons/vue/24/outline";
-
-import { ChevronUpIcon } from "@heroicons/vue/24/outline";
-import HAvatar from "../components/HAvatar.vue";
-import { GameStateNew } from "../../../shared_resources/types";
-import { useControllerStore } from "../stores/controllerStore";
+import { ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon, XMarkIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
+import HAvatar from "@components/HAvatar.vue";
+import { GameState } from "@shared/types";
+import { useControllerStore } from "@stores/controllerStore";
+import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 
 const controllerStore = useControllerStore();
+const gameCycle = useGameCycleStore();
 </script>
 
 <template>
@@ -47,7 +39,7 @@ const controllerStore = useControllerStore();
 
       <div class="flex flex-col items-center w-full py-20">
         <!-- Navigation button-->
-        <div v-if="controllerStore.activeGameState === GameStateNew.LISTEN">
+        <div v-if="gameCycle.activeGameState === GameState.LISTEN">
           <button type="button" class="bg-gray-500 rounded-full px-5 py-5 mb-2">
             <ChevronLeftIcon class="w-10 h-10 text-slate-200">
             </ChevronLeftIcon>
@@ -76,11 +68,11 @@ const controllerStore = useControllerStore();
           <button
             :class="{
               'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
-                controllerStore.activeGameState === GameStateNew.GUESS ||
-                controllerStore.activeGameState === GameStateNew.MATEGUESS,
+                gameCycle.activeGameState === GameState.GUESS ||
+                gameCycle.activeGameState === GameState.MATEGUESS,
               'bg-gray-500':
-                controllerStore.activeGameState !== GameStateNew.GUESS ||
-                controllerStore.activeGameState !== GameStateNew.MATEGUESS,
+                gameCycle.activeGameState !== GameState.GUESS ||
+                gameCycle.activeGameState !== GameState.MATEGUESS,
             }"
             @click="controllerStore.turnLeft(), console.log('left')"
             type="button"
@@ -93,15 +85,15 @@ const controllerStore = useControllerStore();
           <button
             :class="{
               ' bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800':
-                controllerStore.activeGameState === GameStateNew.DRAWCARD ||
-                controllerStore.activeGameState === GameStateNew.MATEGUESS ||
-                controllerStore.activeGameState === GameStateNew.GUESS ||
-                controllerStore.activeGameState === GameStateNew.TURNSTART,
+                gameCycle.activeGameState === GameState.DRAWCARD ||
+                gameCycle.activeGameState === GameState.MATEGUESS ||
+                gameCycle.activeGameState === GameState.GUESS ||
+                gameCycle.activeGameState === GameState.TURNSTART,
               'bg-gray-500':
-                controllerStore.activeGameState !== GameStateNew.DRAWCARD ||
-                controllerStore.activeGameState === GameStateNew.GUESS ||
-                controllerStore.activeGameState !== GameStateNew.MATEGUESS ||
-                controllerStore.activeGameState !== GameStateNew.TURNSTART,
+                gameCycle.activeGameState !== GameState.DRAWCARD ||
+                gameCycle.activeGameState === GameState.GUESS ||
+                gameCycle.activeGameState !== GameState.MATEGUESS ||
+                gameCycle.activeGameState !== GameState.TURNSTART,
             }"
             @click="controllerStore.commit()"
             type="button"
@@ -113,11 +105,11 @@ const controllerStore = useControllerStore();
           <button
             :class="{
               'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
-                controllerStore.activeGameState === GameStateNew.GUESS ||
-                controllerStore.activeGameState === GameStateNew.MATEGUESS,
+                gameCycle.activeGameState === GameState.GUESS ||
+                gameCycle.activeGameState === GameState.MATEGUESS,
               'bg-gray-500':
-                controllerStore.activeGameState !== GameStateNew.GUESS ||
-                controllerStore.activeGameState !== GameStateNew.MATEGUESS,
+                gameCycle.activeGameState !== GameState.GUESS ||
+                gameCycle.activeGameState !== GameState.MATEGUESS,
             }"
             @click="controllerStore.turnRight(), console.log('right')"
             type="button"
@@ -132,9 +124,9 @@ const controllerStore = useControllerStore();
         <button
           :class="{
             'bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900':
-              controllerStore.activeGameState === GameStateNew.WAIT_FOR_DOUBT,
+              gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT,
             'bg-gray-500':
-              controllerStore.activeGameState !== GameStateNew.WAIT_FOR_DOUBT,
+              gameCycle.activeGameState !== GameState.WAIT_FOR_DOUBT,
           }"
           @click="controllerStore.makeDoubt()"
           type="button"

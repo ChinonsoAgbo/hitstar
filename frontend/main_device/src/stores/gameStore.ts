@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia';
-import { Card, GameStateNew, MQTTMessage, Player, guessMsg } from "@shared/types";
+import { Card, GameState, MQTTMessage, Player, guessMsg } from "@shared/types";
 import {computed, onMounted, ref, Ref} from "vue";
 import mqtt from "mqtt";
 import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "@shared/types";
 import { useSessionStore } from "@shared/stores/sessionStore";
+import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 
 
 export const useGameStore = defineStore('game', () => {
 
-
-    const activeGameState: Ref<GameStateNew> = ref(GameStateNew.NOTSTARTED);
+    const gameCycleStore = useGameCycleStore();
 
     const players: Ref<Player[]> = ref([
         {
@@ -230,20 +230,20 @@ export const useGameStore = defineStore('game', () => {
             console.log(message)
            let msg = JSON.parse(message)
             switch (msg.gameState) {
-                case GameStateNew.DRAWCARD:
+                case GameState.DRAWCARD:
                     Actions.drawCard();
                     break;
-                case GameStateNew.LISTEN:
+                case GameState.LISTEN:
                    switch(msg.command){
                        case "pause":
                            break;
                        case "play":
                            break;
                    } break;
-                case GameStateNew.DOUBT:
+                case GameState.DOUBT:
                    Actions.startDoubtPhase(players.value[0])
                    break;
-                case GameStateNew.GUESS:
+                case GameState.GUESS:
                     switch (msg.command) {
                         case "left":
                            Actions.moveCardLeft();
@@ -266,39 +266,39 @@ export const useGameStore = defineStore('game', () => {
                     Helpers.setNextPlayerAsOnTurn();
                     break;
                 case "d":
-                    if (activeGameState.value === GameStateNew.TURNSTART)
+                    if (gameCycleStore.activeGameState === GameState.TURNSTART)
                         Actions.drawCard();
                     break;
                 case "ArrowLeft":
-                    if (activeGameState.value === GameStateNew.GUESS) 
+                    if (gameCycleStore.activeGameState === GameState.GUESS)
                         Actions.moveCardLeft();
-                    else if (activeGameState.value === GameStateNew.MATEGUESS)
+                    else if (gameCycleStore.activeGameState === GameState.MATEGUESS)
                         Actions.moveCardLeft();
                     break;
                 case "ArrowRight":
-                    if (activeGameState.value === GameStateNew.GUESS) 
+                    if (gameCycleStore.activeGameState === GameState.GUESS)
                         Actions.moveCardRight();
-                    else if (activeGameState.value === GameStateNew.MATEGUESS)
+                    else if (gameCycleStore.activeGameState === GameState.MATEGUESS)
                         Actions.moveCardRight();
                     break;
                 case "Enter":
-                    if (activeGameState.value === GameStateNew.GUESS) 
+                    if (gameCycleStore.activeGameState === GameState.GUESS)
                         Actions.commitGuess();
-                    else if (activeGameState.value === GameStateNew.MATEGUESS)
+                    else if (gameCycleStore.activeGameState === GameState.MATEGUESS)
                         Actions.commitGuess();
                     break;
                 case "1":
-                    if (activeGameState.value === GameStateNew.WAIT_FOR_DOUBT) {
+                    if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
                         Actions.startDoubtPhase(players.value[0]);
                     }
                     break;
                 case "2":
-                    if (activeGameState.value === GameStateNew.WAIT_FOR_DOUBT) {
+                    if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
                         Actions.startDoubtPhase(players.value[1]);
                     }
                     break;
                 case "3":
-                    if (activeGameState.value === GameStateNew.WAIT_FOR_DOUBT) {
+                    if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
                         Actions.startDoubtPhase(players.value[2]);
                     }
                     break;
@@ -307,12 +307,10 @@ export const useGameStore = defineStore('game', () => {
        
     });
 
-function startGame(){
-    
-
-    Helpers.initPlayers();
-    Actions.startGame();
-}
+    function startGame(){
+        Helpers.initPlayers();
+        Actions.startGame();
+    }
 
     const Helpers = {
 
@@ -324,10 +322,6 @@ function startGame(){
                 player.maxCardIndex = 10;
                 player.minCardIndex = 1;
             }
-        },
-
-        setGameState(gameState: GameStateNew) {
-            activeGameState.value = gameState;
         },
 
         setPlayerAsActive(player: Player) {
@@ -426,10 +420,10 @@ function startGame(){
          */
         startGame() {
             console.log("ANIMATE GAME START");
-            Helpers.setGameState(GameStateNew.ANIMATE_GAMESTART);
+            gameCycleStore.setGameState(GameState.ANIMATE_GAMESTART);
             setTimeout(() => {
                 console.log("GAME START");
-                Helpers.setGameState(GameStateNew.GAMESTART);
+                gameCycleStore.setGameState(GameState.GAMESTART);
                 Helpers.send(gameStartMsg(sessionStore.getSessionID()));
                 this.startTurn();
             }, ANIMATION_DURATION);
@@ -443,13 +437,13 @@ function startGame(){
             activePlayer.value.guessedCardIndex = 5;
             activePlayer.value.lastGuessedCardIndex = 5;
             Helpers.setNextPlayerAsOnTurn();
-            Helpers.setGameState(GameStateNew.ANIMATE_TURNSTART);
+            gameCycleStore.setGameState(GameState.ANIMATE_TURNSTART);
             Helpers.drawNewRandomCard();
             setTimeout(() => {
                 console.log("TURN START");
-                Helpers.setGameState(GameStateNew.TURNSTART);
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.TURNSTART));
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
+                gameCycleStore.setGameState(GameState.TURNSTART);
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.TURNSTART));
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.DRAWCARD));
             }, ANIMATION_DURATION);
         },
 
@@ -458,11 +452,11 @@ function startGame(){
          */
         drawCard() {
             console.log("DRAW CARD");
-            Helpers.setGameState(GameStateNew.DRAWCARD);
+            gameCycleStore.setGameState(GameState.DRAWCARD);
             //Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
             setTimeout(() => {
                 this.listenToSong();
-                Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.LISTEN))
+                Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.LISTEN))
             }, DRAW_CARD_DURATION);
         },
 
@@ -472,7 +466,7 @@ function startGame(){
          */
         listenToSong() {
             console.log("LISTEN TO SONG");
-            Helpers.setGameState(GameStateNew.LISTEN);
+            gameCycleStore.setGameState(GameState.LISTEN);
             setTimeout(() => {
                 this.startGuessing();
             }, SONG_DURATION);
@@ -481,10 +475,10 @@ function startGame(){
         /**
          * Starts the guessing phase. Called by the main device.
          */
-        startGuessing(gameState: GameStateNew = GameStateNew.GUESS) {
+        startGuessing(gameState: GameState = GameState.GUESS) {
             console.log("START GUESSING");
-            Helpers.setGameState(gameState);
-            Helpers.send(turnMsg(sessionStore.getSessionID(), GameStateNew.GUESS));
+            gameCycleStore.setGameState(gameState);
+            Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.GUESS));
             Helpers.saveCopyOfCards();
             Helpers.makeRoomInTimeLine();
             Helpers.getMaxMin();
@@ -517,12 +511,12 @@ function startGame(){
             console.log("COMMIT GUESS");
             activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: activePlayer.value.guessedCardIndex });
             // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
-            if (activeGameState.value === GameStateNew.GUESS) {
-                Helpers.setGameState(GameStateNew.WAIT_FOR_DOUBT);
-                Helpers.send(turnMsg(sessionStore.getSessionID(), GameStateNew.WAIT_FOR_DOUBT))
+            if (gameCycleStore.activeGameState === GameState.GUESS) {
+                gameCycleStore.setGameState(GameState.WAIT_FOR_DOUBT);
+                Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.WAIT_FOR_DOUBT))
                 this.startDoubtCountDown();
             }
-            else if (activeGameState.value === GameStateNew.MATEGUESS) {
+            else if (gameCycleStore.activeGameState === GameState.MATEGUESS) {
                 console.log("COMMIT MATE GUESS");
                 this.animateEvaluation(true);
             }
@@ -552,14 +546,14 @@ function startGame(){
             doubtCountDown.value = 0;
             Helpers.setPlayerAsActive(player);
             Helpers.subtractToken(player);
-            Helpers.setGameState(GameStateNew.DOUBT);
+            gameCycleStore.setGameState(GameState.DOUBT);
             setTimeout(() => {
 
                 console.log("Player on turn", playerOnTurn.value);
                 console.log("Active player", activePlayer.value);
 
-                Helpers.setGameState(GameStateNew.MATEGUESS);
-                Actions.startGuessing(GameStateNew.MATEGUESS);
+                gameCycleStore.setGameState(GameState.MATEGUESS);
+                Actions.startGuessing(GameState.MATEGUESS);
             }, DOUBT_ANIMATION_DURATION);
         },
 
@@ -567,14 +561,14 @@ function startGame(){
          * Evaluates the guess. Called by the main device.
          */
         animateEvaluation(wasDoubt: boolean) {
-            Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION);
+            gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION);
             setTimeout(() => {
                 this.evaluateGuess(wasDoubt);
             }, EVALUATION_ANIMATION_DURATION)
         },
 
         evaluateGuess(wasDoubt: boolean) {
-            Helpers.setGameState(GameStateNew.EVALUATION);
+            gameCycleStore.setGameState(GameState.EVALUATION);
 
             let lowerBound = Number.NEGATIVE_INFINITY;
             let upperBound = Number.POSITIVE_INFINITY;
@@ -604,14 +598,14 @@ function startGame(){
 
         evaluatePositive(wasDoubt: boolean) {
             console.log('POSITIVE');
-            Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION_POSITIVE);
+            gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_POSITIVE);
             setTimeout(() => {
                 if (wasDoubt) {
                     Helpers.resetTimeLineCards(playerOnTurn.value);
                 }
                 // Helpers.resetTimeLineCards(activePlayer.value);
                 activePlayer.value.cards.push({ ...currentCard.value, position: activePlayer.value.guessedCardIndex });
-                Helpers.setGameState(GameStateNew.TURNEND);
+                gameCycleStore.setGameState(GameState.TURNEND);
                 setTimeout(() => {
                     if (!this.checkWinner())
                         this.startTurn();
@@ -621,9 +615,9 @@ function startGame(){
 
         evaluateNegative(wasDoubt: boolean) {
             console.log('NEGATIVE');
-            Helpers.setGameState(GameStateNew.ANIMATE_EVALUATION_NEGATIVE);
+            gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_NEGATIVE);
             setTimeout(() => {
-                    Helpers.setGameState(GameStateNew.TURNEND);
+                    gameCycleStore.setGameState(GameState.TURNEND);
                     Helpers.resetTimeLineCards(activePlayer.value);
                     setTimeout(() => {
                         if (wasDoubt) {
@@ -639,7 +633,7 @@ function startGame(){
 
         checkWinner() {
             if (activePlayer.value.cards.length === 10) {
-                Helpers.setGameState(GameStateNew.GAMEEND);
+                gameCycleStore.setGameState(GameState.GAMEEND);
                 return true;
             }
             return false;
@@ -651,7 +645,6 @@ function startGame(){
     return {
         drawPile,
         discardPile,
-        activeGameState,
         players,
         activePlayer,
         playerOnTurn,
