@@ -441,7 +441,7 @@ export const useGameStore = defineStore('game', () => {
             setTimeout(() => {
                 console.log("GAME START");
                 gameCycleStore.setGameState(GameState.GAMESTART);
-                Helpers.send(gameStartMsg(sessionStore.getSessionID(), players.value.map(id => id.id)));
+                Helpers.send(gameStartMsg(sessionStore.getSessionID(), players.value));
                 this.startTurn();
             }, ANIMATION_DURATION);
         },

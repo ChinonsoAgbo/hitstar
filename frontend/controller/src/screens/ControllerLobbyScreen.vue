@@ -7,6 +7,7 @@ import { useRoute } from "vue-router";
 import { useControllerStore } from "@stores/controllerStore";
 import { router } from "../router";
 import { useGameCycleStore } from "@shared/stores/gameCycleStore.ts";
+import { GameState } from "@shared/types";
 
 const controllerStore = useControllerStore();
 const gameCycle = useGameCycleStore();
@@ -55,8 +56,8 @@ const avatersForSettings = ref([
 
 watch(
   () => gameCycle.activeGameState,
-  (newState, oldState) => {
-    if (newState !== oldState) {
+  (newState) => {
+    if (newState !== GameState.GAMESTART) {
       router.push("/controller");
     }
   }

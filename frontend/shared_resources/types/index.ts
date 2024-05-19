@@ -57,7 +57,7 @@ interface Message {
   playerName?: PlayerName;
   avatarUrl?: IconURL;
   // lobbyReady benötigt?
-  playerOrder?: PlayerID[];
+  playerOrder?: Player[];
   currentPlayer?: PlayerID;
   currentCardLocalization?: number;
   playerRanking?: Player[];
@@ -102,7 +102,7 @@ export const lobbyMsg = (sessionId: string, playerId: string): MQTTMessage => {
  */
 export const gameStartMsg = (
   sessionId: string,
-  players: PlayerID[]
+  players: Player[]
 ): MQTTMessage => {
   return {
     topic: `${sessionId}/main`,

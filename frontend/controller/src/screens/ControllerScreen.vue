@@ -11,6 +11,7 @@ import HAvatar from "@components/HAvatar.vue";
 import { GameState } from "@shared/types";
 import { useControllerStore } from "@stores/controllerStore";
 import { useGameCycleStore } from "@shared/stores/gameCycleStore.ts";
+import { IMAGE_URL } from "@shared/urls";
 
 const controllerStore = useControllerStore();
 const gameCycle = useGameCycleStore();
@@ -26,9 +27,9 @@ const gameCycle = useGameCycleStore();
       <div class="grid grid-cols-2 mx-4 mt-2">
         <div class="flex justify-start m-3">
           <!-- Link to Game instructions -->
-          <HAvatar url="/profile-picture-5.jpg"></HAvatar>
+          <HAvatar :url="IMAGE_URL + controllerStore.getIconUrl()"></HAvatar>
           <span class="text-sm m-2 text-gray-500 dark:text-gray-400">
-            {{ controllerStore.PlayerID }}
+            {{ controllerStore.getPlayerName() }}
           </span>
         </div>
 
@@ -39,7 +40,7 @@ const gameCycle = useGameCycleStore();
           <!--          <RouterLink to="/game">-->
           <img
             class="w-10 h-10 rounded-full"
-            src="../../../../backend/images/support.png"
+            :src="IMAGE_URL + 'support.png'"
             alt=""
           />
           <!--          </RouterLink>-->
@@ -84,11 +85,15 @@ const gameCycle = useGameCycleStore();
           <button
             :class="{
               'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
-                gameCycle.activeGameState === GameState.GUESS  && controllerStore.itsTurn || 
-                gameCycle.activeGameState === GameState.MATEGUESS && !controllerStore.itsTurn,
+                (gameCycle.activeGameState === GameState.GUESS &&
+                  controllerStore.itsTurn) ||
+                (gameCycle.activeGameState === GameState.MATEGUESS &&
+                  !controllerStore.itsTurn),
               'bg-gray-500':
-                gameCycle.activeGameState !== GameState.GUESS && controllerStore.itsTurn||
-                gameCycle.activeGameState !== GameState.MATEGUESS && !controllerStore.itsTurn,
+                (gameCycle.activeGameState !== GameState.GUESS &&
+                  controllerStore.itsTurn) ||
+                (gameCycle.activeGameState !== GameState.MATEGUESS &&
+                  !controllerStore.itsTurn),
             }"
             @click="controllerStore.turnLeft(), console.log('left')"
             type="button"
@@ -152,9 +157,11 @@ const gameCycle = useGameCycleStore();
         <button
           :class="{
             'bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900':
-              gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT && !controllerStore.itsTurn,
+              gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT &&
+              !controllerStore.itsTurn,
             'bg-gray-500':
-              gameCycle.activeGameState !== GameState.WAIT_FOR_DOUBT || gameCycle.activeGameState == GameState.WAIT_FOR_DOUBT,
+              gameCycle.activeGameState !== GameState.WAIT_FOR_DOUBT ||
+              gameCycle.activeGameState == GameState.WAIT_FOR_DOUBT,
           }"
           @click="controllerStore.makeDoubt()"
           type="button"

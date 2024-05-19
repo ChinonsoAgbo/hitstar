@@ -3,6 +3,7 @@ import { ref, Ref, computed } from "vue";
 import {
   Player,
   GameState,
+  Card,
   MQTTMessage,
   playPauseMsg,
   guessMsg,
@@ -27,6 +28,7 @@ export const useControllerStore = defineStore("controller", () => {
   const activePlayer = computed(
     () => players.value[playerIndex.value] || ({ cards: [{}] } as Player)
   );
+  const controllerPlayer: Ref<Player> = ref({ cards: [] as Card[]} as Player);
   const PlayerID = uuidv4();
   const players: Ref<Player[]> = ref([] as Player[]);
   const itsTurn = ref(false);
@@ -43,6 +45,11 @@ export const useControllerStore = defineStore("controller", () => {
       switch (msg.gameState) {
         case GameState.GAMESTART:
           players.value = msg.playerOrder;
+          controllerPlayer.value = players.value.find(
+            (player) => player.id === PlayerID
+        
+          )!;
+          console.log(controllerPlayer.value)
           break;
         case GameState.TURNSTART:
           activePlayer.value.id = msg.currentPlayer;
@@ -106,15 +113,15 @@ export const useControllerStore = defineStore("controller", () => {
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID));
     },
     commitGuess() {
-        Helpers.send(
-          guessMsg(
-            sessionStore.getSessionID(),
-            "commit",
-            GameState.GUESS,
-            PlayerID,
-            activePlayer.value.id
-          )
-        );
+      Helpers.send(
+        guessMsg(
+          sessionStore.getSessionID(),
+          "commit",
+          GameState.GUESS,
+          PlayerID,
+          activePlayer.value.id
+        )
+      );
     },
     turnLeft() {
       Helpers.send(
@@ -177,6 +184,13 @@ export const useControllerStore = defineStore("controller", () => {
         else this.stopMusic();
       }
     },
+
+    getIconUrl(){
+      return controllerPlayer.value.iconURL
+    },
+    getPlayerName(){
+      return controllerPlayer.value.name
+    }
   };
   return {
     isMusicPlaying,
@@ -188,5 +202,7 @@ export const useControllerStore = defineStore("controller", () => {
     addToLobby: Actions.addToLobby,
     PlayerID,
     itsTurn,
+    getIconUrl: Actions.getIconUrl,
+    getPlayerName: Actions.getPlayerName
   };
 });
