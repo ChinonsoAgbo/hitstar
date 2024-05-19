@@ -28,7 +28,7 @@ export const useControllerStore = defineStore("controller", () => {
   const activePlayer = computed(
     () => players.value[playerIndex.value] || ({ cards: [{}] } as Player)
   );
-  const controllerPlayer: Ref<Player> = ref({ cards: [] as Card[]} as Player);
+  const controllerPlayer: Ref<Player> = ref({ cards: [] as Card[] } as Player);
   const PlayerID = uuidv4();
   const players: Ref<Player[]> = ref([] as Player[]);
   const itsTurn = ref(false);
@@ -47,9 +47,8 @@ export const useControllerStore = defineStore("controller", () => {
           players.value = msg.playerOrder;
           controllerPlayer.value = players.value.find(
             (player) => player.id === PlayerID
-        
           )!;
-          console.log(controllerPlayer.value)
+          console.log(controllerPlayer.value);
           break;
         case GameState.TURNSTART:
           activePlayer.value.id = msg.currentPlayer;
@@ -63,6 +62,11 @@ export const useControllerStore = defineStore("controller", () => {
         case GameState.TURNEND:
           itsTurn.value = false;
           break;
+        case GameState.MATEGUESS:
+          activePlayer.value.id = msg.currentPlayer;
+          if (activePlayer.value.id === PlayerID) {
+            itsTurn.value = true;
+          } else itsTurn.value = false;
       }
     });
   });
@@ -90,20 +94,20 @@ export const useControllerStore = defineStore("controller", () => {
     },
 
     left() {
-      if (
-        (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) ||
-        (!itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS)
-      ) {
-        Actions.turnLeft();
+      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) {
+        Actions.turnLeft(gameCycle.activeGameState);
+      }
+      if (itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS) {
+        Actions.turnLeft(gameCycle.activeGameState);
       }
     },
 
     right() {
-      if (
-        (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) ||
-        (!itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS)
-      ) {
-        Actions.turnRight();
+      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) {
+        Actions.turnRight(gameCycle.activeGameState);
+      }
+      if (itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS) {
+        Actions.turnRight(gameCycle.activeGameState);
       }
     },
   };
@@ -123,23 +127,23 @@ export const useControllerStore = defineStore("controller", () => {
         )
       );
     },
-    turnLeft() {
+    turnLeft(gamestate: GameState) {
       Helpers.send(
         guessMsg(
           sessionStore.getSessionID(),
           "left",
-          GameState.GUESS,
+          gamestate,
           PlayerID,
           activePlayer.value.id
         )
       );
     },
-    turnRight() {
+    turnRight(gamestate: GameState) {
       Helpers.send(
         guessMsg(
           sessionStore.getSessionID(),
           "right",
-          GameState.GUESS,
+          gamestate,
           PlayerID,
           activePlayer.value.id
         )
@@ -159,7 +163,7 @@ export const useControllerStore = defineStore("controller", () => {
         );
     },
     commitDoubtGuess() {
-      if (!itsTurn.value)
+      if (itsTurn.value)
         Helpers.send(
           guessMsg(
             sessionStore.getSessionID(),
@@ -185,12 +189,12 @@ export const useControllerStore = defineStore("controller", () => {
       }
     },
 
-    getIconUrl(){
-      return controllerPlayer.value.iconURL
+    getIconUrl() {
+      return controllerPlayer.value.iconURL;
     },
-    getPlayerName(){
-      return controllerPlayer.value.name
-    }
+    getPlayerName() {
+      return controllerPlayer.value.name;
+    },
   };
   return {
     isMusicPlaying,
@@ -203,6 +207,6 @@ export const useControllerStore = defineStore("controller", () => {
     PlayerID,
     itsTurn,
     getIconUrl: Actions.getIconUrl,
-    getPlayerName: Actions.getPlayerName
+    getPlayerName: Actions.getPlayerName,
   };
 });

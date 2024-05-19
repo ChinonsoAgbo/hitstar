@@ -15,6 +15,27 @@ import { IMAGE_URL } from "@shared/urls";
 
 const controllerStore = useControllerStore();
 const gameCycle = useGameCycleStore();
+
+function isCommitClickable() {
+  return (
+    (gameCycle.activeGameState === GameState.DRAWCARD &&
+      controllerStore.itsTurn) ||
+    (gameCycle.activeGameState == GameState.MATEGUESS &&
+      controllerStore.itsTurn) ||
+    (gameCycle.activeGameState === GameState.GUESS &&
+      controllerStore.itsTurn) ||
+    (gameCycle.activeGameState === GameState.TURNSTART &&
+      controllerStore.itsTurn)
+  );
+}
+function isTurnClickable() {
+  return (
+    (gameCycle.activeGameState === GameState.GUESS &&
+      controllerStore.itsTurn) ||
+    (gameCycle.activeGameState === GameState.MATEGUESS &&
+      controllerStore.itsTurn)
+  );
+}
 </script>
 
 <template>
@@ -85,15 +106,8 @@ const gameCycle = useGameCycleStore();
           <button
             :class="{
               'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
-                (gameCycle.activeGameState === GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.MATEGUESS &&
-                  !controllerStore.itsTurn),
-              'bg-gray-500':
-                (gameCycle.activeGameState !== GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState !== GameState.MATEGUESS &&
-                  !controllerStore.itsTurn),
+                isTurnClickable(),
+              'bg-gray-500': true,
             }"
             @click="controllerStore.turnLeft(), console.log('left')"
             type="button"
@@ -106,23 +120,8 @@ const gameCycle = useGameCycleStore();
           <button
             :class="{
               ' bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800':
-                (gameCycle.activeGameState === GameState.DRAWCARD &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.MATEGUESS &&
-                  !controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.TURNSTART &&
-                  controllerStore.itsTurn),
-              'bg-gray-500':
-                (gameCycle.activeGameState !== GameState.DRAWCARD &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState !== GameState.MATEGUESS &&
-                  !controllerStore.itsTurn) ||
-                (gameCycle.activeGameState !== GameState.TURNSTART &&
-                  controllerStore.itsTurn),
+                isCommitClickable(),
+              'bg-gray-500': true,
             }"
             @click="controllerStore.commit()"
             type="button"
@@ -134,15 +133,8 @@ const gameCycle = useGameCycleStore();
           <button
             :class="{
               'bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900':
-                (gameCycle.activeGameState === GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState === GameState.MATEGUESS &&
-                  !controllerStore.itsTurn),
-              'bg-gray-500':
-                (gameCycle.activeGameState !== GameState.GUESS &&
-                  controllerStore.itsTurn) ||
-                (gameCycle.activeGameState !== GameState.MATEGUESS &&
-                  !controllerStore.itsTurn),
+                isTurnClickable(),
+              'bg-gray-500': true,
             }"
             @click="controllerStore.turnRight(), console.log('right')"
             type="button"
@@ -159,9 +151,7 @@ const gameCycle = useGameCycleStore();
             'bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300  dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900':
               gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT &&
               !controllerStore.itsTurn,
-            'bg-gray-500':
-              gameCycle.activeGameState !== GameState.WAIT_FOR_DOUBT ||
-              gameCycle.activeGameState == GameState.WAIT_FOR_DOUBT,
+            'bg-gray-500': true,
           }"
           @click="controllerStore.makeDoubt()"
           type="button"
