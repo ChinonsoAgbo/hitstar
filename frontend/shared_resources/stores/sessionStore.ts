@@ -13,11 +13,10 @@ export const useSessionStore = defineStore("session", () => {
   }
 
   function createSessionID() {
-    //currently only one game per started server
     sessionID.value = self.crypto.randomUUID();
   }
   function getIPAddress() {
-    return "192.168.178.106";
+    return "CHANGEME";
   }
  
   return {

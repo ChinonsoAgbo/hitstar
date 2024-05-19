@@ -109,7 +109,7 @@ function isTurnClickable() {
                 isTurnClickable(),
               'bg-gray-500': true,
             }"
-            @click="controllerStore.turnLeft(), console.log('left')"
+            @click="controllerStore.turn('left'), console.log('left')"
             type="button"
             class="rounded-full px-5 py-5 mb-2"
           >
@@ -136,7 +136,7 @@ function isTurnClickable() {
                 isTurnClickable(),
               'bg-gray-500': true,
             }"
-            @click="controllerStore.turnRight(), console.log('right')"
+            @click="controllerStore.turn('right'), console.log('right')"
             type="button"
             class="rounded-full px-5 py-5 mb-2"
           >

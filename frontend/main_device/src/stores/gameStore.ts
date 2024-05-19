@@ -228,7 +228,7 @@ export const useGameStore = defineStore('game', () => {
        
         client.on("message", (__, message) => {
             console.log(message)
-           let msg = JSON.parse(message)
+           let msg = JSON.parse(message.toString())
             switch (msg.gameState) {
                 case GameState.DRAWCARD:
                     Actions.drawCard();
@@ -243,7 +243,6 @@ export const useGameStore = defineStore('game', () => {
                 case GameState.DOUBT:
                     if(msg.playerId !== activePlayer.value.id){
                     const doubtPlayer = players.value.find(player => player.id === msg.senderId);
-                    console.log(doubtPlayer)
                     Actions.startDoubtPhase(doubtPlayer!)
                     }
                 break;

@@ -10,7 +10,6 @@ import {
   drawConfirmMsg,
   doubtMsg,
   lobbyMsg,
-  turnMsg,
 } from "@shared/types";
 import { onMounted } from "vue";
 import mqtt from "mqtt";
@@ -34,13 +33,23 @@ export const useControllerStore = defineStore("controller", () => {
   const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
 
+  /**
+   * Checks if the active Player is the same as the "device-Player"
+   * @param playerId is the PlayerID from the Player of this specific controller
+   */
+  function checkIfItsTurn(playerId: String) {
+    if (activePlayer.value.id === playerId) {
+      itsTurn.value = true;
+    } else itsTurn.value = false;
+  }
+
   onMounted(() => {
     client.on("connect", () => {
       client.subscribe(`${sessionStore.getSessionID()}/main`, { qos: 1 });
     });
 
     client.on("message", (__, message) => {
-      let msg = JSON.parse(message);
+      let msg = JSON.parse(message.toString());
       gameCycle.setGameState(msg.gameState);
       switch (msg.gameState) {
         case GameState.GAMESTART:
@@ -52,9 +61,7 @@ export const useControllerStore = defineStore("controller", () => {
           break;
         case GameState.TURNSTART:
           activePlayer.value.id = msg.currentPlayer;
-          if (activePlayer.value.id === PlayerID) {
-            itsTurn.value = true;
-          } else itsTurn.value = false;
+          checkIfItsTurn(PlayerID);
           break;
         case GameState.LISTEN && itsTurn:
           isMusicPlaying.value = true;
@@ -64,9 +71,7 @@ export const useControllerStore = defineStore("controller", () => {
           break;
         case GameState.MATEGUESS:
           activePlayer.value.id = msg.currentPlayer;
-          if (activePlayer.value.id === PlayerID) {
-            itsTurn.value = true;
-          } else itsTurn.value = false;
+          checkIfItsTurn(PlayerID);
       }
     });
   });
@@ -93,29 +98,37 @@ export const useControllerStore = defineStore("controller", () => {
       }
     },
 
-    left() {
-      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) {
-        Actions.turnLeft(gameCycle.activeGameState);
-      }
-      if (itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS) {
-        Actions.turnLeft(gameCycle.activeGameState);
-      }
-    },
-
-    right() {
-      if (itsTurn.value && gameCycle.activeGameState === GameState.GUESS) {
-        Actions.turnRight(gameCycle.activeGameState);
-      }
-      if (itsTurn.value && gameCycle.activeGameState === GameState.MATEGUESS) {
-        Actions.turnRight(gameCycle.activeGameState);
+    /**
+     * is used to move the card in a direction
+     * @param direction is "left" or "right"
+     */
+    turn(direction: String) {
+      if (
+        itsTurn.value &&
+        (gameCycle.activeGameState === GameState.GUESS ||
+          gameCycle.activeGameState === GameState.MATEGUESS)
+      ) {
+        if (direction === "left") {
+          Actions.turnLeft(gameCycle.activeGameState);
+        }
+        if (direction === "right") {
+          Actions.turnRight(gameCycle.activeGameState);
+        }
       }
     },
   };
 
   const Actions = {
+    /**
+     * Adds this Controller to the lobby
+     */
     addToLobby() {
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID));
     },
+
+    /**
+     * Sends the commit-Message
+     */
     commitGuess() {
       Helpers.send(
         guessMsg(
@@ -127,6 +140,11 @@ export const useControllerStore = defineStore("controller", () => {
         )
       );
     },
+
+    /**
+     * Sends the message to turn the card left.
+     * @param gamestate can be GUESS or MATEGUESS
+     */
     turnLeft(gamestate: GameState) {
       Helpers.send(
         guessMsg(
@@ -138,6 +156,11 @@ export const useControllerStore = defineStore("controller", () => {
         )
       );
     },
+
+    /**
+     * Sends the message to turn the card right.
+     * @param gamestate can be GUESS or MATEGUESS
+     */
     turnRight(gamestate: GameState) {
       Helpers.send(
         guessMsg(
@@ -149,10 +172,18 @@ export const useControllerStore = defineStore("controller", () => {
         )
       );
     },
+
+    /**
+     * if the controller is the current Player the drawCard message will be send.
+     */
     drawCard() {
       if (itsTurn.value)
         Helpers.send(drawConfirmMsg(sessionStore.getSessionID(), PlayerID));
     },
+
+    /**
+     * the doubt message can only be sent if the current player differs from the doubter.
+     */
     makeDoubt() {
       if (
         !itsTurn.value &&
@@ -200,8 +231,7 @@ export const useControllerStore = defineStore("controller", () => {
     isMusicPlaying,
     commit: Helpers.commit,
     makeDoubt: Actions.makeDoubt,
-    turnRight: Helpers.right,
-    turnLeft: Helpers.left,
+    turn: Helpers.turn,
     changeMusicState: Actions.changeMusicState,
     addToLobby: Actions.addToLobby,
     PlayerID,
