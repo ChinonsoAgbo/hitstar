@@ -1,22 +1,30 @@
 package de.hhn.labsw.hitstar_backend.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "account")
 public class Account {
-    // Für alle Model Klassen: Attibute und Annotationen hinzufügen
+
+    @Getter
+    @Setter
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Getter
+    @Setter
+    @Column(name = "username")
+    private String username;
 
-    public Long getId() {
-        return id;
-    }
+    @Getter
+    @Setter
+    @Column(name = "password")
+    private String password;
+
+
 }

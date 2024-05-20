@@ -1,21 +1,34 @@
 package de.hhn.labsw.hitstar_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "game")
 public class Game {
 
+    @Getter
+    @Setter
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Getter
+    @Setter
+    @Column(name = "playername")
+    private String playerName;
 
-    public Long getId() {
-        return id;
-    }
+    @Getter
+    @Setter
+    @Column(name = "avatarURL")
+    private String avatarURL;
+
+    @Getter
+    @Setter
+    @Column(name = "playerRank")
+    private int playerRank;
+
+
 }
