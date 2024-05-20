@@ -3,14 +3,18 @@ package de.hhn.labsw.hitstar_backend.service.impl;
 import de.hhn.labsw.hitstar_backend.model.Player;
 import de.hhn.labsw.hitstar_backend.repository.PlayerRepository;
 import de.hhn.labsw.hitstar_backend.service.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
 
+    @Autowired
     public PlayerServiceImpl(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
