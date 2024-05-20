@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface AccountService {
 
     Optional<Account> findByID(Long id);
+
     Account saveAccount(Account account);
+
     void deleteAccount(Long id);
 }

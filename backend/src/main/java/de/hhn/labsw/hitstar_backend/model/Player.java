@@ -1,37 +1,35 @@
 package de.hhn.labsw.hitstar_backend.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "player")
+@Data
 public class Player {
 
-    @Getter
-    @Setter
+    public Player() {
+
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Getter
-    @Setter
-    @Column(name="gameurl")
-    private String gameUrl;
+    @Column(name = "playername")
+    @NotNull
+    private String playerName;
 
-    @Getter
-    @Setter
-    @Column(name="creationtime")
-    @DateTimeFormat
-    private Long creationTime;
+    @Column(name = "avatarURL")
+    @NotNull
+    private String avatarURL;
 
-    @Getter
-    @Setter
-    @Column(name="endtime")
-    @DateTimeFormat
-    private Long endTime;
+    @Column(name = "playerRank")
+    private int playerRank;
+
 
 
 }

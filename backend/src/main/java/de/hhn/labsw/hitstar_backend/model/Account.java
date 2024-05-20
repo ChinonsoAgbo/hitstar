@@ -2,28 +2,31 @@ package de.hhn.labsw.hitstar_backend.model;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "account")
+@Data
 public class Account {
 
-    @Getter
-    @Setter
+    public Account(){
+
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Getter
-    @Setter
     @Column(name = "username")
+    @NotNull
     private String username;
 
-    @Getter
-    @Setter
     @Column(name = "password")
+    @NotNull
     private String password;
 
 

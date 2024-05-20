@@ -8,8 +8,12 @@ import java.util.Optional;
 public interface PlayerService {
 
     List<Player> findAllPlayers();
+
     Optional<Player> findPlayerById(Long id);
+
     Player savePlayer(Player player);
+
     Player updatePlayer(Player player);
+
     void deletePlayer(Long id);
 }
