@@ -2,19 +2,16 @@ package de.hhn.labsw.hitstar_backend.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "account")
 @Data
 public class Account {
-
-    public Account(){
-
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +19,19 @@ public class Account {
     private Long id;
 
     @Column(name = "username")
-    @NotNull
+    @NotBlank
     private String username;
 
     @Column(name = "password")
-    @NotNull
+    @NotBlank
     private String password;
+
+    @OneToMany(mappedBy = "account")
+    List<Game> games = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account")
+    List<AuthentificationToken> tokens = new ArrayList<>();
+
 
 
 }
