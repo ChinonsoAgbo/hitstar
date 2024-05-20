@@ -82,19 +82,21 @@ export const useControllerStore = defineStore("controller", () => {
     },
 
     commit() {
-      switch (gameCycle.activeGameState) {
-        case GameState.DRAWCARD:
-          Actions.drawCard();
-          break;
-        case GameState.LISTEN:
-          Actions.changeMusicState();
-          break;
-        case GameState.GUESS:
-          Actions.commitGuess();
-          break;
-        case GameState.MATEGUESS:
-          Actions.commitDoubtGuess();
-          break;
+      if (itsTurn.value) {
+        switch (gameCycle.activeGameState) {
+          case GameState.DRAWCARD:
+            Actions.drawCard();
+            break;
+          case GameState.LISTEN:
+            Actions.changeMusicState();
+            break;
+          case GameState.GUESS:
+            Actions.commitGuess();
+            break;
+          case GameState.MATEGUESS:
+            Actions.commitDoubtGuess();
+            break;
+        }
       }
     },
 
