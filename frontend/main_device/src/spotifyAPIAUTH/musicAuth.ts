@@ -1,5 +1,4 @@
 
-
 const authUrl = new URL('https://accounts.spotify.com/authorize');
 
 const clientId = 'cb69f868494a44b595d41b78992f3c2f';
@@ -8,25 +7,17 @@ const redirectUri = 'http://localhost:5173/';
 
 const scope = [
     'playlist-read-private',
-     'user-read-email', 
-     'user-read-playback-state', 
-     'user-modify-playback-state', 
-     'streaming',
-     'app-remote-control',
-     'playlist-read-private',
-     'playlist-read-collaborative',
-     'playlist-modify-private',
-     'playlist-modify-public',
-     'user-read-private'
-    
-    ];
-
-
-
-   // const scope = "playlist-read-private, playlist-read-collaborative"
-
-// const code = new URLSearchParams(window.location.search).get("code"); // get access code
-const error = new URLSearchParams(window.location.search).get("error"); // get acees denied
+    'user-read-email',
+    'user-read-playback-state',
+    'user-modify-playback-state',
+    'streaming',
+    'app-remote-control',
+    'playlist-read-private',
+    'playlist-read-collaborative',
+    'playlist-modify-private',
+    'playlist-modify-public',
+    'user-read-private'
+];
 
 /**
  * Redirects user to spotify server for authorization
@@ -61,13 +52,7 @@ const generateRandomString = (length: number): string => {
         .join('');
 };
 
-
-/**
-* Encodes an ArrayBuffer into a base64 string.
-* 
-* @param {ArrayBuffer} input - The ArrayBuffer to encode.
-* @returns {string} The base64-encoded string.
-*/
+//  Encodes an ArrayBuffer into a base64 string.
 const base64encode = (input: ArrayBuffer): string => {
     return btoa(String.fromCharCode(...new Uint8Array(input)))
         .replace(/=/g, '')
@@ -112,7 +97,6 @@ async function getAccessToken(code: string): Promise<any> {
     // save access token in local 
     localStorage.setItem('accessToken', access_token);
     localStorage.setItem('tokenType', token_type);
-    //localStorage.setItem('scope', scope);
     localStorage.setItem('expiresIn', expires_in);
     localStorage.setItem('refreshToken', refresh_token);
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
@@ -147,7 +131,6 @@ async function getRefreshToken(code: string): Promise<any> {
     // local 
     localStorage.setItem('accessToken', access_token);
     localStorage.setItem('tokenType', token_type);
-   // localStorage.setItem('scope', scope);
     localStorage.setItem('expiresIn', expires_in);
     localStorage.setItem('refreshToken', refresh_token);
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
@@ -156,21 +139,13 @@ async function getRefreshToken(code: string): Promise<any> {
 
 }
 
-/**
- * Retrieves a local access token, either by refreshing an existing token or obtaining a new one.
- * @param clientId The client ID for Spotify API authentication.
- * @param code The authorization code for obtaining the access token.
- * @returns A promise that resolves to the access token string.
- */
+//Retrieves a local access token, either by refreshing an existing token or obtaining a new one.
 export async function getLocalToken(code: string): Promise<any> {
 
     let tokenTimestamp = localStorage.getItem('tokenTimestamp');
-
-
     console.log("checkTimeStamp " + isTokenExpired(tokenTimestamp!))
 
     if (tokenTimestamp === null || isTokenExpired(tokenTimestamp)) {
-
         return await getAccessToken(code)
     } else {
         return await getRefreshToken(code)

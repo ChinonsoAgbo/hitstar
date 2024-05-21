@@ -10,7 +10,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
   const player = ref({});
   const current_track = ref({});
   const token = ref('')
-  const cards = ref<Card[]>([]); 
+  const cards = ref<Card[]>([]);  // list histar cards 
 
   interface Artist {
     external_urls: { spotify: string };
@@ -101,7 +101,9 @@ export const useSpotifyStore = defineStore('spotify', () => {
   }
 
   // ACTIONS
-  const setActive = (newValue: any) => {
+
+  // use the Webplayer to set active 
+  const setActive = (newValue: any) => { 
     is_active.value = newValue;
   };
   const setPaused = (newValue: any) => {
@@ -117,8 +119,20 @@ export const useSpotifyStore = defineStore('spotify', () => {
     token.value = newValue;
   };
 
+  
+  const cache = { // cache to reduce API calls to spotify 
+    playlists: null as Playlist | null,
+    tracks: new Map<string, Track[]>(),
+  };
 
+  // Fetches tracks for a specific playlist. 
+  // This is needed to filter out the Tracks in a playlist 
   async function fetchTracksForPlaylist(tracksUrl: string): Promise<Track[]> {
+
+    if (cache.tracks.has(tracksUrl)) {
+      return cache.tracks.get(tracksUrl) || [];
+    }
+
     let tracks: Track[] = [];
     let nextUrl: string | null = tracksUrl;
 
@@ -135,16 +149,31 @@ export const useSpotifyStore = defineStore('spotify', () => {
         throw new Error(`Error fetching tracks: ${result.statusText}`);
       }
 
-      const data = await result.json();
+      const data:any = await result.json();
       tracks.push(...data.items.map((item: TrackItem) => item.track));
       nextUrl = data.next;
     }
+
+    cache.tracks.set(tracksUrl, tracks);
 
     return tracks;
   }
 
 
+  // fetch all tracks in a user playlist 
   async function fetchTracks(): Promise<Track[]> {
+    if (cache.playlists) {
+      const allTracks: Track[] = [];
+      for (const playlist of cache.playlists.items) {
+        if (playlist.tracks.total >= 110) {
+          const tracksUrl = playlist.tracks.href;
+          const tracks = await fetchTracksForPlaylist(tracksUrl);
+          allTracks.push(...tracks);
+        }
+      }
+      return allTracks;
+
+    }
     if (!token.value) {
       console.error('No token or userId available');
       return [];
@@ -165,6 +194,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
       }
 
       const userPlaylists: Playlist = await result.json();
+      cache.playlists = userPlaylists;
 
       const allTracks: Track[] = [];
       for (const playlist of userPlaylists.items) {
@@ -184,6 +214,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
     }
   }
 
+  // shuffle the track array 
   function shuffleArray(array: any[]) {
     const shuffledArray = [...array];
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -194,6 +225,8 @@ export const useSpotifyStore = defineStore('spotify', () => {
   }
 
 
+  // Fetches and prepares the Hiistar track, 
+  // converts them into card objects 
   async function histarTracks(): Promise<Card[]> {
     try {
      
@@ -226,6 +259,9 @@ export const useSpotifyStore = defineStore('spotify', () => {
     }
   }
 
+  // Use this methode to play a track 
+  // NOTE: that i added a uri in the hitstarTrack to return the uri of each track 
+  // using this func requires u to call the HitstarTrack func and iterate the list to pass the uri 
   const playTrack = async (uri: string )=>{
     try {
       if (!token.value) {
@@ -253,13 +289,13 @@ export const useSpotifyStore = defineStore('spotify', () => {
   };
  
   return {
-    token, 
-    setToken, // set the token 
-    histarTracks, // load the fetch and load the histar cards and tracks 
-    playTrack, // für web playback example store.playTrack(uri);
-    cards, // use  card or histarTracks func to get the music card information 
+    token,
+    setToken, // Set the token
+    histarTracks, // Fetch and load the histar cards and tracks
+    playTrack, // Play a track (for web playback)
+    cards, // Get the music card information
     
-    // for web playbacks 
+    // Web playback states and actions
     is_active,
     is_paused,
     player,
