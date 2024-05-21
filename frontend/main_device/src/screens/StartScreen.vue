@@ -3,21 +3,11 @@ import { HButton, HAvatar } from "@components/";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import { ref } from "vue";
 import { IMAGE_URL } from "@shared/urls";
-import {
-  getLocalToken,
-  redirectToAuthCodeFlow,
-} from "../spotifyAPIAUTH/todos.ts";
-import { fetchUserPlaylist } from "../spotifyAPIAUTH/playlist.ts";
-import { fetchUserProfile } from "../spotifyAPIAUTH/profile.ts";
-import {
-  fetchSerch,
-  play,
-  searchTerm,
-  conn,
-} from "../spotifyAPIAUTH/search.ts";
 
-import { PauseIcon, PlayIcon } from "@heroicons/vue/24/outline";
 import { useSpotifyStore } from "@stores/spotifyStore.ts";
+import WebPlayback from "../components/WebPlayback.vue";
+
+import { getLocalToken, redirectToAuthCodeFlow } from "../spotifyAPIAUTH/musicAuth.ts";
 
 const isLoggedIn = ref(true);
 const changeLoginStatus = () => {
@@ -41,34 +31,10 @@ getLocalToken( code)  //  fetch token
   console.log("Access Token", accessToken);
 
   spotifyStore.setToken(accessToken)
-
-// conn.token = accessToken;
-//   fetchUserProfile(conn.token!).then((value) => {
-//     console.log(value);
-//  });
-//   fetchUserPlaylist(conn.token!).then((value) => {
-//   console.log(value);
-//   });
-//    fetchSerch(conn.token!, "Sam smit").then((value) => {
-//    console.log("seachFetch:  ", value);
-//   console.log("body", searchTerm.uri);
-// // call play here to see
-//   play(conn.token!,searchTerm.uri!).then((value) => {
-//   console.log("player:  ",value)
-//   console.log("body",searchTerm.uri)
-// });
-// });
 }).catch(error => {
  console.error("Error fetching access token:", error);
 });
 
-}
-
-//console.log("token in start screen", conn.token)
-//-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
-const isMusicPlaying = ref(true);
-const changePlaySate = () => {
-  isMusicPlaying.value = !isMusicPlaying.value;
 }
 
 
@@ -105,4 +71,7 @@ const changePlaySate = () => {
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
+
+  <!-- <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" />
+  {{ spotifyStore.token }} -->
 </template>

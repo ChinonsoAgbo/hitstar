@@ -2,10 +2,28 @@
 
 const authUrl = new URL('https://accounts.spotify.com/authorize');
 
-const clientId = '3de85bed74224bf5b81e82d76ffb750f';
+const clientId = 'cb69f868494a44b595d41b78992f3c2f';
 
 const redirectUri = 'http://localhost:5173/';
-const scope = ['user-read-private', 'user-read-email', 'user-read-playback-state', 'user-modify-playback-state', 'streaming'];
+
+const scope = [
+    'playlist-read-private',
+     'user-read-email', 
+     'user-read-playback-state', 
+     'user-modify-playback-state', 
+     'streaming',
+     'app-remote-control',
+     'playlist-read-private',
+     'playlist-read-collaborative',
+     'playlist-modify-private',
+     'playlist-modify-public',
+     'user-read-private'
+    
+    ];
+
+
+
+   // const scope = "playlist-read-private, playlist-read-collaborative"
 
 // const code = new URLSearchParams(window.location.search).get("code"); // get access code
 const error = new URLSearchParams(window.location.search).get("error"); // get acees denied
@@ -90,11 +108,11 @@ async function getAccessToken(code: string): Promise<any> {
         redirectToAuthCodeFlow()
     }
 
-    const { access_token, token_type, scope, expires_in, refresh_token } = await result.json();
+    const { access_token, token_type, expires_in, refresh_token } = await result.json();
     // save access token in local 
     localStorage.setItem('accessToken', access_token);
     localStorage.setItem('tokenType', token_type);
-    localStorage.setItem('scope', scope);
+    //localStorage.setItem('scope', scope);
     localStorage.setItem('expiresIn', expires_in);
     localStorage.setItem('refreshToken', refresh_token);
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
@@ -125,11 +143,11 @@ async function getRefreshToken(code: string): Promise<any> {
         return await getAccessToken(code)
     }
 
-    const { access_token, token_type, scope, expires_in, refresh_token } = await result.json();
+    const { access_token, token_type, expires_in, refresh_token } = await result.json();
     // local 
     localStorage.setItem('accessToken', access_token);
     localStorage.setItem('tokenType', token_type);
-    localStorage.setItem('scope', scope);
+   // localStorage.setItem('scope', scope);
     localStorage.setItem('expiresIn', expires_in);
     localStorage.setItem('refreshToken', refresh_token);
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
