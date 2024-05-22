@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface PlayerService {
 
-    List<Player> findAllPlayers();
-
     Optional<Player> findPlayerById(Long id);
 
     Player savePlayer(Player player);

@@ -20,11 +20,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Game> findAllGames() {
-        return gameRepository.findAll();
-    }
-
-    @Override
     public Optional<Game> findGameById(Long id) {
         return gameRepository.findById(id);
     }

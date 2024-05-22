@@ -26,8 +26,8 @@ public class Account {
     @NotBlank
     private String password;
 
-    @OneToMany(mappedBy = "account")
-    List<Game> games = new ArrayList<>();
+    /*@OneToMany(mappedBy = "account")
+    List<Game> games = new ArrayList<>();*/
 
     @OneToMany(mappedBy = "account")
     List<AuthentificationToken> tokens = new ArrayList<>();

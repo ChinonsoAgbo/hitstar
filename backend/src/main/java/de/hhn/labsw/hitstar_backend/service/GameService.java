@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface GameService {
 
-    List<Game> findAllGames();
-
     Optional<Game> findGameById(Long id);
 
     Game saveGame(Game game);

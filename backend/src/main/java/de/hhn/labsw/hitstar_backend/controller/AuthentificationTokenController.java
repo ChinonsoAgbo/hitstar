@@ -15,4 +15,5 @@ public class AuthentificationTokenController {
     public AuthentificationTokenController(AuthentificationTokenService tokenService) {
         this.tokenService = tokenService;
     }
+
 }

@@ -20,11 +20,6 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Player> findAllPlayers() {
-        return playerRepository.findAll();
-    }
-
-    @Override
     public Optional<Player> findPlayerById(Long id) {
         return playerRepository.findById(id);
     }
