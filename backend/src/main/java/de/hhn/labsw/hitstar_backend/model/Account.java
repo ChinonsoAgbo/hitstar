@@ -18,16 +18,6 @@ import java.util.List;
 @Data
 public class Account {
 
-
-    public Account(String username, String password) {
-        this.username = username;
-        this.password=password;
-    }
-
-    public Account() {
-
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -41,6 +31,15 @@ public class Account {
     @Column(name = "password")
     @NotBlank
     private String password;
+
+    public Account(String username, String password) {
+        this.username = username;
+        this.password=password;
+    }
+
+    public Account() {
+
+    }
 
     /*@OneToMany(mappedBy = "account")
     List<Game> games = new ArrayList<>();*/

@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "game")
@@ -20,7 +21,6 @@ public class Game {
     private Long id;
 
     @Column(name = "gameurl")
-    @NotBlank
     private String gameUrl;
 
     @Column(name = "creationtime")
@@ -35,6 +35,17 @@ public class Game {
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false, updatable = false)
     private Account account;
+
+    public Game() {
+
+    }
+
+    public Game(Long creationTime, Account account) {
+        this.creationTime = creationTime;
+        this.account = account;
+        gameUrl= String.valueOf(UUID.randomUUID());
+    }
+
 
 //    @OneToMany(mappedBy = "game")
 //    List<Player> players = new ArrayList<>();

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -26,6 +27,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game saveGame(Game game) {
+        game.setGameUrl(String.valueOf(UUID.randomUUID()));
         return gameRepository.save(game);
     }
 
