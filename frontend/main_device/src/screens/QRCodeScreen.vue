@@ -28,7 +28,7 @@ const playersReadyTojoin = ref<Player[]>([]);
 client.subscribe(`${sessionStore.getSessionID()}/lobby`);
 
 client.on("message", function (_, message) {
-  let msg = JSON.parse(message)
+  let msg = JSON.parse(message.toString())
   let player : Player = {
     id : msg.senderId, 
     name : msg.playerName, 
@@ -46,9 +46,15 @@ client.on("message", function (_, message) {
     minCardIndex : 0,
     maxCardIndex : 10,    
   }
-  if(gameStore.players.filter(p=> p.id === player.id).length === 0){
+  if(gameStore.players.filter(p=> p.id === player.id).length === 0 && !msg.isLeaving){
     gameStore.players.push(player)
   }
+  if(gameStore.players.filter(p=> p.id === player.id).length !== 0 && msg.isLeaving){
+    console.log(gameStore.players)
+    gameStore.players = gameStore.players.filter(p=> p.id !== player.id)
+
+  }
+
   const messageStr = message.toString();
   const messageObj = JSON.parse(messageStr);
 

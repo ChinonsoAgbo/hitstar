@@ -68,6 +68,7 @@ interface Message {
   doubting?: boolean;
   doubtWin?: PlayerID;
   numberOfCards?: number;
+  isLeaving?: boolean
 }
 
 export interface MQTTMessage {
@@ -83,13 +84,14 @@ const playerNames = ["Bananenbrei", "Carl Gustav", "Schwitziger Axel", "Jesus"];
  *
  * qos: 1
  */
-export const lobbyMsg = (sessionId: string, playerId: string): MQTTMessage => {
+export const lobbyMsg = (sessionId: string, playerId: string, isLeaving: boolean): MQTTMessage => {
   return {
     topic: `${sessionId}/lobby`,
     message: {
       senderId: playerId,
       playerName: playerNames[Math.floor(Math.random() * playerNames.length)],
       avatarUrl: `/image${Math.floor(Math.random() * 6) + 1}.png`,
+      isLeaving: isLeaving
     },
   };
 };

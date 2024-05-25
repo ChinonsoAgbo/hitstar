@@ -65,6 +65,10 @@ watch(
 onMounted(() => {
   controllerStore.addToLobby();
 });
+
+window.addEventListener("beforeunload", () =>{
+  controllerStore.leaveOfLobby()
+})
 </script>
 
 <template>
@@ -171,7 +175,7 @@ onMounted(() => {
 
     <div class="relative mt-10 mb-10 z-0 w-full grid grid-flow-col">
       <RouterLink to="/qr-code">
-        <HButton class="bg-red-700"> Exit Lobby </HButton>
+        <HButton @click="controllerStore.leaveOfLobby()" class="bg-red-700"> Exit Lobby </HButton>
       </RouterLink>
 
       <!--                 <HButton class="">  ? </HButton>-->

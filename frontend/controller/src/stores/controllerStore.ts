@@ -17,12 +17,13 @@ import { useSessionStore } from "@shared/stores/sessionStore.ts";
 //@ts-ignore
 import { v4 as uuidv4 } from "uuid";
 import { useGameCycleStore } from "@shared/stores/gameCycleStore.ts";
+import { Buffer } from "buffer";
 
 export const useControllerStore = defineStore("controller", () => {
   const gameCycle = useGameCycleStore();
   const sessionStore = useSessionStore();
-  const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
-
+ 
+  
   const playerIndex: Ref<number> = ref(-1);
   const activePlayer = computed(
     () => players.value[playerIndex.value] || ({ cards: [{}] } as Player)
@@ -32,6 +33,15 @@ export const useControllerStore = defineStore("controller", () => {
   const players: Ref<Player[]> = ref([] as Player[]);
   const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
+  const lobbyLeaveMsg = lobbyMsg(sessionStore.getSessionID, controllerPlayer.value.id, true)
+const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`,{
+  will: {
+    topic: `${sessionStore.getSessionID()}/lobby`,
+    payload: Buffer.from(JSON.stringify(lobbyLeaveMsg.message)),
+    qos: 0,
+    retain: false
+  }
+});
 
   /**
    * Checks if the active Player is the same as the "device-Player"
@@ -125,9 +135,12 @@ export const useControllerStore = defineStore("controller", () => {
      * Adds this Controller to the lobby
      */
     addToLobby() {
-      Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID));
+      Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID, false));
     },
 
+    leaveOfLobby(){
+      Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID, true));
+    },
     /**
      * Sends the commit-Message
      */
@@ -236,6 +249,7 @@ export const useControllerStore = defineStore("controller", () => {
     turn: Helpers.turn,
     changeMusicState: Actions.changeMusicState,
     addToLobby: Actions.addToLobby,
+    leaveOfLobby: Actions.leaveOfLobby,
     PlayerID,
     itsTurn,
     getIconUrl: Actions.getIconUrl,
