@@ -33,15 +33,19 @@ export const useControllerStore = defineStore("controller", () => {
   const players: Ref<Player[]> = ref([] as Player[]);
   const itsTurn = ref(false);
   const isMusicPlaying = ref(false);
-  const lobbyLeaveMsg = lobbyMsg(sessionStore.getSessionID, controllerPlayer.value.id, true)
-const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`,{
-  will: {
-    topic: `${sessionStore.getSessionID()}/lobby`,
-    payload: Buffer.from(JSON.stringify(lobbyLeaveMsg.message)),
-    qos: 0,
-    retain: false
+  let client : mqtt.MqttClient;
+
+  function createClient() {
+    const lobbyLeaveMsg = lobbyMsg(sessionStore.getSessionID, PlayerID, true);
+    client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`,{
+      will: {
+        topic: `${sessionStore.getSessionID()}/lobby`,
+        payload: Buffer.from(JSON.stringify(lobbyLeaveMsg.message)),
+        qos: 0,
+        retain: false
+      }
+    });
   }
-});
 
   /**
    * Checks if the active Player is the same as the "device-Player"
@@ -54,6 +58,7 @@ const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`,{
   }
 
   onMounted(() => {
+    createClient()
     client.on("connect", () => {
       client.subscribe(`${sessionStore.getSessionID()}/main`, { qos: 1 });
     });
