@@ -5,35 +5,61 @@ import { IMAGE_URL } from "@shared/urls";
 
 const password = ref('')
 const confirmPassword = ref('')
-const email = ref('')
+const username = ref('')
+const infoText = ref('')
 
 const isPasswordMismatch = computed(() => {
   return confirmPassword.value !== '' && confirmPassword.value !== password.value
 })
 
 const isFormValid = computed(() => {
-  return password.value !== '' && confirmPassword.value !== '' && email.value !== ''
+  return password.value !== '' && confirmPassword.value !== '' && username.value !== ''
 })
 
+async function register() {
+  console.log(username.value + ", " + password.value);
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Registration failed');
+    }
+    const data = await response.json();
+    infoText.value=data.message;
+    console.log(infoText.value)
+  } catch (error) {
+    infoText.value=error.message;
+    console.log(error)
+  }
+}
 </script>
 
 <template>
   <div class="bg-neutral">
     <h1 class="mb-5 ml-5 font-bold">Register for Hitstar</h1>
-    <form class="max-w-sm ml-5">
+    <form class="max-w-sm ml-5" @submit.prevent="register">
       <div class="mb-5">
-        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Your Username
         </label>
         <input
-            type="email"
-            id="email"
-            v-model="email"
+            type="text"
+            id="username"
+            v-model="username"
             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 \
                   focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 \
                   dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 \
                   dark:shadow-sm-light"
-            placeholder="name@hitstar.com"
+            placeholder="Max Mustermann"
             required
         />
       </div>
@@ -66,10 +92,11 @@ const isFormValid = computed(() => {
         />
         <p v-if="isPasswordMismatch" class="text-red-500 text-sm mt-1">Passwords do not match.</p>
         <p v-if="!isFormValid" class="text-red-500 text-sm mt-1">Please fill all fields.</p>
+        <p v-if="infoText!=''" class="text-blue-500 text-sm mt-1">{{infoText}}</p>
       </div>
-      <RouterLink to="/login">
+<!--      <RouterLink to="/login">-->
         <HSubmitButton :disabled="!isFormValid || isPasswordMismatch">Register</HSubmitButton>
-      </RouterLink>
+<!--      </RouterLink>-->
     </form>
     <RouterLink to="/start">
       <HButton>Go back to Start Screen</HButton>
@@ -79,3 +106,4 @@ const isFormValid = computed(() => {
     </HCard>
   </div>
 </template>
+
