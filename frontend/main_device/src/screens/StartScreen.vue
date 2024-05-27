@@ -5,7 +5,8 @@ import { ref } from "vue";
 import { IMAGE_URL } from "@shared/urls";
 
 import { useSpotifyStore } from "@stores/spotifyStore.ts";
-import WebPlayback from "../components/WebPlayback.vue";
+
+ import WebPlayback from "../components/WebPlayback.vue";
 
 import { getLocalToken, redirectToAuthCodeFlow } from "../spotifyAPIAUTH/musicAuth.ts";
 
@@ -16,7 +17,11 @@ const changeLoginStatus = () => {
 
 // is used to create a sessionStore  instance
 const sessionStore = useSessionStore();
+
 const spotifyStore = useSpotifyStore();
+
+
+
 //creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
 
 // parse the URL to retrieve the code parameter
@@ -38,9 +43,15 @@ getLocalToken( code)  //  fetch token
 }
 
 
+
+
+
+
 </script>
 
-<template>
+<template >
+ 
+
   <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
     <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
   </div>
@@ -71,7 +82,7 @@ getLocalToken( code)  //  fetch token
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
-
-  <!-- <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" />
+<!-- 
+  <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" />
   {{ spotifyStore.token }} -->
 </template>

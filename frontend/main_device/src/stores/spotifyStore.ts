@@ -165,7 +165,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
     if (cache.playlists) {
       const allTracks: Track[] = [];
       for (const playlist of cache.playlists.items) {
-        if (playlist.tracks.total >= 110) {
+        if (playlist.tracks.total >= 110) { // just for test 
           const tracksUrl = playlist.tracks.href;
           const tracks = await fetchTracksForPlaylist(tracksUrl);
           allTracks.push(...tracks);
