@@ -22,7 +22,6 @@ import { Buffer } from "buffer";
 export const useControllerStore = defineStore("controller", () => {
   const gameCycle = useGameCycleStore();
   const sessionStore = useSessionStore();
- 
   
   const playerIndex: Ref<number> = ref(-1);
   const activePlayer = computed(
@@ -96,6 +95,11 @@ export const useControllerStore = defineStore("controller", () => {
       client.publish(message.topic, JSON.stringify(message.message));
     },
 
+    /**
+     * If it is the turn of the player executing this function, an action is 
+     * selected depending on the current GameState, which executes the correct 
+     * “Commit” function according to the current state.
+     */
     commit() {
       if (itsTurn.value) {
         switch (gameCycle.activeGameState) {
@@ -137,12 +141,15 @@ export const useControllerStore = defineStore("controller", () => {
 
   const Actions = {
     /**
-     * Adds this Controller to the lobby
+     * Sends a message that adds the controller to the lobby.
      */
     addToLobby() {
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID, false));
     },
 
+    /**
+     * Sends a message that attempts to remove this controller from the lobby. 
+     */
     leaveOfLobby(){
       Helpers.send(lobbyMsg(`${sessionStore.getSessionID()}`, PlayerID, true));
     },
@@ -212,7 +219,12 @@ export const useControllerStore = defineStore("controller", () => {
         Helpers.send(
           doubtMsg(sessionStore.getSessionID(), PlayerID, activePlayer.value.id)
         );
+
     },
+
+    /**
+     * sends a message to the main device when the doubt player wants to commit his attempt
+     */
     commitDoubtGuess() {
       if (itsTurn.value)
         Helpers.send(
@@ -225,14 +237,27 @@ export const useControllerStore = defineStore("controller", () => {
           )
         );
     },
+
+    /**
+     * Currently without function! Should start the music on the main device.
+     */
     playMusic() {
       Helpers.send(playPauseMsg(sessionStore.getSessionID(), "play", PlayerID));
     },
+
+    /**
+     * Currently without function! Should pause the music on the main device.
+     */
     stopMusic() {
       Helpers.send(
         playPauseMsg(sessionStore.getSessionID(), "pause", PlayerID)
       );
     },
+
+    /**
+     * Currently without function. Checks whether it should call up the playMusic or the stopMusic
+     *  function based on the current MusicState
+     */
     changeMusicState() {
       if (itsTurn.value && gameCycle.activeGameState === GameState.LISTEN) {
         if (isMusicPlaying.value) this.playMusic();

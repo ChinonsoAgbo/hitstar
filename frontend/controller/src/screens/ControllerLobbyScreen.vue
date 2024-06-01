@@ -65,10 +65,6 @@ watch(
 onMounted(() => {
   controllerStore.addToLobby();
 });
-
-window.addEventListener("beforeunload", () =>{
-  controllerStore.leaveOfLobby()
-})
 </script>
 
 <template>
