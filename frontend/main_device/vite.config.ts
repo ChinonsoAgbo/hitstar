@@ -13,5 +13,8 @@ export default defineConfig({
           '@screens': resolve(__dirname, 'src/screens'),
           '@assets': resolve(__dirname, 'src/assets')
       }
-  }
+  },
+    test: {
+        environment: 'jsdom'
+    }
 })
