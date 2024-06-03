@@ -28,19 +28,19 @@ const spotifyStore = useSpotifyStore();
  const code = new URLSearchParams(window.location.search).get("code"); // get access code
 
 
- if (!code) {
-redirectToAuthCodeFlow(); // make sure the user accepts
-} else if (code) { 
-getLocalToken( code)  //  fetch token
-  .then((accessToken) => {
-  console.log("Access Token", accessToken);
+//  if (!code) {
+// redirectToAuthCodeFlow(); // make sure the user accepts
+// } else if (code) { 
+// getLocalToken( code)  //  fetch token
+//   .then((accessToken) => {
+//   console.log("Access Token", accessToken);
 
-  spotifyStore.setToken(accessToken)
-}).catch(error => {
- console.error("Error fetching access token:", error);
-});
+//   spotifyStore.setToken(accessToken)
+// }).catch(error => {
+//  console.error("Error fetching access token:", error);
+// });
 
-}
+// }
 
 
 
@@ -82,7 +82,7 @@ getLocalToken( code)  //  fetch token
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
-<!-- 
+
   <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" />
-  {{ spotifyStore.token }} -->
+  <!-- {{ spotifyStore.token }}  -->
 </template>
