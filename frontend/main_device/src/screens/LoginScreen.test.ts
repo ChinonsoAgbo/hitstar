@@ -13,7 +13,7 @@ describe('Login.vue', () => {
     it('initially disables the login button', () => {
         const wrapper = mount(Login)
         const loginButton = wrapper.findComponent(HSubmitButton)
-        expect(loginButton.attributes('disabled')).toBe('disabled')
+        expect(loginButton.attributes('disabled')).toBe('')
     })
 
     it('enables the login button when email and password are filled', async () => {
