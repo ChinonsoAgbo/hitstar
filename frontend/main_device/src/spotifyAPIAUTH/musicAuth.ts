@@ -3,7 +3,7 @@ const authUrl = new URL('https://accounts.spotify.com/authorize');
 
 // client id von michi 0081b6fb5adf457aa794e77ec48fc00b
 //const clientId = 'cb69f868494a44b595d41b78992f3c2f';
-const clientId = '0081b6fb5adf457aa794e77ec48fc00b';
+const clientId = 'cb69f868494a44b595d41b78992f3c2f';
 
 
 const redirectUri = 'http://localhost:5173/';
