@@ -2,8 +2,13 @@ package de.hhn.labsw.hitstar_backend.service;
 
 import de.hhn.labsw.hitstar_backend.HitstarBackendApplication;
 import de.hhn.labsw.hitstar_backend.model.Account;
+import de.hhn.labsw.hitstar_backend.repository.AccountRepository;
+import de.hhn.labsw.hitstar_backend.service.impl.AccountServiceImpl;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,16 +18,23 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AccountServiceTest {
 
 
+
+    @Mock
+    private AccountRepository repository;
+
+    @InjectMocks
     @Autowired
-    private AccountService service;
+    private AccountServiceImpl service;
 
+    private Account[] accounts = new Account[10];
+    Account account;
+    Account invalidUsernameAccount;
 
-    private final Account[] accounts = new Account[10];
-    Account account = new Account("Tim", "SuperSecure");
-
+    @BeforeEach
     void setUp() {
-
-
+        accounts = new Account[10];
+        account = new Account("Tim", "SuperSecure");
+        invalidUsernameAccount = new Account("B", "SuperSecure");
     }
 
     @Test
@@ -33,7 +45,6 @@ public class AccountServiceTest {
 
     @Test
     void saveAccount() {
-
         account = service.saveAccount(account);
         assertTrue(service.findByID(account.getId()).isPresent());
         assertEquals(account, service.findByID(account.getId()).get());
@@ -67,13 +78,28 @@ public class AccountServiceTest {
         service.deleteAccount(account.getId());
         assertFalse(service.findByID(account.getId()).isPresent());
 
+
     }
 
     @Test
-    void checkPassword(){
+    void checkPassword() {
 
     }
-   @AfterEach
+    @Test
+    void  checkUsername(){
+        invalidUsernameAccount = service.saveAccount(invalidUsernameAccount);
+        assertFalse(service.findByID(invalidUsernameAccount.getId()).isPresent());
+
+
+    }
+
+    @Test
+    void AccountAlreadyExists(){
+        account = service.saveAccount(account);
+        account = service.saveAccount(account);
+    }
+
+    @AfterEach
     void tearDown() {
         for (Account account : accounts) {
             if (account != null && account.getId() != null) {
