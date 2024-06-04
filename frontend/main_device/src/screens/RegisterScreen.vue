@@ -12,8 +12,13 @@ const isPasswordMismatch = computed(() => {
   return confirmPassword.value !== '' && confirmPassword.value !== password.value
 })
 
-const isFormValid = computed(() => {
+const isNotEmpty = computed(() => {
   return password.value !== '' && confirmPassword.value !== '' && username.value !== ''
+})
+
+const hasValidLength = computed(() => {
+  return password.value.length >= 5 && password.value.length <= 50
+      && username.value.length >= 3 && username.value.length <= 20
 })
 
 async function register() {
@@ -83,7 +88,7 @@ async function register() {
             type="password"
             id="confirm-password"
             v-model="confirmPassword"
-            :class="{'border-red-500': !isFormValid, 'border-gray-300': isFormValid}"
+            :class="{'border-red-500': !isNotEmpty, 'border-gray-300': isNotEmpty}"
             class="shadow-sm bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 \
                    focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 \
                    dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 \
@@ -91,11 +96,12 @@ async function register() {
             required
         />
         <p v-if="isPasswordMismatch" class="text-red-500 text-sm mt-1">Passwords do not match.</p>
-        <p v-if="!isFormValid" class="text-red-500 text-sm mt-1">Please fill all fields.</p>
+        <p v-if="!isNotEmpty" class="text-red-500 text-sm mt-1">Please fill all fields.</p>
+        <p v-if="!hasValidLength" class="text-red-500 text-sm mt-1">Password has to have between 5 and 50 digits. Username has to have between 3 and 20 digits.</p>
         <p v-if="infoText!=''" class="text-blue-500 text-sm mt-1">{{infoText}}</p>
       </div>
 <!--      <RouterLink to="/login">-->
-        <HSubmitButton :disabled="!isFormValid || isPasswordMismatch">Register</HSubmitButton>
+        <HSubmitButton :disabled="!isNotEmpty || isPasswordMismatch || !hasValidLength">Register</HSubmitButton>
 <!--      </RouterLink>-->
     </form>
     <RouterLink to="/start">
