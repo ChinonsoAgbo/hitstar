@@ -3,6 +3,7 @@ package de.hhn.labsw.hitstar_backend.service;
 import de.hhn.labsw.hitstar_backend.HitstarBackendApplication;
 import de.hhn.labsw.hitstar_backend.model.Account;
 import de.hhn.labsw.hitstar_backend.service.impl.AccountServiceImpl;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,20 +16,20 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AccountServiceNoMockTest {
 
 
-
-
     @Autowired
-    private AccountServiceImpl service;
+    private AccountServiceImpl accountService;
 
     private Account[] accounts = new Account[10];
     Account account;
     Account invalidUsernameAccount;
+    Account invalidPasswordAccount;
 
     @BeforeEach
     void setUp() {
         accounts = new Account[10];
         account = new Account("Tim", "SuperSecure");
         invalidUsernameAccount = new Account("B", "SuperSecure");
+        invalidPasswordAccount = new Account("Hitstar", "Bad");
     }
 
     @Test
@@ -39,9 +40,9 @@ public class AccountServiceNoMockTest {
 
     @Test
     void saveAccount() {
-        account = service.saveAccount(account);
-        assertTrue(service.findByID(account.getId()).isPresent());
-        assertEquals(account, service.findByID(account.getId()).get());
+        account = accountService.saveAccount(account);
+        assertTrue(accountService.findByID(account.getId()).isPresent());
+        assertEquals(account, accountService.findByID(account.getId()).get());
     }
 
     @Test
@@ -57,48 +58,60 @@ public class AccountServiceNoMockTest {
         accounts[8] = new Account("Jack", "totalSecure");
         accounts[9] = new Account("Jane", "totalSecure");
         for (Account account : accounts) {
-            service.saveAccount(account);
+            account = accountService.saveAccount(account);
         }
         for (Account account : accounts) {
-            assertTrue(service.findByID(account.getId()).isPresent());
-            assertEquals(account, service.findByID(account.getId()).get());
+            assertTrue(accountService.findByID(account.getId()).isPresent());
+            assertEquals(account, accountService.findByID(account.getId()).get());
         }
 
     }
 
     @Test
     void deleteAccount() {
-        account = service.saveAccount(account);
-        service.deleteAccount(account.getId());
-        assertFalse(service.findByID(account.getId()).isPresent());
+        account = accountService.saveAccount(account);
+        accountService.deleteAccount(account.getId());
+        assertFalse(accountService.findByID(account.getId()).isPresent());
 
 
     }
 
     @Test
     void checkPassword() {
-
-    }
-    @Test
-    void  checkUsername(){
-        invalidUsernameAccount = service.saveAccount(invalidUsernameAccount);
-        assertFalse(service.findByID(invalidUsernameAccount.getId()).isPresent());
-
+        assertThrows(ConstraintViolationException.class, () ->
+                accountService.saveAccount(invalidPasswordAccount));
 
     }
 
     @Test
-    void AccountAlreadyExists(){
-        account = service.saveAccount(account);
-        account = service.saveAccount(account);
+    void checkUsername() {
+        assertThrows(ConstraintViolationException.class, () ->
+                accountService.saveAccount(invalidUsernameAccount));
+    }
+
+
+    @Test
+    void AccountAlreadyExists() {
+        account = accountService.saveAccount(account);
+        account = accountService.saveAccount(account);
     }
 
     @AfterEach
     void tearDown() {
+        if (account != null && account.getId() != null) {
+            accountService.deleteAccount(account.getId());
+        }
+        if (invalidUsernameAccount != null && invalidUsernameAccount.getId() != null) {
+            accountService.deleteAccount(invalidUsernameAccount.getId());
+        }
+        if (invalidPasswordAccount != null && invalidPasswordAccount.getId() != null) {
+            accountService.deleteAccount(invalidPasswordAccount.getId());
+        }
         for (Account account : accounts) {
             if (account != null && account.getId() != null) {
-                service.deleteAccount(account.getId());
+                accountService.deleteAccount(account.getId());
             }
         }
     }
+
 }
