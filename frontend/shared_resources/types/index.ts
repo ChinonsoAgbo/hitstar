@@ -1,3 +1,8 @@
+export interface Account{
+  username: string;
+  token: string;
+}
+
 export interface Card {
   id: string;
   title: string;
