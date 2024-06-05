@@ -23,13 +23,14 @@ public class Account {
     @Column(name = "id")
     private Long id;
 
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 20, message = "Username must have 3 to 20 characters")
     @Column(name = "username")
-    @NotBlank
+    @NotBlank(message = "Username may not be empty or blank.")
     private String username;
 
     @Column(name = "password")
-    @NotBlank
+    //@Size(min = 5, max = 50, message = "Password must have 5 to 50 characters")
+    @NotBlank(message = "Username may not be empty or blank.")
     private String password;
 
     public Account(String username, String password) {
