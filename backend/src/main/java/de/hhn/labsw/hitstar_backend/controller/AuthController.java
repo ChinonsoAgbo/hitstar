@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@Validated
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -59,6 +61,11 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
+        }
+        if (signUpRequest.getPassword().length()<5 | signUpRequest.getPassword().length()>50) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Password must be between 5 and 50 characters!"));
         }
 
         // Create new user's account
