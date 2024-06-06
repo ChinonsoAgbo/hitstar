@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AuthControllerTest {
 
-    private static final String REQUEST_URL = "http://localhost:8080/api/auth/signup";
+    private static final String REGISTER_URL = "http://localhost:8080/api/auth/signup";
+    private static final String SIGNING_URL = "http://localhost:8080/api/auth/signin";
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -64,75 +65,82 @@ class AuthControllerTest {
 
     @Test
     void registerValidAccount() {
-        checkValid(account);
+        checkRegisterValid(account);
 
     }
 
     @Test
     void registerValidPasswordFive() {
-        checkValid(validPasswordAccount);
+        checkRegisterValid(validPasswordAccount);
 
     }
 
     @Test
     void registerValidLong() {
-        checkValid(pwNearlyTooLongAccount);
+        checkRegisterValid(pwNearlyTooLongAccount);
     }
 
     @Test
     void registerInvalidShortPassword() {
-        checkInvalid(invalidShortPasswordAccount);
+        checkRegisterInvalid(invalidShortPasswordAccount);
     }
 
     @Test
     void registerInvalidLongPassword() {
-        checkInvalid(pwTooLongAccount);
+        checkRegisterInvalid(pwTooLongAccount);
 
     }
 
     @Test
     void registerInvalidUsernameAccount() {
-        checkInvalid(invalidUsernameAccount);
+        checkRegisterInvalid(invalidUsernameAccount);
     }
 
 
     @Test
     void registerInvalidBothBlank() {
-        checkInvalid(blankAccount);
+        checkRegisterInvalid(blankAccount);
     }
 
     @Test
     void registerInvalidUsernameIsBlank() {
-        checkInvalid(usernameBlankAccount);
+        checkRegisterInvalid(usernameBlankAccount);
 
     }
 
     @Test
     void registerValidUserLong() {
-        checkValid(usernameNearlyTooLong);
+        checkRegisterValid(usernameNearlyTooLong);
     }
 
     @Test
     void registerUserTooLong() {
-        checkInvalid(usernameTooLong);
+        checkRegisterInvalid(usernameTooLong);
 
     }
 
     @Test
     void registerUsernameIsNull() {
-        checkInvalid(usernameisNull);
+        checkRegisterInvalid(usernameisNull);
     }
 
     @Test
     void registerPasswordIsNull() {
-        checkInvalid(passwordIsNull);
+        checkRegisterInvalid(passwordIsNull);
     }
 
 
     @Test
+    void loginValid(){
+        checkRegisterValid(account);
+        checkLogin(account);
+
+
+    }
+    @Test
     void registerUserAlreadyExists() {
-        checkValid(account);
-        ResponseEntity<String> responseTwo = restTemplate.postForEntity(REQUEST_URL, account, String.class);
+        checkRegisterValid(account);
+        ResponseEntity<String> responseTwo = restTemplate.postForEntity(REGISTER_URL, account, String.class);
         assertEquals(responseTwo.getStatusCode(), HttpStatus.BAD_REQUEST);
         System.out.println(responseTwo.getBody());
     }
@@ -144,8 +152,8 @@ class AuthControllerTest {
      *
      * @param account the account to be checked
      */
-    private void checkInvalid(Account account) {
-        ResponseEntity<String> response = restTemplate.postForEntity(REQUEST_URL, account, String.class);
+    private void checkRegisterInvalid(Account account) {
+        ResponseEntity<String> response = restTemplate.postForEntity(REGISTER_URL, account, String.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         System.out.println(response);
         assertFalse(accountRepository.findByUsername(account.getUsername()).isPresent());
@@ -156,8 +164,17 @@ class AuthControllerTest {
      *
      * @param account the account to be checked
      */
-    private void checkValid(Account account) {
-        ResponseEntity<String> response = restTemplate.postForEntity(REQUEST_URL, account, String.class);
+    private void checkRegisterValid(Account account) {
+        ResponseEntity<String> response = restTemplate.postForEntity(REGISTER_URL, account, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response);
+        assertTrue(accountRepository.findByUsername(account.getUsername()).isPresent());
+    }
+
+
+    private void  checkLogin(Account account) {
+
+        ResponseEntity<String> response = restTemplate.postForEntity(SIGNING_URL, account, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         System.out.println(response);
         assertTrue(accountRepository.findByUsername(account.getUsername()).isPresent());

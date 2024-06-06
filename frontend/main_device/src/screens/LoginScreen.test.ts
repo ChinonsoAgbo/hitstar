@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import { describe, it, expect } from 'vitest'
 import Login from './LoginScreen.vue'
 import { HSubmitButton, HButton, HCard } from '@components/'
@@ -6,19 +7,34 @@ import { HSubmitButton, HButton, HCard } from '@components/'
 describe('Login.vue', () => {
 
     it('renders the component properly', () => {
-        const wrapper = mount(Login)
+        const pinia = createPinia()
+        const wrapper = mount(Login, {
+            global: {
+                plugins: [pinia]
+            }
+        })
         expect(wrapper.find('h1').text()).toBe('Login for your Hitstar account')
     })
 
     it('initially disables the login button', () => {
-        const wrapper = mount(Login)
+        const pinia = createPinia()
+        const wrapper = mount(Login, {
+            global: {
+                plugins: [pinia]
+            }
+        })
         const loginButton = wrapper.findComponent(HSubmitButton)
         expect(loginButton.attributes('disabled')).toBe('')
     })
 
     it('enables the login button when email and password are filled', async () => {
-        const wrapper = mount(Login)
-        const emailInput = wrapper.find('input#email')
+        const pinia = createPinia()
+        const wrapper = mount(Login, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        const emailInput = wrapper.find('input#username')
         const passwordInput = wrapper.find('input#password')
 
         await emailInput.setValue('test@hitstar.com')
@@ -29,9 +45,14 @@ describe('Login.vue', () => {
     })
 
     it('shows validation message when form is incomplete', async () => {
-        const wrapper = mount(Login)
+        const pinia = createPinia()
+        const wrapper = mount(Login, {
+            global: {
+                plugins: [pinia]
+            }
+        })
 
-        const emailInput = wrapper.find('input#email')
+        const emailInput = wrapper.find('input#username')
         await emailInput.setValue('')
 
         const passwordInput = wrapper.find('input#password')
@@ -43,9 +64,14 @@ describe('Login.vue', () => {
     })
 
     it('does not show validation message when form is complete', async () => {
-        const wrapper = mount(Login)
+        const pinia = createPinia()
+        const wrapper = mount(Login, {
+            global: {
+                plugins: [pinia]
+            }
+        })
 
-        const emailInput = wrapper.find('input#email')
+        const emailInput = wrapper.find('input#username')
         await emailInput.setValue('test@hitstar.com')
 
         const passwordInput = wrapper.find('input#password')

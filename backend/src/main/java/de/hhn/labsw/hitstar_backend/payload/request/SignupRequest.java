@@ -1,8 +1,7 @@
 package de.hhn.labsw.hitstar_backend.payload.request;
 
-import java.util.Set;
-
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +14,6 @@ public class SignupRequest {
     private String username;
 
     @NotBlank
-    @Size(min = 6, max = 40)
+    @Size(min = 5, max = 40)
     private String password;
 }

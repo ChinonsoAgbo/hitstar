@@ -1,23 +1,42 @@
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import { describe, it, expect } from 'vitest'
 import RegisterScreen from './RegisterScreen.vue'
 import { HSubmitButton, HButton, HCard } from '@components/'
 
 describe('RegisterScreen.vue', () => {
     it('renders the component properly', () => {
-        const wrapper = mount(RegisterScreen)
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
         expect(wrapper.find('h1').text()).toBe('Register for Hitstar')
     })
 
     it('initially disables the register button', () => {
-        const wrapper = mount(RegisterScreen)
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
         const registerButton = wrapper.findComponent(HSubmitButton)
         expect(registerButton.attributes('disabled')).toBe('')
     })
 
     it('enables the register button when form is valid', async () => {
-        const wrapper = mount(RegisterScreen)
-        const emailInput = wrapper.find('input#email')
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
+        const emailInput = wrapper.find('input#username')
         const passwordInput = wrapper.find('input#password')
         const confirmPasswordInput = wrapper.find('input#confirm-password')
 
@@ -30,7 +49,13 @@ describe('RegisterScreen.vue', () => {
     })
 
     it('displays validation message when passwords do not match', async () => {
-        const wrapper = mount(RegisterScreen)
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
         const passwordInput = wrapper.find('input#password')
         const confirmPasswordInput = wrapper.find('input#confirm-password')
 
@@ -43,8 +68,14 @@ describe('RegisterScreen.vue', () => {
     })
 
     it('button is disabled when form is incomplete', async () => {
-        const wrapper = mount(RegisterScreen)
-        const emailInput = wrapper.find('input#email')
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
+        const emailInput = wrapper.find('input#username')
         const passwordInput = wrapper.find('input#password')
 
         await emailInput.setValue('')
@@ -58,8 +89,14 @@ describe('RegisterScreen.vue', () => {
     })
 
     it('does not display validation message when form is complete and passwords match', async () => {
-        const wrapper = mount(RegisterScreen)
-        const emailInput = wrapper.find('input#email')
+        const pinia = createPinia()
+        const wrapper = mount(RegisterScreen, {
+            global: {
+                plugins: [pinia]
+            }
+        })
+        
+        const emailInput = wrapper.find('input#username')
         const passwordInput = wrapper.find('input#password')
         const confirmPasswordInput = wrapper.find('input#confirm-password')
 
