@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PauseIcon, PlayIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
+// import { PauseIcon, PlayIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { onMounted, ref, watch } from 'vue'
 import { useAnimate } from '@vueuse/core'
 // @ts-ignore
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
   trackUri: string
 }>(),{timeDelta:30});
 
-const isLoading = ref(true);
+// const isLoading = ref(true);
 const bar = ref()
 const animation = useAnimate(
     bar,
@@ -46,7 +46,6 @@ const emit = defineEmits<{
 onMounted(() => {
   playTrack(props.trackUri)
   console.log("trackUri", props.trackUri)
-  //animation.pause();
   setTimeout(() => { 
     pauseTrack()
   },props.timeDelta)

@@ -6,7 +6,6 @@ import { IMAGE_URL } from "@shared/urls";
 
 import { useSpotifyStore } from "@stores/spotifyStore.ts";
 
-import WebPlayback from "../components/WebPlayback.vue";
 
 const spotifyStore = useSpotifyStore();
 // parse the URL to retrieve the code parameter
@@ -38,13 +37,12 @@ const changeLoginStatus = () => {
 };
 
 // is used to create a sessionStore  instance
+//creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
+
 const sessionStore = useSessionStore();
 
 
-
-
-//creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
-
+// ###################### web playback sachen ######################
 
 const script = document.createElement('script');
 script.src = 'https://sdk.scdn.co/spotify-player.js';
@@ -95,8 +93,7 @@ onMounted(() => {
 
 
 });
-
-
+// ###################### webplayback sachen end#################
 
 
 </script>
@@ -130,6 +127,4 @@ onMounted(() => {
     </RouterLink>
   </div>
 
-  <!-- <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" /> -->
-  <!-- {{ spotifyStore.token }}  -->
 </template>
