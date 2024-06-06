@@ -17,7 +17,11 @@ export const useSessionStore = defineStore("session", () => {
   }
   function getIPAddress() {
 <<<<<<< HEAD
+<<<<<<< HEAD
     return "CHANGEME";
+=======
+    return "localhost";
+>>>>>>> feature/spotify_playlist_karten
 =======
     return "localhost";
 >>>>>>> feature/spotify_playlist_karten
