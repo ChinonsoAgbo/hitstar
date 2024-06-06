@@ -8,7 +8,6 @@ import { useSpotifyStore } from "@stores/spotifyStore.ts";
 
  import WebPlayback from "../components/WebPlayback.vue";
 
-import { getLocalToken, redirectToAuthCodeFlow } from "../spotifyAPIAUTH/musicAuth.ts";
 
 const isLoggedIn = ref(true);
 const changeLoginStatus = () => {
@@ -29,9 +28,9 @@ const spotifyStore = useSpotifyStore();
 
 
  if (!code) {
-redirectToAuthCodeFlow(); // make sure the user accepts
+spotifyStore.redirectToAuthCodeFlow(); // make sure the user accepts
 } else if (code) { 
-getLocalToken( code)  //  fetch token
+spotifyStore.getLocalToken( code)  //  fetch token
   .then((accessToken) => {
   console.log("Access Token", accessToken);
 
