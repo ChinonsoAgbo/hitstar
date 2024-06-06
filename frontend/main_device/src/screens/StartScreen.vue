@@ -83,6 +83,6 @@ getLocalToken( code)  //  fetch token
     </RouterLink>
   </div>
 
-  <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" />
+  <!-- <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" /> -->
   <!-- {{ spotifyStore.token }}  -->
 </template>
