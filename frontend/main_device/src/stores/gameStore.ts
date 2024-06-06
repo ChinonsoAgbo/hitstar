@@ -11,18 +11,39 @@ export const useGameStore = defineStore('game', () => {
 
     const gameCycleStore = useGameCycleStore();
 
-    const players: Ref<Player[]> = ref([])
-        /*{
+    const players: Ref<Player[]> = ref([
+        {
             id: "a",
             name: "Harry",
             iconURL: "profile-picture-1.jpg",
             cards: [
                 {
-                    id: "10",
+                    id: "14",
                     title: "HITSTAR",
-                    year: 1960,
+                    year: 1993,
                     interpreter: "HITSTAR",
                     position: 5
+                },
+                {
+                    id: "14",
+                    title: "HITSTAR",
+                    year: 1993,
+                    interpreter: "HITSTAR",
+                    position: 6
+                },
+                {
+                    id: "15",
+                    title: "HITSTAR",
+                    year: 2000,
+                    interpreter: "HITSTAR",
+                    position: 7
+                },
+                {
+                    id: "16",
+                    title: "HITSTAR",
+                    year: 2002,
+                    interpreter: "HITSTAR",
+                    position: 8
                 },
             ],
             tokens: 3,
@@ -60,28 +81,28 @@ export const useGameStore = defineStore('game', () => {
                     title: "HITSTAR",
                     year: 1910,
                     interpreter: "HITSTAR",
-                    position: 1
+                    position: 2
                 },
                 {
                     id: "11",
                     title: "HITSTAR",
                     year: 1970,
                     interpreter: "HITSTAR",
-                    position: 2
+                    position: 3
                 },
                 {
                     id: "12",
                     title: "HITSTAR",
                     year: 1980,
                     interpreter: "HITSTAR",
-                    position: 3
+                    position: 4
                 },
                 {
                     id: "13",
                     title: "HITSTAR",
                     year: 1990,
                     interpreter: "HITSTAR",
-                    position: 4
+                    position: 5
                 },
                 {
                     id: "14",
@@ -125,7 +146,7 @@ export const useGameStore = defineStore('game', () => {
             minCardIndex: 0,
             maxCardIndex: 0
         }
-    ]);*/
+    ]);
     const drawPile: Ref<Card[]> = ref([
         {
           id: "1",
@@ -190,6 +211,69 @@ export const useGameStore = defineStore('game', () => {
           interpreter: "HITSTAR",
           position: 5,
       },
+        {
+            id: "10",
+            title: "HITSTAR",
+            year: 1920,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "11",
+            title: "HITSTAR",
+            year: 1921,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "12",
+            title: "HITSTAR",
+            year: 1922,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "13",
+            title: "HITSTAR",
+            year: 1950,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "14",
+            title: "HITSTAR",
+            year: 1951,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "15",
+            title: "HITSTAR",
+            year: 1952,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "16",
+            title: "HITSTAR",
+            year: 1970,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "17",
+            title: "HITSTAR",
+            year: 1971,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
+        {
+            id: "18",
+            title: "HITSTAR",
+            year: 1972,
+            interpreter: "HITSTAR",
+            position: 5,
+        },
       ]);
     const discardPile: Ref<Card[]> = ref([] as Card[]);
 
@@ -203,7 +287,7 @@ export const useGameStore = defineStore('game', () => {
     const sessionStore = useSessionStore()
     const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
-    const SONG_DURATION = 1000; // 10000
+    const SONG_DURATION = 100; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -241,9 +325,11 @@ export const useGameStore = defineStore('game', () => {
                            break;
                    } break;
                 case GameState.DOUBT:
-                    if(msg.playerId !== activePlayer.value.id){
-                    const doubtPlayer = players.value.find(player => player.id === msg.senderId);
-                    Actions.startDoubtPhase(doubtPlayer!)
+                    if(msg.playerId !== activePlayer.value.id) {
+                        const doubtPlayer = players.value.find(player => player.id === msg.senderId);
+                        if (doubtPlayer?.tokens > 0) {
+                            Actions.startDoubtPhase(doubtPlayer!)
+                        }
                     }
                 break;
                 case GameState.GUESS:
@@ -304,22 +390,24 @@ export const useGameStore = defineStore('game', () => {
                     break;
                 case "1":
                     if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
-                        Actions.startDoubtPhase(players.value[0]);
+                        if (players.value[0].tokens > 0)
+                            Actions.startDoubtPhase(players.value[0]);
                     }
                     break;
                 case "2":
                     if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
-                        Actions.startDoubtPhase(players.value[1]);
+                        if (players.value[1].tokens > 0)
+                            Actions.startDoubtPhase(players.value[1]);
                     }
                     break;
                 case "3":
                     if (gameCycleStore.activeGameState === GameState.WAIT_FOR_DOUBT) {
-                        Actions.startDoubtPhase(players.value[2]);
+                        if (players.value[2].tokens > 0)
+                            Actions.startDoubtPhase(players.value[2]);
                     }
                     break;
             }
         }
-       
     });
 
     function startGame(){
@@ -378,10 +466,18 @@ export const useGameStore = defineStore('game', () => {
         },
 
         getMaxMin() {
-            activePlayer.value.maxCardIndex = Math.max(...activePlayer.value.cards.map((c) => c.position));
-            activePlayer.value.minCardIndex = Math.min(...activePlayer.value.cards.map((c) => c.position));
+            let max = Math.max(...activePlayer.value.cards.map((c) => c.position));
+            let min = Math.min(...activePlayer.value.cards.map((c) => c.position));
+
+            if (activePlayer.value.cards.filter((c) => c.position < 6).length === 0) {
+                min = 5;
+            }
+
+            activePlayer.value.maxCardIndex = max;
+            activePlayer.value.minCardIndex = min;
 
             if (activePlayer.value.maxCardIndex === activePlayer.value.minCardIndex) {
+                console.log("MAX AND MIN ARE SAME");
                 activePlayer.value.minCardIndex--;
             }
             console.log(activePlayer.value.maxCardIndex, activePlayer.value.minCardIndex);
@@ -493,6 +589,7 @@ export const useGameStore = defineStore('game', () => {
          */
         startGuessing(gameState: GameState) {
             console.log("START GUESSING");
+            activePlayer.value.guessedCardIndex = 5;
             gameCycleStore.setGameState(gameState);
             Helpers.send(turnMsg(sessionStore.getSessionID(), gameState, activePlayer.value.id));
             Helpers.saveCopyOfCards();
@@ -632,17 +729,17 @@ export const useGameStore = defineStore('game', () => {
             console.log('NEGATIVE');
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_NEGATIVE);
             setTimeout(() => {
-                    gameCycleStore.setGameState(GameState.TURNEND);
-                    Helpers.resetTimeLineCards(activePlayer.value);
-                    setTimeout(() => {
-                        if (wasDoubt) {
-                            Helpers.setPlayerAsActive(playerOnTurn.value);
-                            Actions.animateEvaluation(false);
-                        }
-                        else {
-                            this.startTurn();
-                        }
-                    }, TURN_END_DURATION)
+                gameCycleStore.setGameState(GameState.TURNEND);
+                Helpers.resetTimeLineCards(activePlayer.value);
+                setTimeout(() => {
+                    if (wasDoubt) {
+                        Helpers.setPlayerAsActive(playerOnTurn.value);
+                        Actions.animateEvaluation(false);
+                    }
+                    else {
+                        this.startTurn();
+                    }
+                }, TURN_END_DURATION)
             }, SHOW_CARD_DURATION);
         },
 

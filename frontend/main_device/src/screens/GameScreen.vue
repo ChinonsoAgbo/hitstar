@@ -325,7 +325,7 @@ onMounted(() =>{
                   :duration="5000" 
                   :stageHeight="8000" 
                   :stageWidth="5000" 
-                  :particleCount="500"/>
+                  :particleCount="199"/>
               <Transition name="pop" appear>
                 <VueFlip v-model="flip" width="248px" height="248px">
                   <template #front>
