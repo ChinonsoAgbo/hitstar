@@ -250,7 +250,7 @@ onMounted(() =>{
                         <PauseIcon class="w-20 h-20 cursor-pointer font-bold" />
                     </div> -->
 
-                    <MusicPlayer :timeDelta="gameStore.SONG_DURATION" />
+                    <MusicPlayer :trackUri="gameStore.currentCard.trackUri" :timeDelta="gameStore.SONG_DURATION" />
 
                   </div>
                 </Transition>            

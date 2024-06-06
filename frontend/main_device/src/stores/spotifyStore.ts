@@ -84,6 +84,7 @@ const authUrl = new URL('https://accounts.spotify.com/authorize');
 const clientId = 'cb69f868494a44b595d41b78992f3c2f';
 
 
+
 const redirectUri = 'http://localhost:5173/';
 
 const scope = [
@@ -99,6 +100,8 @@ const scope = [
     'playlist-modify-public',
     'user-read-private'
 ];
+
+
 
 /**
  * Redirects user to spotify server for authorization
@@ -265,6 +268,8 @@ const isTokenExpired = (tokenTimestamp: string) => {
 
   const setToken = (newValue: any) => {
     token.value = newValue;
+
+  
   };
 
 
@@ -396,7 +401,7 @@ const isTokenExpired = (tokenTimestamp: string) => {
           year: album.release_date || 'Unknown', // Use 'Unknown' if release_date is null
           interpreter: track.artists[0]?.name || 'Unknown Artist',
           position: index + 1, // Position in the list, 1-based
-          uri: trackURI
+          trackUri: trackURI
         };
       });
       // setCards(cards);

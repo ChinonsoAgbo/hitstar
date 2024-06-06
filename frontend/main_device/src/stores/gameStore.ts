@@ -5,6 +5,7 @@ import mqtt from "mqtt";
 import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "@shared/types";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
+import { useSpotifyStore } from './spotifyStore';
 
 
 export const useGameStore = defineStore('game', () => {
@@ -17,35 +18,35 @@ export const useGameStore = defineStore('game', () => {
             name: "Harry",
             iconURL: "profile-picture-1.jpg",
             cards: [
-                {
-                    id: "14",
-                    title: "HITSTAR",
-                    year: 1993,
-                    interpreter: "HITSTAR",
-                    position: 5
-                },
-                {
-                    id: "14",
-                    title: "HITSTAR",
-                    year: 1993,
-                    interpreter: "HITSTAR",
-                    position: 6
-                },
-                {
-                    id: "15",
-                    title: "HITSTAR",
-                    year: 2000,
-                    interpreter: "HITSTAR",
-                    position: 7
-                },
-                {
-                    id: "16",
-                    title: "HITSTAR",
-                    year: 2002,
-                    interpreter: "HITSTAR",
-                    position: 8
-                },
-            ],
+            //     {
+            //         id: "14",
+            //         title: "HITSTAR",
+            //         year: 1993,
+            //         interpreter: "HITSTAR",
+            //         position: 5
+            //     },
+            //     {
+            //         id: "14",
+            //         title: "HITSTAR",
+            //         year: 1993,
+            //         interpreter: "HITSTAR",
+            //         position: 6
+            //     },
+            //     {
+            //         id: "15",
+            //         title: "HITSTAR",
+            //         year: 2000,
+            //         interpreter: "HITSTAR",
+            //         position: 7
+            //     },
+            //     {
+            //         id: "16",
+            //         title: "HITSTAR",
+            //         year: 2002,
+            //         interpreter: "HITSTAR",
+            //         position: 8
+            //     },
+             ],
             tokens: 3,
             guessedCardIndex: 0,
             lastGuessedCardIndex: 0,
@@ -57,13 +58,13 @@ export const useGameStore = defineStore('game', () => {
             name: "Hermione",
             iconURL: "profile-picture-3.jpg",
             cards: [
-                {
-                    id: "11",
-                    title: "HITSTAR",
-                    year: 1980,
-                    interpreter: "HITSTAR",
-                    position: 5
-                }
+                // {
+                //     id: "11",
+                //     title: "HITSTAR",
+                //     year: 1980,
+                //     interpreter: "HITSTAR",
+                //     position: 5
+                // }
             ],
             tokens: 3,
             guessedCardIndex: 0,
@@ -76,69 +77,69 @@ export const useGameStore = defineStore('game', () => {
             name: "Ron",
             iconURL: "profile-picture-2.jpg",
             cards: [
-                {
-                    id: "12",
-                    title: "HITSTAR",
-                    year: 1910,
-                    interpreter: "HITSTAR",
-                    position: 2
-                },
-                {
-                    id: "11",
-                    title: "HITSTAR",
-                    year: 1970,
-                    interpreter: "HITSTAR",
-                    position: 3
-                },
-                {
-                    id: "12",
-                    title: "HITSTAR",
-                    year: 1980,
-                    interpreter: "HITSTAR",
-                    position: 4
-                },
-                {
-                    id: "13",
-                    title: "HITSTAR",
-                    year: 1990,
-                    interpreter: "HITSTAR",
-                    position: 5
-                },
-                {
-                    id: "14",
-                    title: "HITSTAR",
-                    year: 1993,
-                    interpreter: "HITSTAR",
-                    position: 6
-                },
-                {
-                    id: "15",
-                    title: "HITSTAR",
-                    year: 2000,
-                    interpreter: "HITSTAR",
-                    position: 7
-                },
-                {
-                    id: "16",
-                    title: "HITSTAR",
-                    year: 2002,
-                    interpreter: "HITSTAR",
-                    position: 8
-                },
-                {
-                    id: "17",
-                    title: "HITSTAR",
-                    year: 2016,
-                    interpreter: "HITSTAR",
-                    position: 9
-                },
-                {
-                    id: "18",
-                    title: "HITSTAR",
-                    year: 2018,
-                    interpreter: "HITSTAR",
-                    position: 10
-                }
+                // {
+                //     id: "12",
+                //     title: "HITSTAR",
+                //     year: 1910,
+                //     interpreter: "HITSTAR",
+                //     position: 2
+                // },
+                // {
+                //     id: "11",
+                //     title: "HITSTAR",
+                //     year: 1970,
+                //     interpreter: "HITSTAR",
+                //     position: 3
+                // },
+                // {
+                //     id: "12",
+                //     title: "HITSTAR",
+                //     year: 1980,
+                //     interpreter: "HITSTAR",
+                //     position: 4
+                // },
+                // {
+                //     id: "13",
+                //     title: "HITSTAR",
+                //     year: 1990,
+                //     interpreter: "HITSTAR",
+                //     position: 5
+                // },
+                // {
+                //     id: "14",
+                //     title: "HITSTAR",
+                //     year: 1993,
+                //     interpreter: "HITSTAR",
+                //     position: 6
+                // },
+                // {
+                //     id: "15",
+                //     title: "HITSTAR",
+                //     year: 2000,
+                //     interpreter: "HITSTAR",
+                //     position: 7
+                // },
+                // {
+                //     id: "16",
+                //     title: "HITSTAR",
+                //     year: 2002,
+                //     interpreter: "HITSTAR",
+                //     position: 8
+                // },
+                // {
+                //     id: "17",
+                //     title: "HITSTAR",
+                //     year: 2016,
+                //     interpreter: "HITSTAR",
+                //     position: 9
+                // },
+                // {
+                //     id: "18",
+                //     title: "HITSTAR",
+                //     year: 2018,
+                //     interpreter: "HITSTAR",
+                //     position: 10
+                //}
             ],
             tokens: 3,
             guessedCardIndex: 0,
@@ -148,132 +149,132 @@ export const useGameStore = defineStore('game', () => {
         }
     ]);
     const drawPile: Ref<Card[]> = ref([
-        {
-          id: "1",
-          title: "HITSTAR",
-          year: 1920,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "2",
-          title: "HITSTAR",
-          year: 1921,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "3",
-          title: "HITSTAR",
-          year: 1922,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "4",
-          title: "HITSTAR",
-          year: 1950,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "5",
-          title: "HITSTAR",
-          year: 1951,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "6",
-          title: "HITSTAR",
-          year: 1952,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "7",
-          title: "HITSTAR",
-          year: 1970,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "8",
-          title: "HITSTAR",
-          year: 1971,
-          interpreter: "HITSTAR",
-          position: 5,
-        },
-        {
-          id: "9",
-          title: "HITSTAR",
-          year: 1972,
-          interpreter: "HITSTAR",
-          position: 5,
-      },
-        {
-            id: "10",
-            title: "HITSTAR",
-            year: 1920,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "11",
-            title: "HITSTAR",
-            year: 1921,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "12",
-            title: "HITSTAR",
-            year: 1922,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "13",
-            title: "HITSTAR",
-            year: 1950,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "14",
-            title: "HITSTAR",
-            year: 1951,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "15",
-            title: "HITSTAR",
-            year: 1952,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "16",
-            title: "HITSTAR",
-            year: 1970,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "17",
-            title: "HITSTAR",
-            year: 1971,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
-        {
-            id: "18",
-            title: "HITSTAR",
-            year: 1972,
-            interpreter: "HITSTAR",
-            position: 5,
-        },
+    //     {
+    //       id: "1",
+    //       title: "HITSTAR",
+    //       year: 1920,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "2",
+    //       title: "HITSTAR",
+    //       year: 1921,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "3",
+    //       title: "HITSTAR",
+    //       year: 1922,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "4",
+    //       title: "HITSTAR",
+    //       year: 1950,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "5",
+    //       title: "HITSTAR",
+    //       year: 1951,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "6",
+    //       title: "HITSTAR",
+    //       year: 1952,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "7",
+    //       title: "HITSTAR",
+    //       year: 1970,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "8",
+    //       title: "HITSTAR",
+    //       year: 1971,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //     },
+    //     {
+    //       id: "9",
+    //       title: "HITSTAR",
+    //       year: 1972,
+    //       interpreter: "HITSTAR",
+    //       position: 5,
+    //   },
+    //     {
+    //         id: "10",
+    //         title: "HITSTAR",
+    //         year: 1920,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "11",
+    //         title: "HITSTAR",
+    //         year: 1921,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "12",
+    //         title: "HITSTAR",
+    //         year: 1922,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "13",
+    //         title: "HITSTAR",
+    //         year: 1950,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "14",
+    //         title: "HITSTAR",
+    //         year: 1951,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "15",
+    //         title: "HITSTAR",
+    //         year: 1952,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "16",
+    //         title: "HITSTAR",
+    //         year: 1970,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "17",
+    //         title: "HITSTAR",
+    //         year: 1971,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
+    //     {
+    //         id: "18",
+    //         title: "HITSTAR",
+    //         year: 1972,
+    //         interpreter: "HITSTAR",
+    //         position: 5,
+    //     },
       ]);
     const discardPile: Ref<Card[]> = ref([] as Card[]);
 
@@ -285,9 +286,10 @@ export const useGameStore = defineStore('game', () => {
 
     var activePlayerCardsCopy: { [playerID: string]: Card[] } = {};
     const sessionStore = useSessionStore()
+    const spotifyStore = useSpotifyStore();
     const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
-    const SONG_DURATION = 100; // 10000
+    const SONG_DURATION = 30000; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -305,8 +307,12 @@ export const useGameStore = defineStore('game', () => {
     var countDown: any = {};
 
 
-    onMounted(() => {
+    onMounted( async() => {
+
+        drawPile.value = await spotifyStore.loadHitstarTracks();
+
         client.on("connect", () => {
+
             client.subscribe(`${sessionStore.getSessionID()}/controller`, { qos: 0 });
         });
        
