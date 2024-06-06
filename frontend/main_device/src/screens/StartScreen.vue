@@ -3,21 +3,11 @@ import { HButton, HAvatar } from "@components/";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import { ref } from "vue";
 import { IMAGE_URL } from "@shared/urls";
-// import {
-//   clientId,
-//   getLocalToken,
-//   redirectToAuthCodeFlow,
-// } from "../spotifyAPIAUTH/todos.ts";
-// import { fetchUserPlaylist } from "../spotifyAPIAUTH/playlist.ts";
-// import { fetchUserProfile } from "../spotifyAPIAUTH/profile.ts";
-// import {
-//   fetchSerch,
-//   play,
-//   searchTerm,
-//   conn,
-// } from "../spotifyAPIAUTH/search.ts";
-//
-// import { PauseIcon, PlayIcon } from "@heroicons/vue/24/outline";
+
+import { useSpotifyStore } from "@stores/spotifyStore.ts";
+
+ import WebPlayback from "../components/WebPlayback.vue";
+
 
 const isLoggedIn = ref(true);
 const changeLoginStatus = () => {
@@ -27,83 +17,40 @@ const changeLoginStatus = () => {
 // is used to create a sessionStore  instance
 const sessionStore = useSessionStore();
 
+const spotifyStore = useSpotifyStore();
+
+
+
 //creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
 
 // parse the URL to retrieve the code parameter
-const code = new URLSearchParams(window.location.search).get("code"); // get access code
-const error = new URLSearchParams(window.location.search).get("error"); // get acees denied
-// console.log(code)
-//if (!code) {
-// redirectToAuthCodeFlow(clientId); // make sure the user accepts
-//} else if (code) { //  fetch token
-// getLocalToken(clientId, code)
-//   .then((accessToken) => {
-//   console.log("Access Token", accessToken);
-//
-//conn.token = accessToken;
-//console.log("token:" + token)
-//   fetchUserProfile(conn.token!).then((value) => {
-//     console.log(value);
-//  });
-//   fetchUserPlaylist(conn.token!).then((value) => {
-//   console.log(value);
-//   });
-//    fetchSerch(conn.token!, "Sam smit").then((value) => {
-//    console.log("seachFetch:  ", value);
-//   console.log("body", searchTerm.uri);
-// call play here to see
-//   play(conn.token!,searchTerm.uri!).then((value) => {
-//   console.log("player:  ",value)
-//   console.log("body",searchTerm.uri)
-// });
-// });
-//}).catch(error => {
-//  console.error("Error fetching access token:", error);
-// });
-//} else {
-//console.error(error);
-//}
-// //console.log("token in start screen", conn.token)
-// //-------------------------------------------------------------------------- Checking mussic dingPlayback ------------------
-// const isMusicPlaying = ref(true);
-// const changePlaySate = () => {
-//   isMusicPlaying.value = !isMusicPlaying.value;
-// };
-// const musicState = ref(true);
-// const changeMusicSate = () => {
-//   musicState.value = !musicState.value;
-//   player.togglePlay();
-// };
-// const musicPlayDuration = 5000;
-// let player: Spotify.Player | null = null;
-//   window.onSpotifyWebPlaybackSDKReady = () => {
-//     player = new Spotify.Player({
-//       name: 'Web Playback SDK Quick Start Player',
-//       getOAuthToken: cb => { cb(conn.token); },
-//       volume: 0.5
-//     });
-//     // Ready
-//     player.addListener('ready', ({ device_id }) => {
-//       console.log('Ready with Device ID', device_id);
-//     });
-//     // Not Ready
-//     player.addListener('not_ready', ({ device_id }) => {
-//       console.log('Device ID has gone offline', device_id);
-//     });
-//     player.addListener('initialization_error', ({ message }) => {
-//       console.error(message);
-//     });
-//     player.addListener('authentication_error', ({ message }) => {
-//       console.error(message);
-//     });
-//     player.addListener('account_error', ({ message }) => {
-//       console.error(message);
-//     });
-//     // connect to our spotify instance
-//     player.connect();
+ const code = new URLSearchParams(window.location.search).get("code"); // get access code
+
+
+ if (!code) {
+spotifyStore.redirectToAuthCodeFlow(); // make sure the user accepts
+} else if (code) { 
+spotifyStore.getLocalToken( code)  //  fetch token
+  .then((accessToken) => {
+  console.log("Access Token", accessToken);
+
+  spotifyStore.setToken(accessToken)
+}).catch(error => {
+ console.error("Error fetching access token:", error);
+});
+
+}
+
+
+
+
+
+
 </script>
 
-<template>
+<template >
+ 
+
   <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
     <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
   </div>
@@ -134,4 +81,7 @@ const error = new URLSearchParams(window.location.search).get("error"); // get a
       <HButton class="lg:m-5 m-10">Game instructions</HButton>
     </RouterLink>
   </div>
+
+  <!-- <WebPlayback v-if="spotifyStore.token" :token="spotifyStore.token" /> -->
+  <!-- {{ spotifyStore.token }}  -->
 </template>
