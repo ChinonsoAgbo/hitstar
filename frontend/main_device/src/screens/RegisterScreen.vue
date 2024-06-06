@@ -17,7 +17,7 @@ const isNotEmpty = computed(() => {
 })
 
 const hasValidLength = computed(() => {
-  return password.value.length >= 5 && password.value.length <= 50
+  return password.value.length >= 5 && password.value.length <= 40
       && username.value.length >= 3 && username.value.length <= 20
 })
 

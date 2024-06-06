@@ -18,9 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @Validated
@@ -62,7 +59,7 @@ public class AuthController {
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
-        if (signUpRequest.getPassword().length()<5 | signUpRequest.getPassword().length()>50) {
+        if (signUpRequest.getPassword().length() < 5 | signUpRequest.getPassword().length() > 40) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Password must be between 5 and 50 characters!"));
