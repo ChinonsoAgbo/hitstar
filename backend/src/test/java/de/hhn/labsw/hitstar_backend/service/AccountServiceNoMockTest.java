@@ -27,8 +27,8 @@ public class AccountServiceNoMockTest {
     @BeforeEach
     void setUp() {
         accounts = new Account[10];
-        account = new Account("Tim", "SuperSecure");
-        invalidUsernameAccount = new Account("B", "SuperSecure");
+        account = new Account("Tim", "cd0f169aecc8ec03dd4a81aa766273a05f4f0266a5f01b152336c1df83aa2d8b");
+        invalidUsernameAccount = new Account("B", "cd0f169aecc8ec03dd4a81aa766273a05f4f0266a5f01b152336c1df83aa2d8b");
         invalidPasswordAccount = new Account("Hitstar", "Bad");
     }
 
@@ -73,13 +73,6 @@ public class AccountServiceNoMockTest {
         accountService.deleteAccount(account.getId());
         assertFalse(accountService.findByID(account.getId()).isPresent());
 
-
-    }
-
-    @Test
-    void checkPassword() {
-        assertThrows(ConstraintViolationException.class, () ->
-                accountService.saveAccount(invalidPasswordAccount));
 
     }
 

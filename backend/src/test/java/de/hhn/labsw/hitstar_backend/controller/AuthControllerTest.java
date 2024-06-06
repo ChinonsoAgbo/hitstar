@@ -19,6 +19,7 @@ class AuthControllerTest {
 
     private static final String REGISTER_URL = "http://localhost:8080/api/auth/signup";
     private static final String SIGNING_URL = "http://localhost:8080/api/auth/signin";
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -33,7 +34,7 @@ class AuthControllerTest {
     private Account usernameBlankAccount;
     private Account pwNearlyTooLongAccount;
     private Account pwTooLongAccount;
-    private Account usernameNearlyTooLong;
+    private Account usernameNearlyTooLongAccount;
     private Account usernameTooLong;
     private Account usernameisNull;
     private Account passwordIsNull;
@@ -47,10 +48,10 @@ class AuthControllerTest {
         blankAccount = new Account("", "");
         validPasswordAccount = new Account("Michael", "12345");
         usernameBlankAccount = new Account("", "Password");
-        pwNearlyTooLongAccount = new Account("Michael", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0");
-        pwTooLongAccount = new Account("Michael", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t01");
-        usernameNearlyTooLong = new Account("FantastischerUser123", "123456");
-        usernameTooLong = new Account("FantastischerUser1234", "123456");
+        pwNearlyTooLongAccount = new Account("Michael", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"); // less then 40
+        pwTooLongAccount = new Account("Michael", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t01"); // more than 40
+        usernameNearlyTooLongAccount = new Account("FantastischerUser123", "123456"); //less than 20
+        usernameTooLong = new Account("FantastischerUser1234", "123456"); //more than 20
         usernameisNull = new Account(null, "123456");
         passwordIsNull = new Account("Michael", null);
     }
@@ -110,7 +111,7 @@ class AuthControllerTest {
 
     @Test
     void registerValidUserLong() {
-        checkRegisterValid(usernameNearlyTooLong);
+        checkRegisterValid(usernameNearlyTooLongAccount);
     }
 
     @Test
@@ -131,12 +132,13 @@ class AuthControllerTest {
 
 
     @Test
-    void loginValid(){
+    void loginValid() {
         checkRegisterValid(account);
         checkLogin(account);
 
 
     }
+
     @Test
     void registerUserAlreadyExists() {
         checkRegisterValid(account);
@@ -172,8 +174,7 @@ class AuthControllerTest {
     }
 
 
-    private void  checkLogin(Account account) {
-
+    private void checkLogin(Account account) {
         ResponseEntity<String> response = restTemplate.postForEntity(SIGNING_URL, account, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         System.out.println(response);
