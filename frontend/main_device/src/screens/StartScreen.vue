@@ -41,11 +41,17 @@ if (code) {
     .then((accessToken) => {
       console.log("Access Token", accessToken);
       spotifyStore.setToken(accessToken)
-      setStep(2)
+     
 
     }).catch(error => {
       console.error("Error fetching access token:", error);
     });
+    if (spotifyStore.is_active){
+      stepClass(3)
+    }else{
+      setStep(2)
+    }
+ 
 }
 
 
@@ -153,7 +159,6 @@ onMounted(() => {
     </div>
 
 
-
     <div class="flex flex-col items-center pt-36 space-y-3s  min-h-screen">
 
 
@@ -168,12 +173,13 @@ onMounted(() => {
         </RouterLink>
 
         <div class="items-center space-y-3 gap-4">
+          <HButton v-show="!code" @click="redirectToAuthCodeFlow"> Login to Spotify</HButton>
+
           <RouterLink v-show="isLoggedIn && code && spotifyStore.is_active" to="/qr-code">
             <HButton @click="sessionStore.createSessionID">Start game</HButton>
 
           </RouterLink>
 
-          <HButton v-show="!code" @click="redirectToAuthCodeFlow"> Login to Spotify</HButton>
         </div>
       </div>
       <!-- <RouterLink to="/">
