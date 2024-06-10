@@ -7,11 +7,13 @@ import LoginScreen from '../screens/LoginScreen.vue'
 import QRCodeScreen from '../screens/QRCodeScreen.vue'
 import RegisterScreen from '../screens/RegisterScreen.vue'
 import StartScreen from '../screens/StartScreen.vue'
+import SpotifyLogin from '@screens/SpotifyLogin.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/start' },
+    // { path: '/', redirect: '/spotify-login' },
     { path: '/design-settings', component: DesignSettingsScreen },
     { path: '/end', component: EndScreen },
     { path: '/game', component: GameScreen },
@@ -20,6 +22,8 @@ export const router = createRouter({
     { path: '/qr-code', component: QRCodeScreen },
     { path: '/register', component: RegisterScreen },
     { path: '/start', component: StartScreen },
+    { path: '/spotify-login', component: SpotifyLogin },
+
 
   ],
 })

@@ -1,4 +1,4 @@
-import { ref,onMounted } from 'vue';
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { Card } from '@shared/types';
 
@@ -10,60 +10,6 @@ export const useSpotifyStore = defineStore('spotify', () => {
   const player = ref({});
   const current_track = ref({});
   const token = ref('')
-  const setWebplayer= ref({})
-  const getWebplayer = ref('')
-  let webPlayer = ref({});
-  const hitstarTrackCard = ref<Card[]>([]);  // list histar cards 
-
-  interface Artist {
-    external_urls: { spotify: string };
-    href: string;
-    id: string;
-    name: string;
-    type: string;
-    uri: string;
-  }
-
-  interface Image {
-    url: string;
-    height: number | null;
-    width: number | null;
-  }
-
-  interface Track {
-    album: {
-      album_type: string;
-      artists: Artist[];
-      available_markets: string[];
-      external_urls: { spotify: string };
-      href: string;
-      id: string;
-      images: Image[];
-      name: string;
-      release_date: string;
-      release_date_precision: string;
-      total_tracks: number;
-      type: string;
-      uri: string;
-    };
-    artists: Artist[];
-    available_markets: string[];
-    disc_number: number;
-    duration_ms: number;
-    explicit: boolean;
-    external_ids: { isrc: string };
-    external_urls: { spotify: string };
-    href: string;
-    id: string;
-    is_local: boolean;
-    name: string;
-    popularity: number;
-    preview_url: string | null;
-    track_number: number;
-    type: string;
-    uri: string;
-  }
-
 
   type Playlist = {
     id: string;
@@ -71,23 +17,19 @@ export const useSpotifyStore = defineStore('spotify', () => {
     tracks: {
       href: string;
       total: number;
-      items?: Track[];
+      items?: [];
     };
   };
 
 
-  
-const authUrl = new URL('https://accounts.spotify.com/authorize');
 
-// client id von michi 0081b6fb5adf457aa794e77ec48fc00b
-//const clientId = 'cb69f868494a44b595d41b78992f3c2f';
-const clientId = 'cb69f868494a44b595d41b78992f3c2f';
+  const authUrl = new URL('https://accounts.spotify.com/authorize');
+  // change me 
+  const clientId = 'cb69f868494a44b595d41b78992f3c2f'; // your spotify client id here 
 
-
-
-const redirectUri = 'http://localhost:5173/';
-
-const scope = [
+  // const redirectUri = 'http://localhost:5173/';
+  const redirectUri = 'http://localhost:5173/spotify-login'; 
+  const scope = [
     'playlist-read-private',
     'user-read-email',
     'user-read-playback-state',
@@ -99,14 +41,14 @@ const scope = [
     'playlist-modify-private',
     'playlist-modify-public',
     'user-read-private'
-];
+  ];
 
 
 
-/**
- * Redirects user to spotify server for authorization
- */
- async function redirectToAuthCodeFlow() {
+  /**
+   * Redirects user to spotify server for authorization
+   */
+  async function redirectToAuthCodeFlow() {
     const verifierCode = generateRandomString(64);
     //code challenge generation
     const hashed = await sha256(verifierCode);
@@ -114,43 +56,43 @@ const scope = [
 
     localStorage.setItem('verifier', verifierCode);
 
-    const params:any = {
-        response_type: 'code',
-        client_id: clientId,
-        scope,
-        code_challenge_method: 'S256',
-        code_challenge: codeChallenge,
-        redirect_uri: redirectUri,
+    const params: any = {
+      response_type: 'code',
+      client_id: clientId,
+      scope,
+      code_challenge_method: 'S256',
+      code_challenge: codeChallenge,
+      redirect_uri: redirectUri,
     };
     authUrl.search = new URLSearchParams(params).toString(); // the code is found in the url 
     // Store the code verifier locally
     window.location.href = authUrl.toString();
-};
+  };
 
-// a high-entropy cryptographic random string for authentication
-const generateRandomString = (length: number): string => {
+  // a high-entropy cryptographic random string for authentication
+  const generateRandomString = (length: number): string => {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const randomValues = crypto.getRandomValues(new Uint8Array(length)); // return the crypto object associated to the global obj
     return Array.from(randomValues)
-        .map((x) => possible[x % possible.length])
-        .join('');
-};
+      .map((x) => possible[x % possible.length])
+      .join('');
+  };
 
-//  Encodes an ArrayBuffer into a base64 string.
-const base64encode = (input: ArrayBuffer): string => {
+  //  Encodes an ArrayBuffer into a base64 string.
+  const base64encode = (input: ArrayBuffer): string => {
     return btoa(String.fromCharCode(...new Uint8Array(input)))
-        .replace(/=/g, '')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_');
-};
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+  };
 
-const sha256 = async (plain: string): Promise<ArrayBuffer> => {
+  const sha256 = async (plain: string): Promise<ArrayBuffer> => {
     const encoder = new TextEncoder()
     const data = encoder.encode(plain)
     return await crypto.subtle.digest('SHA-256', data);
-};
+  };
 
-async function getAccessToken(code: string): Promise<any> {
+  async function getAccessToken(code: string): Promise<any> {
 
     console.log(" func to fetch new token was called  ")
     const verifierCode = localStorage.getItem("verifier") // get the verifier code 
@@ -165,16 +107,16 @@ async function getAccessToken(code: string): Promise<any> {
 
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params
     });
     if (!result.ok) {
-        const errormessage = await result.text();
-        console.log(errormessage)
+      const errormessage = await result.text();
+      console.log(errormessage)
 
-        // cannot fetch token so redirect 
-        redirectToAuthCodeFlow()
+      // cannot fetch token so redirect 
+      redirectToAuthCodeFlow()
     }
 
     const { access_token, token_type, expires_in, refresh_token } = await result.json();
@@ -186,9 +128,9 @@ async function getAccessToken(code: string): Promise<any> {
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
 
     return access_token
-}
+  }
 
-async function getRefreshToken(code: string): Promise<any> {
+  async function getRefreshToken(code: string): Promise<any> {
     console.log(" func to refresh token was called  ")
     const refreshToken = localStorage.getItem('refreshToken');
     const url = "https://accounts.spotify.com/api/token";
@@ -201,14 +143,14 @@ async function getRefreshToken(code: string): Promise<any> {
     params.append("client_id", clientId);
 
     const result = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params
     });
     if (!result.ok) {
-        console.log(" there was a proble refreshing token so fetched new one ")
-        // in calse of problem refreshing th token just fetch new one 
-        return await getAccessToken(code)
+      console.log(" there was a proble refreshing token so fetched new one ")
+      // in calse of problem refreshing th token just fetch new one 
+      return await getAccessToken(code)
     }
 
     const { access_token, token_type, expires_in, refresh_token } = await result.json();
@@ -218,34 +160,28 @@ async function getRefreshToken(code: string): Promise<any> {
     localStorage.setItem('expiresIn', expires_in);
     localStorage.setItem('refreshToken', refresh_token);
     localStorage.setItem('tokenTimestamp', tokenTimestamp);
-
     return access_token
 
-}
+  }
 
-//Retrieves a local access token, either by refreshing an existing token or obtaining a new one.
- async function getLocalToken(code: string): Promise<any> {
+  //Retrieves a local access token, either by refreshing an existing token or obtaining a new one.
+  async function getLocalToken(code: string): Promise<any> {
 
     let tokenTimestamp = localStorage.getItem('tokenTimestamp');
     console.log("checkTimeStamp " + isTokenExpired(tokenTimestamp!))
 
     if (tokenTimestamp === null || isTokenExpired(tokenTimestamp)) {
-        return await getAccessToken(code)
+      return await getAccessToken(code)
     } else {
-        return await getRefreshToken(code)
+      return await getRefreshToken(code)
     }
-
-
-}
-// check if tokem is expired 
-const isTokenExpired = (tokenTimestamp: string) => {
+  }
+  // check if tokem is expired 
+  const isTokenExpired = (tokenTimestamp: string) => {
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     const tokenExpiryTime = parseInt(tokenTimestamp) + 3600; // Token expiry time in seconds (1 hour)
     return currentTime >= tokenExpiryTime;
-};
-
-
-
+  };
 
   // ACTIONS
 
@@ -262,14 +198,10 @@ const isTokenExpired = (tokenTimestamp: string) => {
   const setTrack = (newValue: any) => {
     current_track.value = newValue;
   };
-  const setNextTrack = (newValue: any) => {
-  }
-  const setEndTrack = (newValue:any) =>{}
-
   const setToken = (newValue: any) => {
     token.value = newValue;
 
-  
+
   };
 
 
@@ -277,18 +209,23 @@ const isTokenExpired = (tokenTimestamp: string) => {
 
   const cache: {
     playlists?: Playlist;
-    tracks: Map<string, Track[]>;
+    tracks: Map<string, []>;
   } = { tracks: new Map() };
 
-  // Fetches tracks for a specific playlist. 
-  // This is needed to filter out the Tracks in a playlist 
-  async function fetchTracksInPlaylist(tracksUrl: string): Promise<Track[]> {
+
+  /**
+   *  Fetches tracks for a specific playlist. 
+   * This is needed to filter out the Tracks in a playlist 
+   * @param tracksUrl 
+   * @returns list of tracks
+   */
+  async function fetchTracksInPlaylist(tracksUrl: string): Promise<any[]> {
 
     if (cache.tracks.has(tracksUrl)) {
       return cache.tracks.get(tracksUrl) || [];
     }
 
-    let tracks: Track[] = [];
+    let tracks: any = [];
     let nextUrl: string | null = tracksUrl;
 
     while (nextUrl) {
@@ -305,7 +242,7 @@ const isTokenExpired = (tokenTimestamp: string) => {
       }
 
       const data: any = await result.json();
-      tracks.push(...data.items.map((item: TrackItem) => item.track));
+      tracks.push(...data.items.map((item: any) => item.track));
       nextUrl = data.next;
     }
 
@@ -314,9 +251,11 @@ const isTokenExpired = (tokenTimestamp: string) => {
     return tracks;
   }
 
-
-
-  async function fetch_HitstarDefault_Tracks(): Promise<any[]> {
+  /**
+   * fetches the hitstar default playlists 
+   * @returns Playlist tracks
+   */
+  async function fetchHitstarDefaultTracks(): Promise<any[]> {
 
     if (cache.playlists) {
       const playlist = cache.playlists;
@@ -379,21 +318,19 @@ const isTokenExpired = (tokenTimestamp: string) => {
   }
 
 
-  // Fetches and prepares the Hiistar track, 
-  // converts them into card objects 
+  /**
+   * Fetches and prepares the Hiistar track, 
+   * @returns converts them into card objects 
+   */
   async function loadHitstarTracks(): Promise<Card[]> {
     try {
 
-      const fetchedTracks = await fetch_HitstarDefault_Tracks(); // Fetch the tracks 
-
+      const fetchedTracks = await fetchHitstarDefaultTracks();
       const shuffledTracks = shuffleArray(fetchedTracks);   // Shuffle the fetched tracks 
       const slicedTracks = shuffledTracks.slice(0, 151);  // limit the size 
 
-
       const cards: Card[] = slicedTracks.map((track, index) => {  // Transform the sliced tracks into Card objects
-
         const album = track.album || {}; // Check if track.album exists and is not null
-
         const trackURI = `spotify:track:${track.id}`;
         return {
           id: track.id,
@@ -404,17 +341,19 @@ const isTokenExpired = (tokenTimestamp: string) => {
           trackUri: trackURI
         };
       });
-      // setCards(cards);
+
       return cards;
     } catch (error) {
       console.error('Error fetching hitstar track ', error);
-      throw error; // Propagate the error
+      throw error;
     }
   }
 
-  // Use this methode to play a track 
-  // NOTE: that i added a uri in the hitstarTrack to return the uri of each track 
-  // using this func requires u to call the HitstarTrack func and iterate the list to pass the uri 
+  /**
+   * Use this methode to play a track 
+   * @param uri using this func requires u to call the HitstarTrack func and iterate the list to pass the uri 
+   * @returns 
+   */
   const playTrack = async (uri: string) => {
     try {
       if (!token.value) {
@@ -439,40 +378,33 @@ const isTokenExpired = (tokenTimestamp: string) => {
   };
 
 
-  // const setCards = (newCards: Card[]) => {
-  //   hitstarTrackCard.value = newCards;
-  // };
+  const pauseTrack = async () => {
+    try {
+      if (!token.value) {
+        console.error('No token available');
+        return;
+      }
 
-
-const pauseTrack = async () => {
-  try {
-    if (!token.value) {
-      console.error('No token available');
-      return;
+      await fetch(`https://api.spotify.com/v1/me/player/pause`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Playback paused.');
+    } catch (error) {
+      console.error('Error pausing track:', error);
     }
-
-    await fetch(`https://api.spotify.com/v1/me/player/pause`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    console.log('Playback paused.');
-  } catch (error) {
-    console.error('Error pausing track:', error);
-  }
-};
+  };
 
   return {
     token,
-    setToken, // Set the token
-    loadHitstarTracks, // Fetch and load the histar cards and tracks
-    playTrack, // Play a track (for web playback)
-   // hitstarTrackCard, // Get the music card information
-
-   redirectToAuthCodeFlow,
-   getLocalToken,
+    setToken,
+    loadHitstarTracks,
+    playTrack,
+    redirectToAuthCodeFlow,
+    getLocalToken,
     pauseTrack,
     is_active,
     is_paused,
@@ -482,6 +414,5 @@ const pauseTrack = async () => {
     setPaused,
     setPlayer,
     setTrack,
-   // initWebPlayer
   };
 });
