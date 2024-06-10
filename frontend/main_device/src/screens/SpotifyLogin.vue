@@ -12,11 +12,6 @@ const code = new URLSearchParams(window.location.search).get("code"); // get acc
 const currentStep = ref(1)
 
 
-const isLoggedIn = ref(true);
-const changeLoginStatus = () => {
-  isLoggedIn.value = !isLoggedIn.value;
-};
-
 const startGame = (newValue: boolean) => { // show the button to sart game 
   if (newValue) {
     setStep(3)
@@ -60,16 +55,16 @@ if (code) {
 
 // is used to create a sessionStore  instance
 const sessionStore = useSessionStore();
-
+if (code) {
 const script = document.createElement('script');
 script.src = 'https://sdk.scdn.co/spotify-player.js';
 script.async = true;
 
 document.body.appendChild(script);
-
+}
 onMounted(() => {
 
-  if (code) {
+
   window.onSpotifyWebPlaybackSDKReady = () => {
     const player = new window.Spotify.Player({
       name: 'Hitstar Player',
@@ -105,7 +100,6 @@ onMounted(() => {
 
     spotifyStore.player.connect();
   };
-}
 
 });
 
@@ -115,7 +109,7 @@ onMounted(() => {
 
   <div class=" flex  items-center justify-center bg-primary-300 min-h-screen">
 
-    <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
+    <div class="absolute top-5 right-5 h-16 w-16">
       <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
     </div>
 
@@ -180,7 +174,7 @@ onMounted(() => {
         
           <HButton  v-show="!code" @click="redirectToAuthCodeFlow"> Login to Spotify</HButton>
 
-          <RouterLink v-show="isLoggedIn && code && spotifyStore.is_active" to="/qr-code">
+          <RouterLink v-show="code && spotifyStore.is_active" to="/qr-code">
             <HButton @click="sessionStore.createSessionID">Start game</HButton>
 
           </RouterLink>
