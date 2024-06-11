@@ -9,6 +9,7 @@ export interface Card {
   year: number;
   interpreter: string;
   position: number; // 1 - 10
+  trackUri: string;
 }
 
 export interface Player {
