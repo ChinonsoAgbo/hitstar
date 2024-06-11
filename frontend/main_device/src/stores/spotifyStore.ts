@@ -28,7 +28,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
   const clientId = 'cb69f868494a44b595d41b78992f3c2f'; // your spotify client id here 
 
   // const redirectUri = 'http://localhost:5173/';
-  const redirectUri = 'http://localhost:5173/spotify-login'; 
+  const redirectUri = 'http://localhost:5173/'; 
   const scope = [
     'playlist-read-private',
     'user-read-email',
@@ -42,8 +42,6 @@ export const useSpotifyStore = defineStore('spotify', () => {
     'playlist-modify-public',
     'user-read-private'
   ];
-
-
 
   /**
    * Redirects user to spotify server for authorization

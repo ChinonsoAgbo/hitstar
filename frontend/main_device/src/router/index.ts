@@ -9,11 +9,18 @@ import RegisterScreen from '../screens/RegisterScreen.vue'
 import StartScreen from '../screens/StartScreen.vue'
 import SpotifyLogin from '@screens/SpotifyLogin.vue'
 
+const code = new URLSearchParams(window.location.search).get("code"); // get access code
+let redirectUrl = '/start';
+if (code){
+  redirectUrl = '/spotify-login';
+}
+
 export const router = createRouter({
   history: createWebHashHistory(),
+
   routes: [
-    { path: '/', redirect: '/start' },
-    // { path: '/', redirect: '/spotify-login' },
+    //{ path: '/', redirect: '/start' },
+   { path: '/', redirect: redirectUrl },
     { path: '/design-settings', component: DesignSettingsScreen },
     { path: '/end', component: EndScreen },
     { path: '/game', component: GameScreen },
@@ -23,7 +30,6 @@ export const router = createRouter({
     { path: '/register', component: RegisterScreen },
     { path: '/start', component: StartScreen },
     { path: '/spotify-login', component: SpotifyLogin },
-
 
   ],
 })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { HButton, HAvatar } from "@components/";
-import { useSessionStore } from "@shared/stores/sessionStore";
 import { ref } from "vue";
 import { IMAGE_URL } from "@shared/urls";
 
@@ -14,7 +13,6 @@ const changeLoginStatus = () => {
 // is used to create a sessionStore  instance
 //creates a new random SessionID that is stored in the gameStore so it can acces from every Vue
 
-const sessionStore = useSessionStore();
 
 
 
