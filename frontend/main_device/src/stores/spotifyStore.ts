@@ -25,7 +25,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
 
   const authUrl = new URL('https://accounts.spotify.com/authorize');
   // change me 
-  const clientId = 'cb69f868494a44b595d41b78992f3c2f'; // your spotify client id here 
+  const clientId = '0081b6fb5adf457aa794e77ec48fc00b'; // your spotify client id here 
 
   // const redirectUri = 'http://localhost:5173/';
   const redirectUri = 'http://localhost:5173/'; 
@@ -330,10 +330,11 @@ export const useSpotifyStore = defineStore('spotify', () => {
       const cards: Card[] = slicedTracks.map((track, index) => {  // Transform the sliced tracks into Card objects
         const album = track.album || {}; // Check if track.album exists and is not null
         const trackURI = `spotify:track:${track.id}`;
+        const year = album.release_date ? album.release_date.split('-')[0] : 'Unknown';
         return {
           id: track.id,
           title: track.name,
-          year: album.release_date || 'Unknown', // Use 'Unknown' if release_date is null
+          year: year, // Use 'Unknown' if release_date is null
           interpreter: track.artists[0]?.name || 'Unknown Artist',
           position: index + 1, // Position in the list, 1-based
           trackUri: trackURI
