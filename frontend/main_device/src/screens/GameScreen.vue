@@ -110,7 +110,7 @@ onMounted(() =>{
                 v-for="player in gameStore.players" 
                 class="m-2 gap-2 flex flex-col items-center border-2 p-1 pt-3 rounded-md" 
                 :class="player === gameStore.playerOnTurn ? 
-                      'border-secondary-500 animate-pulse' : 'border-gray-400'" >
+                      `border-${player.color}-500 animate-pulse` : 'border-gray-400'" >
 
                 <HAvatar :active="player === gameStore.playerOnTurn" :size="3" :url="IMAGE_URL + player.iconURL" />
                 <Tokens :amount="player.tokens" />
@@ -134,7 +134,8 @@ onMounted(() =>{
             class="fixed left-0 top-[20%] w-full flex items-center justify-center gap-5">
           <HAvatar
               :active="gameCycle.activeGameState !== GameState.MATEGUESS"
-              :size="7" 
+              :size="7"
+              :color="player.color"
               :url="IMAGE_URL + gameStore.playerOnTurn.iconURL" />
 
           <BoltIcon 
@@ -144,7 +145,8 @@ onMounted(() =>{
           <HAvatar 
               v-if="gameCycle.activeGameState === GameState.MATEGUESS"
               :active="true" 
-              :size="7" 
+              :size="7"
+              :color="player.color"
               :url="IMAGE_URL + gameStore.activePlayer.iconURL" class="animate-pulse" />
 
         </div>

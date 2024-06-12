@@ -23,6 +23,8 @@ export interface Player {
   lastGuessedCardIndex: number;
   maxCardIndex: number;
   minCardIndex: number;
+
+  color: string;
 }
 
 export enum GameState {

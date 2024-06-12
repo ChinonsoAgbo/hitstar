@@ -26,4 +26,6 @@ services:
     ports:
       - "8081:80"
     volumes:
+      - ./nginx/nginx.conf:/etc/nginx/default.conf
       - ./images:/usr/share/nginx/html/images
+      - ./sounds:/usr/share/nginx/html/sounds
