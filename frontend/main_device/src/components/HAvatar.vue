@@ -13,9 +13,8 @@ withDefaults(defineProps<{
 
 <template>
     <img 
-        :style="{ width: size + 'rem', height: size + 'rem' }" 
-        class="rounded-full ring-4 p-1" 
-        :class="[ active ? `ring-${color}-500` : 'ring-gray-400 dark:ring-gray-500' ]"
+        :style="{ width: size + 'rem', height: size + 'rem' }"
+        :class="`rounded-full ring-4 p-1 ring-${color}-500`"
         :src="url" 
         alt="Rounded avatar">
 </template>

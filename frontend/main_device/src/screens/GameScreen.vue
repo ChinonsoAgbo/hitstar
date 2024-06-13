@@ -109,10 +109,9 @@ onMounted(() =>{
             <div 
                 v-for="player in gameStore.players" 
                 class="m-2 gap-2 flex flex-col items-center border-2 p-1 pt-3 rounded-md" 
-                :class="player === gameStore.playerOnTurn ? 
-                      `border-${player.color}-500 animate-pulse` : 'border-gray-400'" >
+                :class="[`border-${player.color}-500`, player === gameStore.playerOnTurn ? 'animate-pulse': '']">
 
-                <HAvatar :active="player === gameStore.playerOnTurn" :size="3" :url="IMAGE_URL + player.iconURL" />
+                <HAvatar :active="player === gameStore.playerOnTurn" :color="player.color" :size="3" :url="IMAGE_URL + player.iconURL" />
                 <Tokens :amount="player.tokens" />
                 
                 <h5 
@@ -135,7 +134,7 @@ onMounted(() =>{
           <HAvatar
               :active="gameCycle.activeGameState !== GameState.MATEGUESS"
               :size="7"
-              :color="player.color"
+              :color="gameStore.playerOnTurn.color"
               :url="IMAGE_URL + gameStore.playerOnTurn.iconURL" />
 
           <BoltIcon 
@@ -146,7 +145,7 @@ onMounted(() =>{
               v-if="gameCycle.activeGameState === GameState.MATEGUESS"
               :active="true" 
               :size="7"
-              :color="player.color"
+              :color="gameStore.playerOnTurn.color"
               :url="IMAGE_URL + gameStore.activePlayer.iconURL" class="animate-pulse" />
 
         </div>
@@ -167,12 +166,14 @@ onMounted(() =>{
                     v-if="gameStore.hasCard(position, gameStore.activePlayer) 
                           && gameStore.getCard(position, gameStore.activePlayer)?.title !== 'GUESS'" 
                     :size="cardSize" 
-                    :card="gameStore.getCard(position, gameStore.activePlayer)!" />
+                    :card="gameStore.getCard(position, gameStore.activePlayer)!"
+                    :color="gameStore.playerOnTurn.color"/>
 
                 <HHitstarCard 
                     v-else-if="gameStore.hasCard(position, gameStore.activePlayer) 
                           && gameStore.getCard(position, gameStore.activePlayer)?.title === 'GUESS'" 
-                    :size="cardSize" />
+                    :size="cardSize"
+                    :color="gameStore.playerOnTurn.color" />
 
             </HCard>
 
@@ -233,6 +234,7 @@ onMounted(() =>{
                         <HAvatar
                             :active="true"
                             :size="cardSize"
+                            :color="gameStore.playerOnTurn.color"
                             :url="IMAGE_URL + gameStore.playerOnTurn?.iconURL!" />
 
                         <h1 class="text-5xl font-bold tracking-tight text-white">
@@ -290,6 +292,7 @@ onMounted(() =>{
                       :active="true" 
                       :size="7" 
                       :url="IMAGE_URL + gameStore.activePlayer.iconURL"
+                      :color="gameStore.activePlayer.color"
                       class="fixed bottom-[30%] right-[30%]" />
                 </Transition>
             </div>
@@ -334,7 +337,7 @@ onMounted(() =>{
                     <HHitstarCard :size="16" />
                   </template>
                   <template #back>
-                    <HSongCard :size="16" :card="gameStore.currentCard" />
+                    <HSongCard :color="gameStore.activePlayer.color" :size="16" :card="gameStore.currentCard" />
                   </template>
                 </VueFlip>
               </Transition>
@@ -349,7 +352,8 @@ onMounted(() =>{
                 <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
                   <HAvatar 
                     :active="true" 
-                    :size="7" 
+                    :size="7"
+                    :color="gameStore.activePlayer.color"
                     :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
                 </div>
                 
@@ -360,7 +364,7 @@ onMounted(() =>{
                     </template>
                     <template #back>
                       <Transition name="getgray" appear>
-                        <HSongCard :size="16" :card="gameStore.currentCard" />
+                        <HSongCard :size="16" :color="gameStore.activePlayer.color" :card="gameStore.currentCard" />
                       </Transition>
                     </template>
                   </VueFlip>

@@ -5,6 +5,9 @@ import {resolve} from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    port: 5174
+  },
   resolve: {
     alias: {
       '@shared': resolve(__dirname, '../shared_resources'),

@@ -40,11 +40,13 @@ client.on("message", function (_, message) {
           year: 1920,
           interpreter: "HITSTAR",
           position: 5,
+          trackUri: ""
         }],
     guessedCardIndex : 5,
     lastGuessedCardIndex: 5,
     minCardIndex : 0,
-    maxCardIndex : 10,    
+    maxCardIndex : 10,
+    color: gameStore.colors.pop()!
   }
   if(gameStore.players.filter(p=> p.id === player.id).length === 0 && !msg.isLeaving){
     gameStore.players.push(player)
@@ -72,15 +74,7 @@ function addPlayer(incomingPlayer: any) {
   // could check if player is already in the list
   //if (!players.value.some(player => player.name === playerName)) {
   if (incomingPlayer) {
-  
-
-    playersReadyTojoin.value.push({
-      id: incomingPlayer.senderId,
-      name: incomingPlayer.playerName,
-      icon: "profile-picture-5.jpg",
-      tokens: incomingPlayer.tokens,
-      cards: incomingPlayer.cards,
-    });
+    playersReadyTojoin.value.push(incomingPlayer);
   }
   console.log("Player lenth", playersReadyTojoin.value.length);
 }

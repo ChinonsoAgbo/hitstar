@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { Card, GameState, MQTTMessage, Player, guessMsg } from "@shared/types";
+import { Card, GameState, MQTTMessage, Player } from "@shared/types";
 import {computed, onMounted, ref, Ref} from "vue";
 import mqtt from "mqtt";
-import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "@shared/types";
+import {gameStartMsg, turnMsg } from "@shared/types";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 import { useSpotifyStore } from './spotifyStore';
@@ -13,19 +13,9 @@ export const useGameStore = defineStore('game', () => {
 
     const gameCycleStore = useGameCycleStore();
 
-    const players: Ref<Player[]> = ref([
-        {
-            name: "Player 1",
-            id: 1,
-            tokens: 3,
-            cards: [],
-            iconURL: "image1.png",
-            guessedCardIndex: 5,
-            lastGuessedCardIndex: 5,
-            maxCardIndex: 10,
-            minCardIndex: 1
-        }
-    ])
+    const colors = ref(['red', 'green', 'yellow', 'white', 'black', 'orange', 'pink', 'gray']);
+
+    const players: Ref<Player[]> = ref([]);
 
     const drawPile: Ref<Card[]> = ref([]);
 
@@ -48,7 +38,7 @@ export const useGameStore = defineStore('game', () => {
     const DRAW_CARD_DURATION = 500;
     const DOUBT_INTERVALL_STEP = 1000; // 1000
     const DOUBT_INTERVALL_ANNOUNCEMENT = 2000; // 2000
-    const DOUBT_INTERVALL = DOUBT_INTERVALL_ANNOUNCEMENT + 5 * DOUBT_INTERVALL_STEP;
+    // const DOUBT_INTERVALL = DOUBT_INTERVALL_ANNOUNCEMENT + 5 * DOUBT_INTERVALL_STEP;
     const DOUBT_ANIMATION_DURATION = 4000; // 4000
     const EVALUATION_ANIMATION_DURATION = 3000; // 3000
     const SHOW_CARD_DURATION = 5000; // 5000
@@ -66,7 +56,7 @@ export const useGameStore = defineStore('game', () => {
     const flipCardSound = new Audio(`${SOUND_URL}flip_card.mp3`);
     const cardSwipeSound = new Audio(`${SOUND_URL}card_swipe.mp3`);
     const endGameFanfareSound = new Audio(`${SOUND_URL}end_game_fanfare.mp3`);
-    const explosionSound = new Audio(`${SOUND_URL}explosion.mp3`);
+    // const explosionSound = new Audio(`${SOUND_URL}explosion.mp3`);
     const successSound = new Audio(`${SOUND_URL}success.mp3`);
     const failureSound = new Audio(`${SOUND_URL}failure.mp3`);
 
@@ -98,7 +88,7 @@ export const useGameStore = defineStore('game', () => {
                 case GameState.DOUBT:
                     if(msg.playerId !== activePlayer.value.id) {
                         const doubtPlayer = players.value.find(player => player.id === msg.senderId);
-                        if (doubtPlayer?.tokens > 0) {
+                        if (doubtPlayer?.tokens! > 0) {
                             Actions.startDoubtPhase(doubtPlayer!)
                         }
                     }
@@ -396,7 +386,7 @@ export const useGameStore = defineStore('game', () => {
          */ 
         commitGuess() {
             console.log("COMMIT GUESS");
-            activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: activePlayer.value.guessedCardIndex });
+            activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: activePlayer.value.guessedCardIndex, trackUri: '' });
             // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             flipCardSound.play();
             if (gameCycleStore.activeGameState === GameState.GUESS) {
@@ -486,8 +476,10 @@ export const useGameStore = defineStore('game', () => {
 
         evaluatePositive(wasDoubt: boolean) {
             console.log('POSITIVE');
-            successSound.play();
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_POSITIVE);
+            setTimeout(() => {
+                successSound.play();
+            }, 2000);
             setTimeout(() => {
                 if (wasDoubt) {
                     Helpers.resetTimeLineCards(playerOnTurn.value);
@@ -504,8 +496,10 @@ export const useGameStore = defineStore('game', () => {
 
         evaluateNegative(wasDoubt: boolean) {
             console.log('NEGATIVE');
-            failureSound.play();
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_NEGATIVE);
+            setTimeout(() => {
+                failureSound.play();
+            }, 2000);
             setTimeout(() => {
                 gameCycleStore.setGameState(GameState.TURNEND);
                 Helpers.resetTimeLineCards(activePlayer.value);
@@ -545,6 +539,7 @@ export const useGameStore = defineStore('game', () => {
         currentCard,
         DRAW_CARD_DURATION,
         SONG_DURATION,
-        startGame
+        startGame,
+        colors
     }
 });
