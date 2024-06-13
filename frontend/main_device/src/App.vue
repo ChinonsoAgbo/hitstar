@@ -5,7 +5,7 @@ import {IMAGE_URL} from "@shared/urls";
 
 <template>
 
-  <div class="bg-[url('http://localhost:8081/images/stage.bmp')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
+  <div class="bg-[url('http://localhost:8081/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
 
     <div class="absolute top-[10%] left-[10%] background-animate p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
       <img class="rounded-full w-96 h-96 flex justify-center align-middle" :src="`${IMAGE_URL}hitstar.jpg`"
