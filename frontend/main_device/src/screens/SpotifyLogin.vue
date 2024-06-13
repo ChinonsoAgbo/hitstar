@@ -5,11 +5,13 @@ import { ref, onMounted } from "vue";
 import { IMAGE_URL } from "@shared/urls";
 
 import { useSpotifyStore } from "@stores/spotifyStore.ts";
+import TimeLineStep from "@components/TimeLineStep.vue";
+import {UserIcon, ArrowLeftIcon, MusicalNoteIcon} from "@heroicons/vue/24/solid";
 
 const spotifyStore = useSpotifyStore();
 // parse the URL to retrieve the code parameter for spotify Token
 const code = new URLSearchParams(window.location.search).get("code"); // get access code
-const currentStep = ref(1)
+const currentStep = ref(0)
 
 
 const startGame = (newValue: boolean) => { // show the button to sart game 
@@ -107,84 +109,116 @@ onMounted(() => {
 
 <template>
 
-  <div class=" flex  items-center justify-center bg-primary-300 min-h-screen">
+    <div class="absolute p-5 top-[10%] right-[10%] h-[80%] w-[40%] rounded-lg \
+                gap-2 backdrop-blur-md flex flex-col items-stretch justify-center">
 
-    <div class="absolute top-5 right-5 h-16 w-16">
-      <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
-    </div>
+      <RouterLink to="/start">
+        <HButton class="fixed -top-5 -right-5 flex justify-around items-center">
+          <ArrowLeftIcon class="w-8 h-8 mr-5" />
+          BACK
+        </HButton>
+      </RouterLink>
 
-    <div class="flex-col  w-full ">
-    <div class="">
-
-      <ol
-        class=" flex   text-lg font-semibold  text-black-600 dark:text-black-500  p-24   ">
-
-        <div class=" flex  w-full">
-          <li
-            :class="[stepClass(1), 'flex md:w-full items-center sm:after:content-[\'\'] after:w-full after:h-1 after:border-b after:border-4 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-6']">
-            <span class="flex items-center rounded-lg"
-              :class="currentStep >= 1 ? 'text-black-600 dark:text-black-500 bg-primary-100 dark:bg-[#1DB954]  ' : 'bg-gray-100 dark:bg-gray-700'">
-
-              <svg v-if="currentStep >= 1" class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-              </svg>
-              Login <span class="hidden sm:inline-flex sm:ms-2"> to</span> <span
-                class="hidden sm:inline-flex sm:ms-2">spotify</span>
-            </span>
-
-          </li>
-       
-          <li
-            :class="[stepClass(2), 'flex md:w-full items-center sm:after:content-[\'\'] after:w-full after:h-1 after:border-b after:border-4 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-6']">
-            <span class="flex items-center rounded-lg  "
-              :class="currentStep >= 2 ? ' bg-blue-100 dark:bg-[#1DB954]  ' : 'bg-gray dark:bg-gray'">
-              Connect in Spotify App to (Hitstar player)
-            </span>
-          </li>
-
-          <li :class="[stepClass(3), 'flex items-center']">
-            <span class="flex items-center rounded-lg  "
-              :class="currentStep >= 3 ? ' bg-blue-100 dark:bg-[#1DB954] ' : 'bg-gray dark:bg-gray'">
-              <svg v-if="currentStep >= 3" class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-              </svg>
-              <span :class="spotifyStore.is_active ? setStep(3) : startGame(spotifyStore.is_active)" class="me-2"> Start
-            
-          </span> game! <p v-if="spotifyStore.is_active" >😎</p>
-            </span>
-          </li>
-
-        </div>
+      <ol class="relative m-5 border-s border-gray-200 dark:border-gray-700">
+        <TimeLineStep subtitle="1.)" :done="currentStep > 0">
+          <template #default>
+            SPOTIFY LOGIN
+          </template>
+          <template #button>
+            <HButton  v-show="!code" @click="redirectToAuthCodeFlow">LOGIN TO SPOTIFY</HButton>
+          </template>
+        </TimeLineStep>
+        <TimeLineStep subtitle="2.)" :done="currentStep > 1">
+          CHOOSE HITSTAR IN SPOTIFY APP
+        </TimeLineStep>
+        <TimeLineStep subtitle="3.)" :done="spotifyStore.is_active">
+          <template #default>
+            START GAME!
+          </template>
+          <template #button>
+            <RouterLink v-show="code && spotifyStore.is_active" to="/qr-code">
+              <HButton @click="sessionStore.createSessionID" class="animate-pulse w-full flex justify-around items-center">
+                START GAME
+                <MusicalNoteIcon class="w-8 h-8 mx-5" />
+              </HButton>
+            </RouterLink>
+          </template>
+        </TimeLineStep>
       </ol>
 
     </div>
-    <!-- min-h-screen -->
 
-    <div class="flex w-full items-center justify-center  ">
+    <!--    <div class="flex-col  w-full ">-->
+<!--    <div>-->
 
-        <div class=" ">
+<!--      <ol-->
+<!--        class=" flex   text-lg font-semibold  text-black-600 dark:text-black-500  p-24   ">-->
 
-          <RouterLink v-show="!code" to="/start"> 
-            <HButton  v-show="!code"> Move back </HButton>
-          </RouterLink>
-        
-          <HButton  v-show="!code" @click="redirectToAuthCodeFlow"> Login to Spotify</HButton>
+<!--        <div class=" flex  w-full">-->
+<!--          <li-->
+<!--            :class="[stepClass(1), 'flex md:w-full items-center sm:after:content-[\'\'] after:w-full after:h-1 after:border-b after:border-4 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-6']">-->
+<!--            <span class="flex items-center rounded-lg"-->
+<!--              :class="currentStep >= 1 ? 'text-black-600 dark:text-black-500 bg-primary-100 dark:bg-[#1DB954]  ' : 'bg-gray-100 dark:bg-gray-700'">-->
 
-          <RouterLink v-show="code && spotifyStore.is_active" to="/qr-code">
-            <HButton @click="sessionStore.createSessionID">Start game</HButton>
+<!--              <svg v-if="currentStep >= 1" class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true"-->
+<!--                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">-->
+<!--                <path-->
+<!--                  d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />-->
+<!--              </svg>-->
+<!--              Login <span class="hidden sm:inline-flex sm:ms-2"> to</span> <span-->
+<!--                class="hidden sm:inline-flex sm:ms-2">spotify</span>-->
+<!--            </span>-->
 
-          </RouterLink>
+<!--          </li>-->
+<!--       -->
+<!--          <li-->
+<!--            :class="[stepClass(2), 'flex md:w-full items-center sm:after:content-[\'\'] after:w-full after:h-1 after:border-b after:border-4 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-6']">-->
+<!--            <span class="flex items-center rounded-lg  "-->
+<!--              :class="currentStep >= 2 ? ' bg-blue-100 dark:bg-[#1DB954]  ' : 'bg-gray dark:bg-gray'">-->
+<!--              Connect in Spotify App to (Hitstar player)-->
+<!--            </span>-->
+<!--          </li>-->
 
-        </div>
+<!--          <li :class="[stepClass(3), 'flex items-center']">-->
+<!--            <span class="flex items-center rounded-lg  "-->
+<!--              :class="currentStep >= 3 ? ' bg-blue-100 dark:bg-[#1DB954] ' : 'bg-gray dark:bg-gray'">-->
+<!--              <svg v-if="currentStep >= 3" class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true"-->
+<!--                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">-->
+<!--                <path-->
+<!--                  d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />-->
+<!--              </svg>-->
+<!--              <span :class="spotifyStore.is_active ? setStep(3) : startGame(spotifyStore.is_active)" class="me-2"> Start-->
+<!--            -->
+<!--          </span> game! <p v-if="spotifyStore.is_active" >😎</p>-->
+<!--            </span>-->
+<!--          </li>-->
 
-      </div>
-    
-    </div>
+<!--        </div>-->
+<!--      </ol>-->
 
-  </div>
+<!--    </div>-->
+<!--    &lt;!&ndash; min-h-screen &ndash;&gt;-->
+
+<!--    <div class="flex w-full items-center justify-center  ">-->
+
+<!--        <div class=" ">-->
+
+<!--          <RouterLink v-show="!code" to="/start"> -->
+<!--            <HButton  v-show="!code"> Move back </HButton>-->
+<!--          </RouterLink>-->
+<!--        -->
+<!--          <HButton  v-show="!code" @click="redirectToAuthCodeFlow"> Login to Spotify</HButton>-->
+
+<!--          <RouterLink v-show="code && spotifyStore.is_active" to="/qr-code">-->
+<!--            <HButton @click="sessionStore.createSessionID">Start game</HButton>-->
+
+<!--          </RouterLink>-->
+
+<!--        </div>-->
+
+<!--      </div>-->
+<!--    -->
+<!--    </div>-->
+
 
 </template>

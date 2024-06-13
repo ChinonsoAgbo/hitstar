@@ -13,9 +13,18 @@ export const useGameStore = defineStore('game', () => {
 
     const gameCycleStore = useGameCycleStore();
 
-    const colors = ref(['red', 'green', 'yellow', 'white', 'black', 'orange', 'pink', 'gray']);
+    const colors = ref(['red', 'green', 'yellow', 'white', 'lime', 'orange', 'pink', 'gray']);
 
-    const players: Ref<Player[]> = ref([]);
+    const players: Ref<Player[]> = ref([
+        {
+            id: "0",
+            name: "Player 1",
+            tokens: 5,
+            cards: [],
+            iconURL: "image1.png"
+
+        }
+    ]);
 
     const drawPile: Ref<Card[]> = ref([]);
 

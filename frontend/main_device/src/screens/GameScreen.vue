@@ -99,7 +99,7 @@ onMounted(() =>{
 </script>
 
 <template>
-    <div class="bg-primary-500 absolute w-full h-full">
+    <div class="bg-primary-200 absolute w-full h-full">
 
         <!-- Players at top right corner -->
         <div 
@@ -109,7 +109,7 @@ onMounted(() =>{
             <div 
                 v-for="player in gameStore.players" 
                 class="m-2 gap-2 flex flex-col items-center border-2 p-1 pt-3 rounded-md" 
-                :class="[`border-${player.color}-500`, player === gameStore.playerOnTurn ? 'animate-pulse': '']">
+                :class="[`border-${player.color}-200`, player === gameStore.playerOnTurn ? 'animate-pulse': '']">
 
                 <HAvatar :active="player === gameStore.playerOnTurn" :color="player.color" :size="3" :url="IMAGE_URL + player.iconURL" />
                 <Tokens :amount="player.tokens" />
@@ -139,7 +139,7 @@ onMounted(() =>{
 
           <BoltIcon 
               v-if="gameCycle.activeGameState === GameState.MATEGUESS"
-              class="h-20 text-secondary-500" />
+              class="h-20 text-secondary-200" />
 
           <HAvatar 
               v-if="gameCycle.activeGameState === GameState.MATEGUESS"
@@ -250,7 +250,7 @@ onMounted(() =>{
                 <Transition name="pop" appear>
                   <div class="flex flex-col justify-center items-center gap-3">
                     <HHitstarCard :size="16" />
-                    <!-- <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-500">
+                    <!-- <div class="w-24 h-24 flex justify-center items-center bg-white rounded-lg border-4 border-primary-200">
                         <PauseIcon class="w-20 h-20 cursor-pointer font-bold" />
                     </div> -->
 
@@ -284,7 +284,7 @@ onMounted(() =>{
                       class="fixed top-[30%] left-[30%]" />
                 </Transition>
                 <Transition name="pop" appear>
-                  <BoltIcon v-if="flip" class="h-40 text-secondary-500" />
+                  <BoltIcon v-if="flip" class="h-40 text-secondary-200" />
                 </Transition>
                 <Transition name="pop" appear>
                   <HAvatar 

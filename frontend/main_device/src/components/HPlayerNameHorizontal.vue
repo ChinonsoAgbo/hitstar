@@ -11,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex items-center">
+    <div class="flex items-center text-white">
 
         <div class="relative">
             <HAvatar :url="IMAGE_URL + player.iconURL" :color="player.color"> </HAvatar>
@@ -21,7 +21,7 @@ defineProps<{
             </span>
         </div>
 
-        <span class="ml-3 text-sm font-medium text-gray-900 truncate dark:text-white">
+        <span class="ml-5 text-lg font-medium text-white truncate">
             {{ player.name }}
         </span>
 
