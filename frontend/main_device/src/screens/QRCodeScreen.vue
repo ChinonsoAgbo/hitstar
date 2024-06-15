@@ -35,14 +35,9 @@ client.on("message", function (_, message) {
     name : msg.playerName, 
     iconURL : msg.avatarUrl,
     tokens : 3, 
-    cards:[    {
-          id: "1",
-          title: "HITSTAR",
-          year: 1920,
-          interpreter: "HITSTAR",
-          position: 5,
-          trackUri: ""
-        }],
+    cards:[
+        gameStore.drawPile.pop()!,
+    ],
     guessedCardIndex : 5,
     lastGuessedCardIndex: 5,
     minCardIndex : 0,
@@ -79,6 +74,7 @@ function addPlayer(incomingPlayer: any) {
   }
   console.log("Player lenth", playersReadyTojoin.value.length);
 }
+
 </script>
 
 <template>

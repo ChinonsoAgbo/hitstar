@@ -4,6 +4,7 @@ import { HSubmitButton, HButton, HCard } from '@components/'
 import { IMAGE_URL } from "@shared/urls";
 import HInput from "@components/HInput.vue";
 import {ArrowLeftIcon} from "@heroicons/vue/24/solid";
+import HWarning from "@components/HWarning.vue";
 
 const password = ref('')
 const confirmPassword = ref('')
@@ -52,15 +53,6 @@ async function register() {
 
 <template>
 
-
-  <div class="fixed top-0 left-0 w-full h-full bg-[url('http://localhost:8081/images/stage.bmp')] bg-center bg-cover"></div>
-
-  <div class="absolute top-[10%] left-[10%] p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
-    <img class="rounded-full w-96 h-96 flex justify-center align-middle" :src="`${IMAGE_URL}hitstar.jpg`"
-         alt="image description" />
-  </div>
-
-
   <div class="absolute p-5 top-[10%] right-[10%] h-[80%] w-[40%] rounded-lg gap-2 backdrop-blur-md flex flex-col items-stretch justify-center">
 
     <RouterLink to="/start">
@@ -90,10 +82,12 @@ async function register() {
         <HInput id="confirmPassword" placeholder="Password..." type="password" v-model="confirmPassword"/>
       </div>
 
-      <p v-if="isPasswordMismatch" class="text-red-500 text-base mt-1">Passwords do not match.</p>
-      <p v-if="!isNotEmpty" class="text-red-500 text-base mt-1">Please fill in all fields.</p>
-      <p v-if="!hasValidLength" class="text-red-500 text-base mt-1">Password must contain 5 - 50 digits. <br/> Username must contain 3 - 20 digits.</p>
-      <p v-if="infoText !== ''" class="text-blue-500 text-base mt-1">{{infoText}}</p>
+      <HWarning v-if="isPasswordMismatch || !isNotEmpty || !hasValidLength || infoText !== ''">
+        <p v-if="isPasswordMismatch" class="text-red-500 text-base mt-1">Passwords do not match.</p>
+        <p v-if="!isNotEmpty" class="text-red-500 text-base mt-1">Please fill in all fields.</p>
+        <p v-if="!hasValidLength" class="text-red-500 text-base mt-1">Password must contain 5 - 50 digits. <br/> Username must contain 3 - 20 digits.</p>
+        <p v-if="infoText !== ''" class="text-blue-500 text-base mt-1">{{infoText}}</p>
+      </HWarning>
 
       <HButton class="w-full mt-5" type="submit" :disabled="!isNotEmpty || isPasswordMismatch || !hasValidLength">
         REGISTER

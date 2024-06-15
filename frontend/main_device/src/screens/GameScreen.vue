@@ -99,7 +99,7 @@ onMounted(() =>{
 </script>
 
 <template>
-    <div class="bg-primary-200 absolute w-full h-full">
+    <div class="backdrop-blur-2xl absolute w-full h-full">
 
         <!-- Players at top right corner -->
         <div 
@@ -145,7 +145,7 @@ onMounted(() =>{
               v-if="gameCycle.activeGameState === GameState.MATEGUESS"
               :active="true" 
               :size="7"
-              :color="gameStore.playerOnTurn.color"
+              :color="gameStore.activePlayer.color"
               :url="IMAGE_URL + gameStore.activePlayer.iconURL" class="animate-pulse" />
 
         </div>
@@ -167,7 +167,7 @@ onMounted(() =>{
                           && gameStore.getCard(position, gameStore.activePlayer)?.title !== 'GUESS'" 
                     :size="cardSize" 
                     :card="gameStore.getCard(position, gameStore.activePlayer)!"
-                    :color="gameStore.playerOnTurn.color"/>
+                    :color="gameStore.activePlayer.color"/>
 
                 <HHitstarCard 
                     v-else-if="gameStore.hasCard(position, gameStore.activePlayer) 
@@ -186,7 +186,8 @@ onMounted(() =>{
                   v-if="(gameCycle.activeGameState === GameState.GUESS
                         || gameCycle.activeGameState === GameState.MATEGUESS)
                         && position == gameStore.activePlayer.guessedCardIndex" 
-                  :size="cardSize" 
+                  :size="cardSize"
+                  color="primary"
                   class="animate-bounce" />
               </HCard>
 
@@ -195,14 +196,14 @@ onMounted(() =>{
 
         <!-- Ablagestapel -->
         <div class="fixed top-4 left-4 hover:cursor-pointer grayscale">
-          <HHitstarCard ref="discardPile" :size="cardSize" />
+          <HHitstarCard ref="discardPile" :size="cardSize" color="primary" />
         </div>
 
         <!-- Nachziehstapel -->
         <div 
             class="fixed top-4 left-36 hover:cursor-pointer" 
             :class="{ 'animate-pulse': gameCycle.activeGameState === GameState.TURNSTART }">
-            <HHitstarCard ref="drawPile" :size="cardSize" />
+            <HHitstarCard ref="drawPile" :size="cardSize" color="primary" />
         </div>
 
         
@@ -281,6 +282,7 @@ onMounted(() =>{
                       :active="true" 
                       :size="7" 
                       :url="IMAGE_URL + gameStore.playerOnTurn.iconURL"
+                      :color="gameStore.playerOnTurn.color"
                       class="fixed top-[30%] left-[30%]" />
                 </Transition>
                 <Transition name="pop" appear>
@@ -303,7 +305,8 @@ onMounted(() =>{
                 <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
                   <HAvatar 
                     :active="true" 
-                    :size="7" 
+                    :size="7"
+                    :color="gameStore.activePlayer.color"
                     :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
                 </div>
 
@@ -320,7 +323,8 @@ onMounted(() =>{
               <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
                   <HAvatar 
                     :active="true" 
-                    :size="7" 
+                    :size="7"
+                    :color="gameStore.activePlayer.color"
                     :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
               </div>
                 

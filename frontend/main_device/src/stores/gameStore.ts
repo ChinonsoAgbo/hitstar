@@ -7,6 +7,7 @@ import { useSessionStore } from "@shared/stores/sessionStore";
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 import { useSpotifyStore } from './spotifyStore';
 import { SOUND_URL } from "@shared/urls";
+import {watchOnce} from "@vueuse/core";
 
 
 export const useGameStore = defineStore('game', () => {
@@ -19,10 +20,38 @@ export const useGameStore = defineStore('game', () => {
         {
             id: "0",
             name: "Player 1",
-            tokens: 5,
+            tokens: 3,
             cards: [],
-            iconURL: "image1.png"
-
+            iconURL: "image1.png",
+            color: "red",
+            guessedCardIndex: 0,
+            lastGuessedCardIndex: 0,
+            maxCardIndex: 0,
+            minCardIndex: 0,
+        },
+        {
+            id: "1",
+            name: "Player 2",
+            tokens: 3,
+            cards: [],
+            iconURL: "image2.png",
+            color: "green",
+            guessedCardIndex: 0,
+            lastGuessedCardIndex: 0,
+            maxCardIndex: 0,
+            minCardIndex: 0,
+        },
+        {
+            id: "2",
+            name: "Player 3",
+            tokens: 3,
+            cards: [],
+            iconURL: "image3.png",
+            color: "yellow",
+            guessedCardIndex: 0,
+            lastGuessedCardIndex: 0,
+            maxCardIndex: 0,
+            minCardIndex: 0,
         }
     ]);
 
@@ -41,7 +70,7 @@ export const useGameStore = defineStore('game', () => {
     const spotifyStore = useSpotifyStore();
     const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
-    const SONG_DURATION = 30000; // 10000
+    const SONG_DURATION = 10000; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -69,11 +98,15 @@ export const useGameStore = defineStore('game', () => {
     const successSound = new Audio(`${SOUND_URL}success.mp3`);
     const failureSound = new Audio(`${SOUND_URL}failure.mp3`);
 
-
-
     onMounted(() =>{
 
         loadTracks()
+
+        watchOnce(drawPile, () => {
+            for (let player of players.value) {
+                player.cards.push(drawPile.value.pop()!)
+            }
+        });
 
         client.on("connect", () => {
 

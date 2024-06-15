@@ -5,6 +5,7 @@ import { IMAGE_URL } from "@shared/urls";
 import {useAccountStore} from "@stores/accountStore";
 import {ArrowLeftIcon} from "@heroicons/vue/24/solid";
 import HInput from "@components/HInput.vue";
+import HWarning from "@components/HWarning.vue";
 
 //TODO Ergänzen: Logout-Funktion, Eingabevalidierung (Frontend & Backend)
 
@@ -59,24 +60,27 @@ async function login() {
     </RouterLink>
 
     <form class="max-w-sm" @submit.prevent="login">
-      <div class="mb-5">
+      <div class="mb-2">
         <label for="username" class="block mb-2 text-lg font-medium text-white">
           Your Username
         </label>
         <HInput id="username" placeholder="Username..." type="text" v-model="username"/>
       </div>
-      <div class="mb-5">
+      <div class="mb-2">
         <label for="password" class="block mb-2 text-lg font-medium text-white">
           Your Password
         </label>
         <HInput id="password" placeholder="Password..." type="password" v-model="password"/>
       </div>
-      <p v-if="!isFormValid" class="text-red-500 text-lg mt-1">Please fill in all fields.</p>
-      <p v-if="infoText !== ''" class="text-blue-500 text-lg mt-1">{{infoText}}</p>
 
-        <HButton class="w-full mt-5" type="submit" :disabled="!isFormValid">
-          Login
-        </HButton>
+      <HWarning v-if="!isFormValid || infoText !== ''">
+        <p v-if="!isFormValid" class="text-red-500 text-lg mt-1">Please fill in all fields.</p>
+        <p v-if="infoText !== ''" class="text-blue-500 text-lg mt-1">{{infoText}}</p>
+      </HWarning>
+
+      <HButton class="w-full mt-5" type="submit" :disabled="!isFormValid">
+        Login
+      </HButton>
 
     </form>
 
