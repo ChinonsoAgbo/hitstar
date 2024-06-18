@@ -13,6 +13,9 @@ module.exports = {
     'ring-blue-200',
     'border-blue-200',
       'bg-blue-200',
+    'ring-green-200',
+    'border-green-200',
+      'bg-green-200',
     'ring-red-200',
     'border-red-200',
       'bg-red-200',
@@ -39,7 +42,10 @@ module.exports = {
       'bg-pink-200',
     'border-gray-200',
     'ring-gray-200',
-      'grid-cols-7'
+      'grid-cols-7',
+      'ring-white',
+      'border-white',
+      'bg-white',
   ],
   theme: {
     extend: {

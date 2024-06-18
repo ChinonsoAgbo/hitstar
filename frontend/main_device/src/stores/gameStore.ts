@@ -18,7 +18,7 @@ export const useGameStore = defineStore('game', () => {
     const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
 
-    const SONG_DURATION = 10000; // 10000
+    const SONG_DURATION = 15000; // 10000
 
     const ANIMATION_DURATION = 1000; // 1000
     const DRAW_CARD_DURATION = 500;
@@ -38,33 +38,78 @@ export const useGameStore = defineStore('game', () => {
 
 
     const players: Ref<Player[]> = ref([
-        {
-            id: "0",
-            name: "Player 1",
-            tokens: 3,
-            cards: [],
-            iconURL: "image1.png",
-            color: "red",
-            guessedCardIndex: 4,
-        },
-        {
-            id: "1",
-            name: "Player 2",
-            tokens: 3,
-            cards: [],
-            iconURL: "image2.png",
-            color: "green",
-            guessedCardIndex: 4,
-        },
-        {
-            id: "2",
-            name: "Player 3",
-            tokens: 3,
-            cards: [],
-            iconURL: "image3.png",
-            color: "yellow",
-            guessedCardIndex: 4,
-        }
+        // {
+        //     id: "0",
+        //     name: "Player 1",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image1.png",
+        //     color: "red",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "1",
+        //     name: "Player 2",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image2.png",
+        //     color: "green",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "2",
+        //     name: "Player 3",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image3.png",
+        //     color: "yellow",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "3",
+        //     name: "Player 4",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image4.png",
+        //     color: "white",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "4",
+        //     name: "Player 5",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image5.png",
+        //     color: "lime",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "5",
+        //     name: "Player 6",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image6.png",
+        //     color: "orange",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "6",
+        //     name: "Player 7",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image7.bmp",
+        //     color: "pink",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "7",
+        //     name: "Player 8",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image8.jpg",
+        //     color: "gray",
+        //     guessedCardIndex: 4,
+        // }
     ]);
 
     const drawPile: Ref<Card[]> = ref([]);
@@ -85,14 +130,15 @@ export const useGameStore = defineStore('game', () => {
         interpreter: "HITSTAR",
         trackUri: '',
     };
-    const dummyCard = {
-        id: "0",
-        title: "dummy",
-        year: 0,
-        interpreter: "dummy",
-        trackUri: '',
-    }
+    // const dummyCard = {
+    //     id: "0",
+    //     title: "dummy",
+    //     year: 0,
+    //     interpreter: "dummy",
+    //     trackUri: '',
+    // }
     const hitstarCards = ref(Array.from({length: MAX_CARDS - 1}, () => placeHolderCard));
+    var activePlayerCardsCopy: Card[] = [];
 
     const activePlayer: Ref<Player> = ref({ cards: [] as Card[]} as Player);
     const playerOnTurnIndex: Ref<number> = ref(-1);
@@ -105,8 +151,8 @@ export const useGameStore = defineStore('game', () => {
     var timeOut: any = {};
     var countDown: any = {};
     async function loadTracks() {
-        // drawPile.value = await spotifyStore.loadHitstarTracks();
-        drawPile.value = Array.from({length: 100}, () => dummyCard);
+        drawPile.value = await spotifyStore.loadHitstarTracks();
+        // drawPile.value = Array.from({length: 100}, () => dummyCard);
     }
 
     // ================== SOUNDS ==================
@@ -130,7 +176,7 @@ export const useGameStore = defineStore('game', () => {
        
         client.on("message", (__, message) => {
             console.log(message)
-           let msg = JSON.parse(message.toString())
+            let msg = JSON.parse(message.toString())
             switch (msg.gameState) {
                 case GameState.DRAWCARD:
                     Actions.drawCard();
@@ -389,6 +435,8 @@ export const useGameStore = defineStore('game', () => {
             Helpers.drawNewRandomCard();
             newTurnSound.play();
 
+            activePlayerCardsCopy = [...activePlayer.value.cards];
+
             console.log("CARDS OF PLAYER", playerOnTurn.value.cards.length);
 
             setTimeout(() => {
@@ -497,8 +545,6 @@ export const useGameStore = defineStore('game', () => {
 
             Helpers.replaceAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards, hitstarCard);
 
-            // activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: activePlayer.value.guessedCardIndex, trackUri: '' });
-            // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
             flipCardSound.play();
             if (gameCycleStore.activeGameState === GameState.GUESS) {
                 gameCycleStore.setGameState(GameState.WAIT_FOR_DOUBT);
@@ -532,6 +578,9 @@ export const useGameStore = defineStore('game', () => {
         },
 
         startDoubtPhase(player: Player) {
+
+            // Helpers.removeAt(activePlayer.value.guessedCardIndex, hitstarCards.value);
+
             clearTimeout(timeOut);
             clearInterval(countDown);
             doubtCountDown.value = 0;
@@ -586,15 +635,20 @@ export const useGameStore = defineStore('game', () => {
         evaluatePositive(wasDoubt: boolean) {
             console.log('POSITIVE');
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_POSITIVE);
+
+            if (wasDoubt) {
+                console.log("WAS DOUBT");
+                console.log("PLAYER ON TURN CARDS", playerOnTurn.value.cards);
+                console.log("CARDS COPY", activePlayerCardsCopy);
+
+                playerOnTurn.value.cards = [...activePlayerCardsCopy];
+                activePlayerCardsCopy = [];
+            }
+
             setTimeout(() => {
                 successSound.play();
             }, 2000);
             setTimeout(() => {
-                // if (wasDoubt) {
-                //     Helpers.resetTimeLineCards(playerOnTurn.value);
-                // }
-                // Helpers.resetTimeLineCards(activePlayer.value);
-                // activePlayer.value.cards.push({ ...currentCard.value, position: activePlayer.value.guessedCardIndex });
                 Helpers.replaceAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards, currentCard.value);
                 gameCycleStore.setGameState(GameState.TURNEND);
                 setTimeout(() => {
@@ -640,7 +694,7 @@ export const useGameStore = defineStore('game', () => {
             fanfareSound.play();
             gameCycleStore.setGameState(GameState.GAMEEND);
             setTimeout(() => {
-                router.push('/win');
+                router.push('/end');
             }, 5000);
             return true;
         }

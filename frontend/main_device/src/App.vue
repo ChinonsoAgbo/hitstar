@@ -30,11 +30,12 @@ watch(route, (before, after) => {
 
   <div class="bg-[url('http://localhost:8081/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
 
-    <div class="absolute top-[20%] left-[10%] background-animate p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
-      <img class="rounded-full w-96 h-96 flex justify-center align-middle" :src="`${IMAGE_URL}hitstar.jpg`"
-           alt="image description" />
+    <div class="fixed top-0 left-[10%] h-full flex items-center justify-center">
+      <div class="background-animate p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
+        <img class="rounded-full w-96 h-96 flex justify-center align-middle" :src="`${IMAGE_URL}hitstar.jpg`"
+             alt="image description" />
+      </div>
     </div>
-
     <RouterView />
 </template>
 

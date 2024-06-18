@@ -102,9 +102,7 @@ onMounted(() =>{
     <div class="backdrop-blur-2xl absolute w-full h-full">
 
         <!-- Players at top right corner -->
-        <div 
-            class="fixed right-2 top-2 grid" 
-            :style="{ 'grid-template-columns': `repeat(${gameStore.players.length}, 1fr)` }">
+        <div class="fixed right-2 top-2 grid grid-cols-4">
 
             <div 
                 v-for="player in gameStore.players" 
