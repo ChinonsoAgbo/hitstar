@@ -1,48 +1,23 @@
 <script setup lang="ts">
 import { HButton, HAvatar } from "../components/";
-import { ref } from "vue";
+import {useGameStore} from "@stores/gameStore.ts";
 
-interface Player {
-  name: string;
-  icon: string;
-  cards: number;
-  rank: number;
-}
 
-const players = ref<Player[]>([
-  {
-    name: "Harry",
-    icon: "profile-picture-5.jpg",
-    cards: 10,
-    rank: 1,
-  },
-  {
-    name: "Hermione",
-    icon: "profile-picture-3.jpg",
-    cards: 8,
-    rank: 2,
-  },
-  {
-    name: "Ron",
-    icon: "profile-picture-2.jpg",
-    cards: 7,
-    rank: 3,
-  },
-]);
+const players = useGameStore().players;
 </script>
 
 <template>
   <div
-    class="flex flex-col items-center justify-center space-y-3 bg-primary-300 min-h-screen"
+    class="fixed top-0 right-0 w-[50%] h-full flex flex-col items-center justify-center space-y-3 backdrop-blur-lg"
   >
     <ul
-      class="max-w-md justify-left divide-y divide-secondary-900 dark:divide-gray-700"
+      class="max-w-md text-white justify-left divide-y divide-secondary-900 dark:divide-gray-700"
     >
       <li v-for="(player, index) in players" :key="index" class="py-3 sm:py-4">
-        <div class="flex items-center space-x-4 rtl:space-x-reverse">
+        <div class="flex items-center justify-center text-white space-x-4">
           <HAvatar
             :url="player.icon"
-            :class="`rounded-full text-lg ring-4 ${
+            :class="`rounded-full text-lg ring-4 mr-10 ${
               player.rank === 1
                 ? 'ring-yellow-400 dark:ring-yellow-600'
                 : player.rank === 2
@@ -52,17 +27,17 @@ const players = ref<Player[]>([
           ></HAvatar>
           <div class="flex-1 min-w-0">
             <p
-              class="text-lg font-large text-gray-900 truncate dark:text-white"
+              class="text-lg font-large truncate"
             >
               # {{ player.rank }}
             </p>
             <p
-              class="text-lg font-large text-gray-900 truncate dark:text-white"
+              class="text-lg font-large truncate"
             >
               {{ player.name }}
             </p>
             <p
-              class="text-sm font-medium text-gray-900 truncate dark:text-white"
+              class="text-sm font-medium truncate"
             >
               with {{ player.cards }} collected cards
             </p>
@@ -70,7 +45,7 @@ const players = ref<Player[]>([
         </div>
       </li>
     </ul>
-    <p>
+    <p class="text-white">
       {{ players[0].name }} has won with {{ players[0].cards }} Cards,
       congratulations
     </p>

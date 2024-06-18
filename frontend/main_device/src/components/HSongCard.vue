@@ -12,9 +12,9 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <HCard :size="size" :color="color">
-    <h5 class="text-md text-gray-900 dark:text-white text-center">{{ card.title }}</h5>
-    <h1 class="text-3xl font-bold tracking-tight text-center">{{ card.year }}</h1>
-    <h5 class="text-md text-gray-900 dark:text- text-center">{{ card.interpreter }}</h5>
+  <HCard :size="size" :color="color" class="flex flex-col justify-around items-stretch">
+    <h5 class="text-sm text-gray-900 dark:text-white text-center">{{ card.title }}</h5>
+    <h1 class="text-2xl font-bold tracking-tight text-center">{{ card.year }}</h1>
+    <h5 class="text-sm text-gray-900 dark:text- text-center">{{ card.interpreter }}</h5>
   </HCard>
 </template>

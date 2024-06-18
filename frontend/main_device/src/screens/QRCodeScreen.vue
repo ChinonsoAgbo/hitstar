@@ -35,15 +35,21 @@ client.on("message", function (_, message) {
     name : msg.playerName, 
     iconURL : msg.avatarUrl,
     tokens : 3, 
-    cards:[
-        gameStore.drawPile.pop()!,
-    ],
+    cards:[],
     guessedCardIndex : 5,
-    lastGuessedCardIndex: 5,
-    minCardIndex : 0,
-    maxCardIndex : 10,
-    color: gameStore.colors.pop()!
+    color: gameStore.colors.pop()!,
+    removedAt: 'left'
   }
+
+  //     id: "1",
+  //     name: "Player 2",
+  //     tokens: 3,
+  //     cards: [],
+  //     iconURL: "image2.png",
+  //     color: "green",
+  //     guessedCardIndex: 4,
+  // },
+
   if(gameStore.players.filter(p=> p.id === player.id).length === 0 && !msg.isLeaving){
     gameStore.players.push(player)
   }

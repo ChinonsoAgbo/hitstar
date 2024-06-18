@@ -11,7 +11,7 @@ import { GameState } from "@shared/types";
 import { IMAGE_URL } from "@shared/urls";
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 
-const cardSize = ref(7);
+const cardSize = ref(10);
 
 const gameStore = useGameStore();
 const gameCycle = useGameCycleStore();
@@ -130,7 +130,7 @@ onMounted(() =>{
         <!-- Big players at middle -->
         <div
             v-if="gameCycle.activeGameState > 0"
-            class="fixed left-0 top-[20%] w-full flex items-center justify-center gap-5">
+            class="fixed left-0 top-[10%] w-full flex items-center justify-center gap-5">
           <HAvatar
               :active="gameCycle.activeGameState !== GameState.MATEGUESS"
               :size="7"
@@ -153,57 +153,60 @@ onMounted(() =>{
         <!-- Timeline -->
         <div 
             ref="timeline" 
-            class="fixed top-[50%] left-[2%] w-[96%] h-[40%] flex items-center justify-center overflow-x-auto">
+            class="fixed top-[40%] left-[2%] w-[96%] h-[55%] flex items-center justify-center overflow-x-auto">
             
-            <div class="relative h-min grid grid-cols-10 gap-2">
-            
-            <HCard 
-                v-for="position in 10" 
-                :size="cardSize" 
-                class="bg-transparent border-dashed border-slate-400 flex justify-center items-center">
-              
-                <HSongCard 
-                    v-if="gameStore.hasCard(position, gameStore.activePlayer) 
-                          && gameStore.getCard(position, gameStore.activePlayer)?.title !== 'GUESS'" 
-                    :size="cardSize" 
-                    :card="gameStore.getCard(position, gameStore.activePlayer)!"
-                    :color="gameStore.activePlayer.color"/>
+            <div class="flex flex-col w-full">
 
-                <HHitstarCard 
-                    v-else-if="gameStore.hasCard(position, gameStore.activePlayer) 
-                          && gameStore.getCard(position, gameStore.activePlayer)?.title === 'GUESS'" 
+              <div class="p-2 flex min-w-fit items-center justify-center">
+
+                <HCard
+                    v-for="card in gameStore.activePlayer.cards"
                     :size="cardSize"
-                    :color="gameStore.playerOnTurn.color" />
+                    class="border-dashed border-slate-400 m-1 flex items-center justify-center content-stretch">
 
-            </HCard>
+                  <HHitstarCard
+                      v-if="card && card.title === 'HITSTAR'"
+                      :size="cardSize"
+                      :color="gameStore.playerOnTurn.color" />
 
-            <HCard
-                v-for="position in 10" 
-                :size="cardSize" 
-                class="bg-transparent border-transparent flex justify-center items-center">
+                    <HSongCard
+                        v-else-if="card && card.id !== ''"
+                        :size="cardSize"
+                        :card="card"
+                        :color="gameStore.activePlayer.color"/>
 
-                <HHitstarCard 
-                  v-if="(gameCycle.activeGameState === GameState.GUESS
-                        || gameCycle.activeGameState === GameState.MATEGUESS)
-                        && position == gameStore.activePlayer.guessedCardIndex" 
-                  :size="cardSize"
-                  color="primary"
-                  class="animate-bounce" />
-              </HCard>
+                </HCard>
+              </div>
+
+              <div class="p-2 flex min-w-fit items-center justify-center">
+                <HCard
+                    v-for="card in gameStore.hitstarCards"
+                    :size="cardSize"
+                    class="border-transparent m-1 flex justify-center items-center">
+
+                    <HHitstarCard
+                      v-if="card.title !== ''
+                            && (gameCycle.activeGameState === GameState.GUESS
+                                || gameCycle.activeGameState === GameState.MATEGUESS)"
+                      :size="cardSize"
+                      color="primary"
+                      class="animate-bounce" />
+                  </HCard>
+              </div>
 
           </div>
         </div>
 
         <!-- Ablagestapel -->
         <div class="fixed top-4 left-4 hover:cursor-pointer grayscale">
-          <HHitstarCard ref="discardPile" :size="cardSize" color="primary" />
+          <HHitstarCard ref="discardPile" :size="cardSize - 2" color="primary" />
         </div>
 
         <!-- Nachziehstapel -->
         <div 
-            class="fixed top-4 left-36 hover:cursor-pointer" 
+            class="fixed top-4 left-40 hover:cursor-pointer"
             :class="{ 'animate-pulse': gameCycle.activeGameState === GameState.TURNSTART }">
-            <HHitstarCard ref="drawPile" :size="cardSize" color="primary" />
+            <HHitstarCard ref="drawPile" :size="cardSize - 2" color="primary" />
         </div>
 
         
@@ -266,11 +269,7 @@ onMounted(() =>{
              <div v-if="gameCycle.activeGameState === GameState.WAIT_FOR_DOUBT">
                 <Transition name="pop" appear>
                   <HHeading v-if="gameStore.doubtCountDown == 0">Doubt-Phase 😮🤢😈</HHeading>
-                  <HHeading v-else-if="gameStore.doubtCountDown == 1">1</HHeading>
-                  <HHeading v-else-if="gameStore.doubtCountDown == 2">2</HHeading>
-                  <HHeading v-else-if="gameStore.doubtCountDown == 3">3</HHeading>
-                  <HHeading v-else-if="gameStore.doubtCountDown == 4">4</HHeading>
-                  <HHeading v-else-if="gameStore.doubtCountDown == 5">5</HHeading>
+                  <HHeading v-else>{{ gameStore.doubtCountDown }}</HHeading>
                 </Transition>
             </div>
 
@@ -299,23 +298,23 @@ onMounted(() =>{
                 </Transition>
             </div>
 
-             <!-- EVALUATE ANIMATION -->
-             <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION">
+<!--             &lt;!&ndash; EVALUATE ANIMATION &ndash;&gt;-->
+<!--             <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION">-->
 
-                <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">
-                  <HAvatar 
-                    :active="true" 
-                    :size="7"
-                    :color="gameStore.activePlayer.color"
-                    :url="IMAGE_URL + gameStore.activePlayer.iconURL" />
-                </div>
+<!--                <div class="fixed top-[10%] left-0 w-full flex items-center justify-center">-->
+<!--                  <HAvatar -->
+<!--                    :active="true" -->
+<!--                    :size="7"-->
+<!--                    :color="gameStore.activePlayer.color"-->
+<!--                    :url="IMAGE_URL + gameStore.activePlayer.iconURL" />-->
+<!--                </div>-->
 
-                <Transition name="pop" appear>
-                  <h1 class="text-8xl font-bold tracking-tight text-white">
-                    🤔???
-                  </h1>
-                </Transition>
-            </div>
+<!--                <Transition name="pop" appear>-->
+<!--                  <h1 class="text-8xl font-bold tracking-tight text-white">-->
+<!--                    🤔???-->
+<!--                  </h1>-->
+<!--                </Transition>-->
+<!--            </div>-->
 
             <!-- POSITIVE EVALUATE ANIMATION -->
             <div v-if="gameCycle.activeGameState === GameState.ANIMATE_EVALUATION_POSITIVE">
