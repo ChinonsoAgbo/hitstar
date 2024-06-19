@@ -47,9 +47,9 @@ function isTurnClickable() {
       <!-- Profile and Settings -->
       <div class="grid grid-cols-2 mx-4 mt-2">
         <div class="flex justify-start m-3">
-          <!-- Link to Game instructions -->
+           
           <HAvatar :url="IMAGE_URL + controllerStore.getIconUrl()"></HAvatar>
-          <span class="text-sm m-2 text-gray-500 dark:text-gray-400">
+           <span class="text-sm m-2 text-gray-500 dark:text-gray-400">
             {{ controllerStore.getPlayerName() }}
           </span>
         </div>
@@ -57,14 +57,14 @@ function isTurnClickable() {
         <div class="flex justify-end">
           <!--  settings/Dropdown button -->
 
-          <!-- Spiel GameInstruction -->
-          <!--          <RouterLink to="/game">-->
+          <RouterLink to="/game-instructions">
+
           <img
             class="w-10 h-10 rounded-full"
             :src="IMAGE_URL + 'support.png'"
             alt=""
           />
-          <!--          </RouterLink>-->
+           </RouterLink>
         </div>
 
         <!-- Link to Game instructions -->

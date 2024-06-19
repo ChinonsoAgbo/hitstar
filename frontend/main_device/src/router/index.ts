@@ -8,6 +8,7 @@ import QRCodeScreen from '../screens/QRCodeScreen.vue'
 import RegisterScreen from '../screens/RegisterScreen.vue'
 import StartScreen from '../screens/StartScreen.vue'
 import SpotifyLogin from '@screens/SpotifyLogin.vue'
+import GameInstructions from '@screens/GameInstructions.vue'
 
 const code = new URLSearchParams(window.location.search).get("code"); // get access code
 let redirectUrl = '/start';
@@ -30,6 +31,7 @@ export const router = createRouter({
     { path: '/register', component: RegisterScreen },
     { path: '/start', component: StartScreen },
     { path: '/spotify-login', component: SpotifyLogin },
+    {path: '/game-instructions', component: GameInstructions},
 
   ],
 })
