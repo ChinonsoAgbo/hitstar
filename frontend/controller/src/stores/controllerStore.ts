@@ -35,7 +35,7 @@ export const useControllerStore = defineStore("controller", () => {
   let client : mqtt.MqttClient;
 
   function createClient() {
-    const lobbyLeaveMsg = lobbyMsg(sessionStore.getSessionID, PlayerID, true);
+    const lobbyLeaveMsg = lobbyMsg(sessionStore.getSessionID(), PlayerID, true);
     client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`,{
       will: {
         topic: `${sessionStore.getSessionID()}/lobby`,

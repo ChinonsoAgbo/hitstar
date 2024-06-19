@@ -11,7 +11,7 @@ import mqtt from "mqtt";
 
 const sessionStore = useSessionStore();
 const gameStore = useGameStore()
-const url = `http://${sessionStore.getIPAddress()}:5173/#/controller-lobby/${sessionStore.getSessionID()}`;
+const url = `http://${sessionStore.getIPAddress()}:8082/index.html/#/controller-lobby/${sessionStore.getSessionID()}`;
 const qrcode = useQRCode(url);
 
 

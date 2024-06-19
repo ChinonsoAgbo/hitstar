@@ -28,7 +28,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
   const clientId = '0081b6fb5adf457aa794e77ec48fc00b'; // your spotify client id here 
 
   // const redirectUri = 'http://localhost:5173/';
-  const redirectUri = 'http://localhost:5173/'; 
+  const redirectUri = 'http://localhost:8081/'; 
   const scope = [
     'playlist-read-private',
     'user-read-email',

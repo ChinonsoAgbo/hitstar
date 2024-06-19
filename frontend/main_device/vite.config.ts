@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
       alias: {
-          '@shared': resolve(__dirname, '../shared_resources'),
+          '@shared': resolve(__dirname, 'src/shared_resources'),
           '@components': resolve(__dirname, 'src/components'),
           '@stores': resolve(__dirname, 'src/stores'),
           '@screens': resolve(__dirname, 'src/screens'),

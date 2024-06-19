@@ -26,7 +26,22 @@ services:
     ports:
       - "8081:80"
     volumes:
-      - ./backend/images:/usr/share/nginx/html/images
       - ./frontend/main_device/dist:/usr/share/nginx/html/main_device
+      - ./nginx_maindevice.conf:/etc/nginx/conf.d/default.conf
+
+
+  web2:
+    image: nginx:latest
+    ports:
+      - "8082:80"
+    volumes:
       - ./frontend/controller/dist:/usr/share/nginx/html/controller
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx_controller.conf:/etc/nginx/conf.d/default.conf
+      
+  web3:
+    image: nginx:latest
+    ports:
+      - "8083:80"
+    volumes:
+      - ./backend/images:/usr/share/nginx/html/images
+
