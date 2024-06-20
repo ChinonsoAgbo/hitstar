@@ -57,7 +57,9 @@ const changeLoginStatus = () => {
       </RouterLink>
 
     </div>
-
+    <RouterLink to="/game-instructions">
+      <HButton class="lg:m-5 m-10">Game instructions</HButton>
+    </RouterLink>
   </div>
 
 </template>

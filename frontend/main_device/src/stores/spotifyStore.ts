@@ -25,7 +25,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
 
   const authUrl = new URL('https://accounts.spotify.com/authorize');
   // change me 
-  const clientId = '83425f1e14924e769cab8f58113c4398'; // your spotify client id here
+  const clientId = 'fd8a308b3a7b447793f4afa372cf4d3f'; // your spotify client id here 
 
   // const redirectUri = 'http://localhost:5173/';
   const redirectUri = 'http://localhost:5173/'; 

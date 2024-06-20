@@ -49,35 +49,32 @@ function isTurnClickable() {
       class="w-full max-w-sm rounded-lg"
     >
       <!-- Profile and Settings -->
-<!--      <div class="grid grid-cols-2 mx-4 mt-2">-->
-
-<!--        <div class="flex justify-end">-->
-<!--          &lt;!&ndash;  settings/Dropdown button &ndash;&gt;-->
-
-<!--          &lt;!&ndash; Spiel GameInstruction &ndash;&gt;-->
-<!--          &lt;!&ndash;          <RouterLink to="/game">&ndash;&gt;-->
-<!--&lt;!&ndash;          <img&ndash;&gt;-->
-<!--&lt;!&ndash;            class="w-10 h-10 rounded-full"&ndash;&gt;-->
-<!--&lt;!&ndash;            :src="IMAGE_URL + 'support.png'"&ndash;&gt;-->
-<!--&lt;!&ndash;            alt=""&ndash;&gt;-->
-<!--&lt;!&ndash;          />&ndash;&gt;-->
-<!--          &lt;!&ndash;          </RouterLink>&ndash;&gt;-->
-<!--        </div>-->
-
-        <!-- Link to Game instructions -->
-<!--      </div>-->
-
-      <div class="fixed top-0 left-0 w-full h-full flex flex-col items-center justify-evenly">
-
-        <div class="flex flex-col justify-center items-center m-3">
-          <!-- Link to Game instructions -->
-          <HAvatar :url="IMAGE_URL + controllerStore.getIconUrl()" :size="8"></HAvatar>
-          <span class="text-5xl w-full mt-10 text-center font-bold m-2 text-white">
+      <div class="grid grid-cols-2 mx-4 mt-2">
+        <div class="flex justify-start m-3">
+           
+          <HAvatar :url="IMAGE_URL + controllerStore.getIconUrl()"></HAvatar>
+           <span class="text-sm m-2 text-gray-500 dark:text-gray-400">
             {{ controllerStore.getPlayerName() }}
           </span>
         </div>
 
-        <div class="flex flex-col justify-center items-center">
+        <div class="flex justify-end">
+          <!--  settings/Dropdown button -->
+
+          <RouterLink to="/game-instructions">
+
+          <img
+            class="w-10 h-10 rounded-full"
+            :src="IMAGE_URL + 'support.png'"
+            alt=""
+          />
+           </RouterLink>
+        </div>
+
+        <!-- Link to Game instructions -->
+      </div>
+
+      <div class="flex flex-col items-center w-full py-20">
         <!-- Navigation button-->
         <div
           v-if="
@@ -168,7 +165,6 @@ function isTurnClickable() {
           <!-- <img class="w-10 h-10 rounded-full" src="../assets/icons/unlike.png" alt=""> -->
         </button>
       </div>
-    </div>
     </div>
   </div>
 </template>
