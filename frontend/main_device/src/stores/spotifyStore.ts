@@ -25,7 +25,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
 
   const authUrl = new URL('https://accounts.spotify.com/authorize');
   // change me 
-  const clientId = '0081b6fb5adf457aa794e77ec48fc00b'; // your spotify client id here
+  // const clientId = 'fd8a308b3a7b447793f4afa372cf4d3f'; // your spotify client id here 
 
   // const redirectUri = 'http://localhost:5173/';
   const redirectUri = 'http://localhost:8081/'; 
@@ -43,10 +43,19 @@ export const useSpotifyStore = defineStore('spotify', () => {
     'user-read-private'
   ];
 
+  const getClientId = (): any =>{
+
+    //console.log("clientId", localStorage.getItem("clientId"));
+    return  localStorage.getItem("clientId");
+   
+    
+  }
+
   /**
    * Redirects user to spotify server for authorization
    */
   async function redirectToAuthCodeFlow() {
+    const clientId = await getClientId();
     const verifierCode = generateRandomString(64);
     //code challenge generation
     const hashed = await sha256(verifierCode);
@@ -91,6 +100,7 @@ export const useSpotifyStore = defineStore('spotify', () => {
   };
 
   async function getAccessToken(code: string): Promise<any> {
+    const clientId = await getClientId();
 
     console.log(" func to fetch new token was called  ")
     const verifierCode = localStorage.getItem("verifier") // get the verifier code 
@@ -129,7 +139,9 @@ export const useSpotifyStore = defineStore('spotify', () => {
   }
 
   async function getRefreshToken(code: string): Promise<any> {
-    console.log(" func to refresh token was called  ")
+    const clientId = await getClientId();
+
+    console.log(" function to refresh token :) ")
     const refreshToken = localStorage.getItem('refreshToken');
     const url = "https://accounts.spotify.com/api/token";
 
@@ -204,6 +216,9 @@ export const useSpotifyStore = defineStore('spotify', () => {
 
 
 
+  // const setClientSpotifyClientId = (newValue: any)=>{
+  //   clientId.value = newValue;
+  // }
 
   const cache: {
     playlists?: Playlist;
@@ -413,5 +428,6 @@ export const useSpotifyStore = defineStore('spotify', () => {
     setPaused,
     setPlayer,
     setTrack,
+    getClientId,
   };
 });

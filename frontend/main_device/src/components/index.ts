@@ -17,7 +17,6 @@ import SearchInput from "@components/SearchInput.vue";
 import Tokens from "@components/Tokens.vue";
 import WaitingGamers from "@components/WaitingGamers.vue";
 import HSongCard from "@components/HSongCard.vue";
-
 export {
     Genre,
     HAvatar,
@@ -37,5 +36,6 @@ export {
     SearchInput,
     Tokens,
     WaitingGamers,
-    HSongCard
+    HSongCard,
+
 }

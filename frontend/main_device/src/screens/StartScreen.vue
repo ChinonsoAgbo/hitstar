@@ -48,8 +48,9 @@ const changeLoginStatus = () => {
           <ArrowRightEndOnRectangleIcon class="w-8 h-8 mx-5" />
         </HButton>
       </RouterLink>
+      
 
-      <RouterLink v-show="isLoggedIn" to="/start">
+      <RouterLink v-show="isLoggedIn"  to="/game-instructions">
         <HButton class="w-full flex justify-around items-center">
           INSTRUCTIONS
           <PuzzlePieceIcon class="w-8 h-8 mx-5" />
@@ -57,7 +58,7 @@ const changeLoginStatus = () => {
       </RouterLink>
 
     </div>
-
+    
   </div>
 
 </template>

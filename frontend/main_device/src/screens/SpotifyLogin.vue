@@ -30,10 +30,31 @@ const stepClass = (step: number) => {
 
     : 'after:border-gray-100 dark:after:border-gray-700';
 };
-const redirectToAuthCodeFlow = () => {
-  spotifyStore.redirectToAuthCodeFlow();
 
+const redirectToAuthCodeFlow = () => {
+
+  // let clientId = localStorage.getItem("clientId");
+  let clientId =  spotifyStore.getClientId(); // assumming the clientId is saved before 
+  const requiredLength = 32; // The length of 'fd8a308b3a7b447793f4afa372cf4d3f'
+
+  if (clientId && clientId.length === requiredLength) {
+
+      spotifyStore.redirectToAuthCodeFlow();
+
+  } else {
+    clientId = prompt("Enter your spotify client id:");
+
+    if (clientId && clientId.length === requiredLength) {
+      localStorage.setItem('clientId', clientId); // save new client id 
+
+        spotifyStore.redirectToAuthCodeFlow();
+    } else {
+      alert(`Client ID must be exactly ${requiredLength} characters long.`);
+    }
+  }
 }
+
+
 
 if (code) {
   spotifyStore.getLocalToken(code)  //  fetch token
