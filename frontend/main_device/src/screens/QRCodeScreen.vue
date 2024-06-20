@@ -12,7 +12,7 @@ import {ArrowLeftIcon, MusicalNoteIcon, SwatchIcon} from "@heroicons/vue/24/soli
 
 const sessionStore = useSessionStore();
 const gameStore = useGameStore()
-const url = `http://${sessionStore.getIPAddress()}:5174/#/controller-lobby/${sessionStore.getSessionID()}`;
+const url = `http://${sessionStore.getIPAddress()}:8082/#/controller-lobby/${sessionStore.getSessionID()}`;
 const qrcode = useQRCode(url);
 
 

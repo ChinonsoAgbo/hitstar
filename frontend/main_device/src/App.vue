@@ -28,7 +28,7 @@ watch(route, (before, after) => {
 
 <template>
 
-  <div class="bg-[url('http://localhost:8081/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
+  <div class="bg-[url('http://192.168.178.106:8083/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
 
     <div class="fixed top-0 left-[10%] h-full flex items-center justify-center">
       <div class="background-animate p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">

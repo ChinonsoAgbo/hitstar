@@ -18,7 +18,7 @@ export const useSessionStore = defineStore("session", () => {
   function getIPAddress() {
     //return "192.168.53.5";
     //return "localhost";
-    return '192.168.178.87';
+    return '192.168.178.106';
   }
  
   return {

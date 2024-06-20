@@ -8,7 +8,7 @@ export interface Card {
   title: string;
   year: number;
   interpreter: string;
-  position: number; // 1 - 10
+  // position: number; // 1 - 10
   trackUri: string;
 }
 
@@ -20,9 +20,12 @@ export interface Player {
   cards: Card[];
 
   guessedCardIndex: number;
-  lastGuessedCardIndex: number;
-  maxCardIndex: number;
-  minCardIndex: number;
+  //lastGuessedCardIndex: number;
+  //maxCardIndex: number;
+  //minCardIndex: number;
+  removedAt: 'left' | 'right';
+
+  color: string;
 }
 
 export enum GameState {

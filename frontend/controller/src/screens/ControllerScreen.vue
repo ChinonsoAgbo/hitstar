@@ -40,7 +40,7 @@ function isTurnClickable() {
 
 <template>
 
-  <div class="bg-[url('http://192.168.178.87:8081/images/stage.jpg')] -z-50 bg-center bg-cover fixed top-0 left-0 w-full h-full blur-sm"></div>
+  <div class="bg-[url('http://192.168.178.106:8083/images/stage.jpg')] -z-50 bg-center bg-cover fixed top-0 left-0 w-full h-full blur-sm"></div>
 
 
   <div class="container bg-transparent mx-auto mt-7 flex justify-center items-center">

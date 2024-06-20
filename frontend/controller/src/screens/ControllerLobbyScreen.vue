@@ -71,7 +71,7 @@ onMounted(() => {
 
 <template>
 
-  <div class="bg-[url('http://192.168.178.87:8081/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full blur-sm"></div>
+  <div class="bg-[url('http://192.168.178.106:8083/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full blur-sm"></div>
 
   <h3 class="fixed top-10 left-0 w-full text-center text-lg font-semibold text-white">
     Wait for <p class="font-bold text-4xl">HITSTARS</p> to join the <p class="font-bold text-4xl">GAME!</p>
