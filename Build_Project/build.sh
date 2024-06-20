@@ -12,7 +12,7 @@ cd ../controller
 npm run build 
 
 # Zurück zum Hauptverzeichnis und in das Verzeichnis 'Docker' wechseln
-cd ../../Docker
+cd ../../Build_Project
 
 # Docker starten
 docker compose up -d
