@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+body {
+    @apply font-comic;
+}
 
 .price-input{
     width: 100%;

@@ -1,45 +1,150 @@
 import { defineStore } from 'pinia';
-import { Card, GameState, MQTTMessage, Player, guessMsg } from "@shared/types";
+import { Card, GameState, MQTTMessage, Player } from "@shared/types";
 import {computed, onMounted, ref, Ref} from "vue";
 import mqtt from "mqtt";
-import {gameStartMsg, turnMsg, playPauseMsg, doubtMsg, drawConfirmMsg} from "@shared/types";
+import {gameStartMsg, turnMsg } from "@shared/types";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import {useGameCycleStore} from "@shared/stores/gameCycleStore.ts";
 import { useSpotifyStore } from './spotifyStore';
+import { SOUND_URL } from "@shared/urls";
+import {router} from "../router";
 
 
 export const useGameStore = defineStore('game', () => {
 
     const gameCycleStore = useGameCycleStore();
+    const sessionStore = useSessionStore()
+    const spotifyStore = useSpotifyStore();
+    const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 
-    const players: Ref<Player[]> = ref([])
+
+    const SONG_DURATION = 15000; // 10000
+
+    const ANIMATION_DURATION = 1000; // 1000
+    const DRAW_CARD_DURATION = 500;
+    const DOUBT_INTERVALL_STEP = 1000; // 1000
+    const DOUBT_INTERVALL_STEP_NUM = 3;
+    const DOUBT_INTERVALL_ANNOUNCEMENT = 2000; // 2000
+    const DOUBT_ANIMATION_DURATION = 4000; // 4000
+    // const EVALUATION_ANIMATION_DURATION = 0; // 3000
+    const SHOW_CARD_DURATION = 5000; // 5000
+    const TURN_END_DURATION = 1000;
+
+    const MAX_CARDS = 5;
+
+
+    const colors = ['red', 'green', 'yellow', 'white', 'lime', 'orange', 'pink', 'gray'];
+    // const nickNames = ['Bananenbrei', 'Carl Gustav', 'Schwitziger Axel', 'Jesus', 'Kai-Uwe', 'Dieter Bohlen', 'Bruce Wayne', 'Pinguin'];
+
+
+    const players: Ref<Player[]> = ref([
+        // {
+        //     id: "0",
+        //     name: "Player 1",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image1.png",
+        //     color: "red",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "1",
+        //     name: "Player 2",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image2.png",
+        //     color: "green",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "2",
+        //     name: "Player 3",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image3.png",
+        //     color: "yellow",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "3",
+        //     name: "Player 4",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image4.png",
+        //     color: "white",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "4",
+        //     name: "Player 5",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image5.png",
+        //     color: "lime",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "5",
+        //     name: "Player 6",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image6.png",
+        //     color: "orange",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "6",
+        //     name: "Player 7",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image7.bmp",
+        //     color: "pink",
+        //     guessedCardIndex: 4,
+        // },
+        // {
+        //     id: "7",
+        //     name: "Player 8",
+        //     tokens: 3,
+        //     cards: [],
+        //     iconURL: "image8.jpg",
+        //     color: "gray",
+        //     guessedCardIndex: 4,
+        // }
+    ]);
 
     const drawPile: Ref<Card[]> = ref([]);
-
     const discardPile: Ref<Card[]> = ref([] as Card[]);
 
     const currentCard = ref({} as Card);
+    const placeHolderCard = {
+        id: '',
+        title: '',
+        year: 0,
+        interpreter: '',
+        trackUri: '',
+    };
+    const hitstarCard = {
+        id: "0",
+        title: "HITSTAR",
+        year: 0,
+        interpreter: "HITSTAR",
+        trackUri: '',
+    };
+    // const dummyCard = {
+    //     id: "0",
+    //     title: "dummy",
+    //     year: 0,
+    //     interpreter: "dummy",
+    //     trackUri: '',
+    // }
+    const hitstarCards = ref(Array.from({length: MAX_CARDS - 1}, () => placeHolderCard));
+    var activePlayerCardsCopy: Card[] = [];
 
     const activePlayer: Ref<Player> = ref({ cards: [] as Card[]} as Player);
     const playerOnTurnIndex: Ref<number> = ref(-1);
     const playerOnTurn = computed(() => players.value[playerOnTurnIndex.value] || { cards: [{}] } as Player);
 
-    var activePlayerCardsCopy: { [playerID: string]: Card[] } = {};
-    const sessionStore = useSessionStore()
-    const spotifyStore = useSpotifyStore();
-    const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
-
-    const SONG_DURATION = 30000; // 10000
-
-    const ANIMATION_DURATION = 1000; // 1000
-    const DRAW_CARD_DURATION = 500;
-    const DOUBT_INTERVALL_STEP = 1000; // 1000
-    const DOUBT_INTERVALL_ANNOUNCEMENT = 2000; // 2000
-    const DOUBT_INTERVALL = DOUBT_INTERVALL_ANNOUNCEMENT + 5 * DOUBT_INTERVALL_STEP;
-    const DOUBT_ANIMATION_DURATION = 4000; // 4000
-    const EVALUATION_ANIMATION_DURATION = 3000; // 3000
-    const SHOW_CARD_DURATION = 5000; // 5000
-    const TURN_END_DURATION = 1000;
+    // var activePlayerCardsCopy: { [playerID: string]: Card[] } = {};
 
     const doubtCountDown = ref<number>(0);
 
@@ -47,11 +152,22 @@ export const useGameStore = defineStore('game', () => {
     var countDown: any = {};
     async function loadTracks() {
         drawPile.value = await spotifyStore.loadHitstarTracks();
+        // drawPile.value = Array.from({length: 100}, () => dummyCard);
     }
+
+    // ================== SOUNDS ==================
+    const newTurnSound = new Audio(`${SOUND_URL}new_turn.mp3`);
+    const flipCardSound = new Audio(`${SOUND_URL}flip_card.mp3`);
+    const cardSwipeSound = new Audio(`${SOUND_URL}card_swipe.mp3`);
+    const fanfareSound = new Audio(`${SOUND_URL}end_game_fanfare.mp3`);
+    const popSound = new Audio(`${SOUND_URL}pop.mp3`);
+    const successSound = new Audio(`${SOUND_URL}success.mp3`);
+    const failureSound = new Audio(`${SOUND_URL}failure.mp3`);
+    const swordSound = new Audio(`${SOUND_URL}sword.mp3`);
 
     onMounted(() =>{
 
-        loadTracks()
+        loadTracks();
 
         client.on("connect", () => {
 
@@ -60,7 +176,7 @@ export const useGameStore = defineStore('game', () => {
        
         client.on("message", (__, message) => {
             console.log(message)
-           let msg = JSON.parse(message.toString())
+            let msg = JSON.parse(message.toString())
             switch (msg.gameState) {
                 case GameState.DRAWCARD:
                     Actions.drawCard();
@@ -75,7 +191,7 @@ export const useGameStore = defineStore('game', () => {
                 case GameState.DOUBT:
                     if(msg.playerId !== activePlayer.value.id) {
                         const doubtPlayer = players.value.find(player => player.id === msg.senderId);
-                        if (doubtPlayer?.tokens > 0) {
+                        if (doubtPlayer?.tokens! > 0) {
                             Actions.startDoubtPhase(doubtPlayer!)
                         }
                     }
@@ -159,8 +275,8 @@ export const useGameStore = defineStore('game', () => {
     });
 
     function startGame(){
-        Helpers.initPlayers();
         Actions.startGame();
+        Helpers.initPlayers();
     }
 
     const Helpers = {
@@ -168,10 +284,27 @@ export const useGameStore = defineStore('game', () => {
         initPlayers() {
             for (let player of players.value) {
                 //player.cards.push(drawPile.value.pop()!)
-                player.guessedCardIndex = 5;
-                player.lastGuessedCardIndex = 5;
-                player.maxCardIndex = 10;
-                player.minCardIndex = 1;
+                player.guessedCardIndex = Math.floor(MAX_CARDS / 2);
+
+                for (let i = 0; i < Math.floor(MAX_CARDS / 2); i++)
+                    player.cards.push({
+                        id: "",
+                        title: "",
+                        year: Number.NEGATIVE_INFINITY,
+                        interpreter: "",
+                        trackUri: '',
+                    });
+
+                player.cards.push(drawPile.value.pop()!);
+
+                for (let i = Math.floor(MAX_CARDS / 2) + 1; i < MAX_CARDS; i++)
+                    player.cards.push({
+                        id: "",
+                        title: "",
+                        year: Number.POSITIVE_INFINITY,
+                        interpreter: "",
+                        trackUri: '',
+                    });
             }
         },
 
@@ -197,71 +330,71 @@ export const useGameStore = defineStore('game', () => {
             client.publish(message.topic, JSON.stringify(message.message), {retain: true});
         },
 
-        /**
-         * @param position the position of the card
-         * @returns if the active Player has a card at the given position
-         */
-        hasCard(position: number, player: Player) {
-            return this.getCard(position, player) !== undefined;
+        getYearOfCard(index: number) {
+            if (index < 0)
+                return Number.NEGATIVE_INFINITY;
+
+            if (index >= MAX_CARDS)
+                return Number.POSITIVE_INFINITY;
+
+            console.log(index);
+
+            return activePlayer.value.cards[index].year;
         },
 
-        /**
-         * @param position the position of the card
-         * @returns the card at the given position, if there's one, else undefined
-         */
-        getCard(position: number, player: Player) {
-            return player.cards.find((c) => c.position === position);
+        insertAt(index: number, array: unknown[], item: unknown) {
+            array.splice(index, 0, item);
         },
 
-        getMaxMin() {
-            let max = Math.max(...activePlayer.value.cards.map((c) => c.position));
-            let min = Math.min(...activePlayer.value.cards.map((c) => c.position));
-
-            if (activePlayer.value.cards.filter((c) => c.position < 6).length === 0) {
-                min = 5;
-            }
-
-            activePlayer.value.maxCardIndex = max;
-            activePlayer.value.minCardIndex = min;
-
-            if (activePlayer.value.maxCardIndex === activePlayer.value.minCardIndex) {
-                console.log("MAX AND MIN ARE SAME");
-                activePlayer.value.minCardIndex--;
-            }
-            console.log(activePlayer.value.maxCardIndex, activePlayer.value.minCardIndex);
+        removeAt(index: number, array: unknown[]) {
+            return array.splice(index, 1)[0];
         },
 
-        saveCopyOfCards() {
-            activePlayerCardsCopy[activePlayer.value.id] = JSON.parse(JSON.stringify(activePlayer.value.cards));
+        replaceAt(index: number, array: unknown[], item: unknown) {
+            array[index] = item;
         },
 
-        resetTimeLineCards(player: Player) {
-            player.cards = activePlayerCardsCopy[player.id];
+        switch(oldIndex: number, newIndex: number, array: unknown[]) {
+            let x = this.removeAt(oldIndex, array);
+            this.insertAt(newIndex, array, x);
         },
 
         makeRoomInTimeLine() {
-            if (!Helpers.hasCard(10, activePlayer.value)) {
-                activePlayer?.value.cards
-                    .filter(c => c.position >= activePlayer.value.guessedCardIndex)
-                    .forEach(c => c.position++);
-            }
-            else if (!Helpers.hasCard(1, activePlayer.value)) {
-                activePlayer?.value.cards
-                    .filter(c => c.position <= activePlayer.value.guessedCardIndex)
-                    .forEach(c => c.position--);
-            }
-        },
 
-        switchTimeLineCards() {
-            if (Helpers.hasCard(activePlayer.value.guessedCardIndex, activePlayer.value)) {
-                for (let card of activePlayer?.value.cards) {
-                    if (card.position === activePlayer.value.guessedCardIndex) {
-                        card.position = activePlayer.value.lastGuessedCardIndex;
-                        break;
-                    }
+            let left = 0;
+            let right = 0;
+
+            for (let i = 0; i < MAX_CARDS; i++) {
+                if ((activePlayer.value.cards[i]).id !== '') {
+                    console.log("FOUND CARD LEFT ", activePlayer.value.cards[i]);
+                    left = i;
+                    break;
                 }
-                activePlayer.value.lastGuessedCardIndex = activePlayer.value.guessedCardIndex;
             }
+
+            for (let i = MAX_CARDS - 1; i >= 0; i--) {
+                if ((activePlayer.value.cards[i]).id !== '') {
+                    console.log("FOUND CARD RIGHT ", activePlayer.value.cards[i]);
+                    right = MAX_CARDS - 1 - i;
+                    break;
+                }
+            }
+
+            console.log("LEFT: ", left, "RIGHT: ", right);
+
+            if (left > right) {
+                this.removeAt(0, activePlayer.value.cards);
+                activePlayer.value.removedAt = 'left';
+            }
+            else {
+                this.removeAt(MAX_CARDS - 1, activePlayer.value.cards);
+                activePlayer.value.removedAt = 'right';
+            }
+
+            this.insertAt(Math.floor(MAX_CARDS / 2), activePlayer.value.cards, placeHolderCard);
+
+            hitstarCards.value = Array.from({length: MAX_CARDS - 1}, () => placeHolderCard);
+            this.insertAt(Math.floor(MAX_CARDS / 2), hitstarCards.value, hitstarCard);
         },
 
         subtractToken(player: Player) {
@@ -281,6 +414,7 @@ export const useGameStore = defineStore('game', () => {
           
             console.log("ANIMATE GAME START");
             gameCycleStore.setGameState(GameState.ANIMATE_GAMESTART);
+            fanfareSound.play();
             setTimeout(() => {
                 console.log("GAME START");
                 gameCycleStore.setGameState(GameState.GAMESTART);
@@ -294,11 +428,17 @@ export const useGameStore = defineStore('game', () => {
          */
         startTurn() {
             console.log("ANIMATE TURN START");
-            activePlayer.value.guessedCardIndex = 5;
-            activePlayer.value.lastGuessedCardIndex = 5;
+            // activePlayer.value.guessedCardIndex = 4;
+            // activePlayer.value.lastGuessedCardIndex = 5;
             Helpers.setNextPlayerAsOnTurn();
             gameCycleStore.setGameState(GameState.ANIMATE_TURNSTART);
             Helpers.drawNewRandomCard();
+            newTurnSound.play();
+
+            activePlayerCardsCopy = [...activePlayer.value.cards];
+
+            console.log("CARDS OF PLAYER", playerOnTurn.value.cards.length);
+
             setTimeout(() => {
                 console.log("TURN START");
                 gameCycleStore.setGameState(GameState.TURNSTART);
@@ -314,6 +454,7 @@ export const useGameStore = defineStore('game', () => {
             console.log("DRAW CARD");
             gameCycleStore.setGameState(GameState.DRAWCARD);
             //Helpers.send(turnMsg(sessionStore.getSessionID(),GameStateNew.DRAWCARD));
+            flipCardSound.play()
             setTimeout(() => {
                 this.listenToSong();
                 Helpers.send(turnMsg(sessionStore.getSessionID(),GameState.LISTEN, activePlayer.value.id))
@@ -337,31 +478,63 @@ export const useGameStore = defineStore('game', () => {
          */
         startGuessing(gameState: GameState) {
             console.log("START GUESSING");
-            activePlayer.value.guessedCardIndex = 5;
+            activePlayer.value.guessedCardIndex = Math.floor(MAX_CARDS / 2);
             gameCycleStore.setGameState(gameState);
             Helpers.send(turnMsg(sessionStore.getSessionID(), gameState, activePlayer.value.id));
-            Helpers.saveCopyOfCards();
+            // Helpers.saveCopyOfCards();
             Helpers.makeRoomInTimeLine();
-            Helpers.getMaxMin();
+
+            console.log(activePlayer.value.cards);
+            // Helpers.getMaxMin();
         },
 
         /**
          * Moves the card left. Called by a controller.
          */
         moveCardLeft() {
-            console.log("MOVE CARD LEFT");
-            activePlayer.value.guessedCardIndex = Math.max(activePlayer.value.minCardIndex, activePlayer.value.guessedCardIndex - 1);
-            Helpers.switchTimeLineCards();
+
+            if (activePlayer.value.guessedCardIndex - 1 < 0) {
+                console.log("REACHED LEFT END", activePlayer.value.guessedCardIndex);
+                return;
+            }
+
+            if (activePlayer.value.cards[activePlayer.value.guessedCardIndex - 1].id === '') {
+                console.log("NO CARD AT LEFT", activePlayer.value.guessedCardIndex);
+                return;
+            }
+
+            cardSwipeSound.play();
+
+            console.log("MOVE CARD LEFT", activePlayer.value.guessedCardIndex);
+
+            Helpers.switch(activePlayer.value.guessedCardIndex-1, activePlayer.value.guessedCardIndex, activePlayer.value.cards);
+            Helpers.switch(activePlayer.value.guessedCardIndex, activePlayer.value.guessedCardIndex-1, hitstarCards.value);
+
+            activePlayer.value.guessedCardIndex--;
         },
 
         /**
          * Moves the card right. Called by a controller.
          */ 
         moveCardRight() {
-            console.log("MOVE CARD RIGHT");
-            activePlayer.value.guessedCardIndex = Math.min(activePlayer.value.maxCardIndex, activePlayer.value.guessedCardIndex + 1);
-            Helpers.switchTimeLineCards();
+            if (activePlayer.value.guessedCardIndex + 1 > MAX_CARDS - 1) {
+                console.log("REACHED RIGHT END", activePlayer.value.guessedCardIndex);
+                return;
+            }
 
+            if (activePlayer.value.cards[activePlayer.value.guessedCardIndex + 1].id === '') {
+                console.log("NO CARD AT RIGHT", activePlayer.value.guessedCardIndex);
+                return;
+            }
+
+            cardSwipeSound.play();
+
+            console.log("MOVE CARD RIGHT", activePlayer.value.guessedCardIndex);
+
+            Helpers.switch(activePlayer.value.guessedCardIndex+1, activePlayer.value.guessedCardIndex, activePlayer.value.cards);
+            Helpers.switch(activePlayer.value.guessedCardIndex, activePlayer.value.guessedCardIndex+1, hitstarCards.value);
+
+            activePlayer.value.guessedCardIndex++;
         },
 
         /**
@@ -369,8 +542,10 @@ export const useGameStore = defineStore('game', () => {
          */ 
         commitGuess() {
             console.log("COMMIT GUESS");
-            activePlayer.value.cards.push({ id: "0", title: "GUESS", year: NaN, interpreter: "GUESS", position: activePlayer.value.guessedCardIndex });
-            // Helpers.send(guessMsg("commit", GameStateNew.GUESS));
+
+            Helpers.replaceAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards, hitstarCard);
+
+            flipCardSound.play();
             if (gameCycleStore.activeGameState === GameState.GUESS) {
                 gameCycleStore.setGameState(GameState.WAIT_FOR_DOUBT);
                 Helpers.send(turnMsg(sessionStore.getSessionID(), GameState.WAIT_FOR_DOUBT, activePlayer.value.id))
@@ -387,26 +562,40 @@ export const useGameStore = defineStore('game', () => {
          */
         startDoubtCountDown() {
             timeOut = setTimeout(() => {
-                doubtCountDown.value = 5;
+                doubtCountDown.value = DOUBT_INTERVALL_STEP_NUM;
+                popSound.play();
                 countDown = setInterval(() => {
+                    popSound.play();
                     doubtCountDown.value--;
                     console.log(doubtCountDown.value);
                     if (doubtCountDown.value <= 0) {
                         clearInterval(countDown);
                         this.animateEvaluation(false);
                         doubtCountDown.value = 0;
-                    } 
-                 }, DOUBT_INTERVALL_STEP);
+                    }
+                }, DOUBT_INTERVALL_STEP);
             }, DOUBT_INTERVALL_ANNOUNCEMENT);
         },
 
         startDoubtPhase(player: Player) {
+
+            // Helpers.removeAt(activePlayer.value.guessedCardIndex, hitstarCards.value);
+
             clearTimeout(timeOut);
             clearInterval(countDown);
             doubtCountDown.value = 0;
             Helpers.setPlayerAsActive(player);
             Helpers.subtractToken(player);
             gameCycleStore.setGameState(GameState.DOUBT);
+
+            cardSwipeSound.play();
+            setTimeout(() => {
+                cardSwipeSound.play();
+                setTimeout(() => {
+                    swordSound.play();
+                }, 1000);
+            }, 1000);
+
             setTimeout(() => {
 
                 console.log("Player on turn", playerOnTurn.value);
@@ -424,32 +613,19 @@ export const useGameStore = defineStore('game', () => {
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION);
             setTimeout(() => {
                 this.evaluateGuess(wasDoubt);
-            }, EVALUATION_ANIMATION_DURATION)
+            }, 10)
         },
 
         evaluateGuess(wasDoubt: boolean) {
             gameCycleStore.setGameState(GameState.EVALUATION);
 
-            let lowerBound = Number.NEGATIVE_INFINITY;
-            let upperBound = Number.POSITIVE_INFINITY;
+            cardSwipeSound.play();
 
-            if (Helpers.hasCard(activePlayer.value.guessedCardIndex - 1, activePlayer.value)) {
-                lowerBound = Helpers.getCard(activePlayer.value.guessedCardIndex - 1, activePlayer.value)!.year;
-            }
+            Helpers.replaceAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards, placeHolderCard);
 
-            if (Helpers.hasCard(activePlayer.value.guessedCardIndex + 1, activePlayer.value)) {
-                upperBound = Helpers.getCard(activePlayer.value.guessedCardIndex + 1, activePlayer.value)!.year;
-            }
-
-            // console.log('LOWER BOUND: ', lowerBound, 'UPPER BOUND: ', upperBound);
-
-            activePlayer.value.cards.splice(
-                activePlayer.value.cards.indexOf(
-                    activePlayer.value.cards.find((c) => c.position === activePlayer.value.guessedCardIndex)!), 1);
-
-            // console.log(currentCard.value.year);
-
-            if (currentCard.value.year >= lowerBound && currentCard.value.year <= upperBound) {
+            if (Helpers.getYearOfCard(activePlayer.value.guessedCardIndex - 1) <= currentCard.value.year
+                && Helpers.getYearOfCard(activePlayer.value.guessedCardIndex + 1) >= currentCard.value.year
+            ) {
                 this.evaluatePositive(wasDoubt);
             } else {
                 this.evaluateNegative(wasDoubt);
@@ -459,12 +635,21 @@ export const useGameStore = defineStore('game', () => {
         evaluatePositive(wasDoubt: boolean) {
             console.log('POSITIVE');
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_POSITIVE);
+
+            if (wasDoubt) {
+                console.log("WAS DOUBT");
+                console.log("PLAYER ON TURN CARDS", playerOnTurn.value.cards);
+                console.log("CARDS COPY", activePlayerCardsCopy);
+
+                playerOnTurn.value.cards = [...activePlayerCardsCopy];
+                activePlayerCardsCopy = [];
+            }
+
             setTimeout(() => {
-                if (wasDoubt) {
-                    Helpers.resetTimeLineCards(playerOnTurn.value);
-                }
-                // Helpers.resetTimeLineCards(activePlayer.value);
-                activePlayer.value.cards.push({ ...currentCard.value, position: activePlayer.value.guessedCardIndex });
+                successSound.play();
+            }, 2000);
+            setTimeout(() => {
+                Helpers.replaceAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards, currentCard.value);
                 gameCycleStore.setGameState(GameState.TURNEND);
                 setTimeout(() => {
                     if (!this.checkWinner())
@@ -477,8 +662,16 @@ export const useGameStore = defineStore('game', () => {
             console.log('NEGATIVE');
             gameCycleStore.setGameState(GameState.ANIMATE_EVALUATION_NEGATIVE);
             setTimeout(() => {
+                failureSound.play();
+            }, 2000);
+            setTimeout(() => {
                 gameCycleStore.setGameState(GameState.TURNEND);
-                Helpers.resetTimeLineCards(activePlayer.value);
+                Helpers.removeAt(activePlayer.value.guessedCardIndex, activePlayer.value.cards);
+                if (activePlayer.value.removedAt === 'left') {
+                    Helpers.insertAt(0, activePlayer.value.cards, placeHolderCard);
+                } else {
+                    Helpers.insertAt(MAX_CARDS - 1, activePlayer.value.cards, placeHolderCard);
+                }
                 setTimeout(() => {
                     if (wasDoubt) {
                         Helpers.setPlayerAsActive(playerOnTurn.value);
@@ -492,11 +685,18 @@ export const useGameStore = defineStore('game', () => {
         },
 
         checkWinner() {
-            if (activePlayer.value.cards.length === 10) {
-                gameCycleStore.setGameState(GameState.GAMEEND);
-                return true;
+
+            for (let card of activePlayer.value.cards) {
+                if (card.id === '') {
+                    return false;
+                }
             }
-            return false;
+            fanfareSound.play();
+            gameCycleStore.setGameState(GameState.GAMEEND);
+            setTimeout(() => {
+                router.push('/end');
+            }, 5000);
+            return true;
         }
     }
 
@@ -508,12 +708,14 @@ export const useGameStore = defineStore('game', () => {
         players,
         activePlayer,
         playerOnTurn,
-        getCard: Helpers.getCard,
-        hasCard: Helpers.hasCard,
+        // getCard: Helpers.getCard,
+        // hasCard: Helpers.hasCard,
         doubtCountDown,
         currentCard,
         DRAW_CARD_DURATION,
         SONG_DURATION,
-        startGame
+        startGame,
+        colors,
+        hitstarCards
     }
 });

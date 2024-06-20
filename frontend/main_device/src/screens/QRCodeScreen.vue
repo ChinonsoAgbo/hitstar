@@ -6,12 +6,13 @@ import { useGameStore } from "@stores/gameStore";
 import { Player } from "@shared/types";
 import { ref } from "vue";
 import mqtt from "mqtt";
+import {ArrowLeftIcon, MusicalNoteIcon, SwatchIcon} from "@heroicons/vue/24/solid";
 
 
 
 const sessionStore = useSessionStore();
 const gameStore = useGameStore()
-const url = `http://${sessionStore.getIPAddress()}:8082/index.html/#/controller-lobby/${sessionStore.getSessionID()}`;
+const url = `http://${sessionStore.getIPAddress()}:5174/#/controller-lobby/${sessionStore.getSessionID()}`;
 const qrcode = useQRCode(url);
 
 
@@ -34,18 +35,21 @@ client.on("message", function (_, message) {
     name : msg.playerName, 
     iconURL : msg.avatarUrl,
     tokens : 3, 
-    cards:[    {
-          id: "1",
-          title: "HITSTAR",
-          year: 1920,
-          interpreter: "HITSTAR",
-          position: 5,
-        }],
+    cards:[],
     guessedCardIndex : 5,
-    lastGuessedCardIndex: 5,
-    minCardIndex : 0,
-    maxCardIndex : 10,    
+    color: gameStore.colors.pop()!,
+    removedAt: 'left'
   }
+
+  //     id: "1",
+  //     name: "Player 2",
+  //     tokens: 3,
+  //     cards: [],
+  //     iconURL: "image2.png",
+  //     color: "green",
+  //     guessedCardIndex: 4,
+  // },
+
   if(gameStore.players.filter(p=> p.id === player.id).length === 0 && !msg.isLeaving){
     gameStore.players.push(player)
   }
@@ -72,63 +76,67 @@ function addPlayer(incomingPlayer: any) {
   // could check if player is already in the list
   //if (!players.value.some(player => player.name === playerName)) {
   if (incomingPlayer) {
-  
-
-    playersReadyTojoin.value.push({
-      id: incomingPlayer.senderId,
-      name: incomingPlayer.playerName,
-      icon: "profile-picture-5.jpg",
-      tokens: incomingPlayer.tokens,
-      cards: incomingPlayer.cards,
-    });
+    playersReadyTojoin.value.push(incomingPlayer);
   }
   console.log("Player lenth", playersReadyTojoin.value.length);
 }
+
 </script>
 
 <template>
   <div
-    class="grid grid-cols-2 gap-4 bg-primary-300 min-h-screen items-center justify-center p-8"
+    class="min-h-screen"
   >
-    <div class="flex flex-col items-center space-y-8">
-      <h1 class="text-xl font-bold">Join the game using this QR code</h1>
-      <img class="rounded-lg w-64 h-64" :src="qrcode" alt="QR Code" />
 
-      <HCopy :url="url"></HCopy>
-
-      <div class="grid grid-cols-2 gap-4 items-stretch justify-center">
-        <RouterLink to="/game">
-          <!-- A Button for starting a Game -->
-          <HButton>Start game</HButton>
-        </RouterLink>
-        <RouterLink to="/start">
-          <!-- A button to cancel the game creation  -->
-          <HButton>Cancel</HButton>
-        </RouterLink>
-        <RouterLink to="/design-settings">
-          <!-- A button to go to  the Design settings  -->
-          <HButton>Design settings</HButton>
-        </RouterLink>
-        <RouterLink to="/game-settings">
-          <!-- A button to go to  the Game settings  -->
-          <HButton>Game settings</HButton>
-        </RouterLink>
-      </div>
-    </div>
     <!-- Creates a List of Users that are Connected to the server and are connceted  -->
-    <ul class="max-w-md divide-y divide-secondary-900 dark:divide-gray-700">
-      <p class="text-lg font-semibold">Players in the waiting lobby:</p>
-      <li class="py-3 sm:py-4">
-        <div class="w-full divide-y divide-secondary-900 dark:divide-gray-700">
-          <div class="flex flex-col space-y-4 rtl:space-x-reverse">
-            <HPlayerNameHorizontal
-              v-for="player in gameStore.players"
-              :player="player"
-            >
-            </HPlayerNameHorizontal>
-          </div>
+
+    <div class="absolute p-5 top-[10%] left-[5%] h-[80%] w-[90%] rounded-lg gap-2 backdrop-blur-md grid grid-cols-2">
+
+      <RouterLink to="/start">
+        <HButton class="fixed -top-5 -right-5 flex justify-around items-center">
+          <ArrowLeftIcon class="w-8 h-8 mr-5" />
+          BACK
+        </HButton>
+      </RouterLink>
+
+      <div class="flex flex-col items-center space-y-8">
+        <h1 class="text-xl font-bold text-white">JOIN THE GAME</h1>
+        <div class="p-2 flex justify-center rounded-lg align-middle backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
+          <img class="rounded-lg w-64 h-64" :src="qrcode" alt="QR Code" />
         </div>
-      </li>
-    </ul>
+        <HCopy :url="url"></HCopy>
+      </div>
+
+      <ul class="max-w-md divide-y divide-secondary-900 dark:divide-gray-700">
+        <p class="absolute top-5 text-2xl font-semibold text-white">WAITING LOBBY</p>
+
+          <div class="absolute top-14 w-[40%] px-10 py-5">
+
+              <HPlayerNameHorizontal
+                  v-for="player in gameStore.players"
+                  :player="player">
+
+              </HPlayerNameHorizontal>
+          </div>
+      </ul>
+
+    </div>
+
+    <div class="absolute bottom-5 left-5 grid grid-cols-4 gap-4 items-stretch justify-center">
+      <RouterLink to="/game">
+        <HButton class="animate-pulse w-full flex justify-around items-center">
+          START GAME
+          <MusicalNoteIcon class="w-8 h-8 mx-5" />
+        </HButton>
+      </RouterLink>
+      <RouterLink to="/design-settings">
+        <!-- A button to go to  the Design settings  -->
+        <HButton class="w-full flex justify-around items-center">
+          DESIGN SETTINGS
+          <SwatchIcon class="w-8 h-8 mx-5" />
+        </HButton>
+      </RouterLink>
+    </div>
+
   </div>
 </template>

@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import { HSubmitButton, HButton, HCard } from '@components/'
 import { IMAGE_URL } from "@shared/urls";
 import {useAccountStore} from "@stores/accountStore";
+import {ArrowLeftIcon} from "@heroicons/vue/24/solid";
+import HInput from "@components/HInput.vue";
+import HWarning from "@components/HWarning.vue";
 
 //TODO Ergänzen: Logout-Funktion, Eingabevalidierung (Frontend & Backend)
 
@@ -46,6 +49,44 @@ async function login() {
 </script>
 
 <template>
+
+  <div class="absolute p-5 top-[10%] right-[10%] h-[80%] w-[40%] rounded-lg gap-2 backdrop-blur-md flex flex-col items-stretch justify-center">
+
+    <RouterLink to="/start">
+      <HButton class="fixed -top-5 -right-5 flex justify-around items-center">
+        <ArrowLeftIcon class="w-8 h-8 mr-5" />
+        BACK
+      </HButton>
+    </RouterLink>
+
+    <form class="max-w-sm" @submit.prevent="login">
+      <div class="mb-2">
+        <label for="username" class="block mb-2 text-lg font-medium text-white">
+          Your Username
+        </label>
+        <HInput id="username" placeholder="Username..." type="text" v-model="username"/>
+      </div>
+      <div class="mb-2">
+        <label for="password" class="block mb-2 text-lg font-medium text-white">
+          Your Password
+        </label>
+        <HInput id="password" placeholder="Password..." type="password" v-model="password"/>
+      </div>
+
+      <HWarning v-if="!isFormValid || infoText !== ''">
+        <p v-if="!isFormValid" class="text-red-500 text-lg mt-1">Please fill in all fields.</p>
+        <p v-if="infoText !== ''" class="text-blue-500 text-lg mt-1">{{infoText}}</p>
+      </HWarning>
+
+      <HButton class="w-full mt-5" type="submit" :disabled="!isFormValid">
+        Login
+      </HButton>
+
+    </form>
+
+  </div>
+
+  <!--
   <div class="flex flex-col items-center justify-center space-y-3 bg-primary-300 min-h-screen">
     <h1 class="mb-5 text-xl font-bold">Login for your Hitstar account</h1>
     <div class="flex flex-row space-x-5">
@@ -98,4 +139,5 @@ async function login() {
       </HCard>
     </div>
   </div>
+  -->
 </template>

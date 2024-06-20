@@ -2,7 +2,7 @@
 import { HButton, HAvatar } from "@components/";
 import { ref } from "vue";
 import { IMAGE_URL } from "@shared/urls";
-
+import { ArrowRightEndOnRectangleIcon, UserIcon, MusicalNoteIcon, PuzzlePieceIcon } from "@heroicons/vue/24/solid";
 
 
 const isLoggedIn = ref(true);
@@ -19,33 +19,45 @@ const changeLoginStatus = () => {
 
 <template>
 
-  <div @click="changeLoginStatus" class="absolute top-5 right-5 h-16 w-16">
-    <HAvatar :url="IMAGE_URL + 'hitstar.jpg'"> </HAvatar>
+  <div @click="changeLoginStatus" class="hover:cursor-pointer absolute top-5 right-5 h-16 w-16 flex flex-col items-center justify-between">
+    <HAvatar :url="IMAGE_URL + 'avatar.bmp'" />
   </div>
-  <div class="flex flex-col items-center justify-center space-y-3s bg-primary-300 min-h-screen">
-    <img class="rounded-full w-96 h-96, flex justify-center, align-middle" :src="`${IMAGE_URL}hitstar.jpg`"
-      alt="image description" />
 
-    <div class="items-center space-y-3 grid-cols-2 gap-4">
+  <div class="flex items-center justify-evenly min-h-screen">
+
+    <div class="absolute p-5 top-[30%] right-[15%] h-[40%] w-[30%] rounded-lg gap-2 backdrop-blur-md flex flex-col items-stretch justify-center">
+
+      <RouterLink v-show="isLoggedIn" to="/spotify-login">
+        <!-- <HButton @click="sessionStore.createSessionID">Start game</HButton> -->
+        <HButton class="animate-pulse w-full flex justify-around items-center">
+          START GAME
+          <MusicalNoteIcon class="w-8 h-8 mx-5" />
+        </HButton>
+      </RouterLink>
+
       <RouterLink v-show="!isLoggedIn" to="/login">
-        <HButton class="lg:m-5 m-10">Log in</HButton>
+        <HButton class="w-full flex justify-around items-center">
+          LOG IN
+          <UserIcon class="w-8 h-8 mx-5" />
+        </HButton>
       </RouterLink>
 
       <RouterLink v-show="!isLoggedIn" to="/register">
-        <HButton class="lg:m-5 m-10">Register</HButton>
+        <HButton class="w-full flex justify-around items-center">
+          REGISTER
+          <ArrowRightEndOnRectangleIcon class="w-8 h-8 mx-5" />
+        </HButton>
       </RouterLink>
-      <div class="items-center space-y-3 gap-4">
 
-        <RouterLink v-show="isLoggedIn" to="/spotify-login">
-          <!-- <HButton @click="sessionStore.createSessionID">Start game</HButton> -->
-          <HButton>Start game</HButton>
+      <RouterLink v-show="isLoggedIn" to="/start">
+        <HButton class="w-full flex justify-around items-center">
+          INSTRUCTIONS
+          <PuzzlePieceIcon class="w-8 h-8 mx-5" />
+        </HButton>
+      </RouterLink>
 
-        </RouterLink>
-      </div>
     </div>
-    <RouterLink to="/">
-      <HButton class="lg:m-5 m-10">Game instructions</HButton>
-    </RouterLink>
+
   </div>
 
 </template>
