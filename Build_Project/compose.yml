@@ -1,12 +1,26 @@
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: postgres
     environment:
       - 'POSTGRES_DB=hitstar_backend'
       - 'POSTGRES_PASSWORD=postgres'
       - 'POSTGRES_USER=postgres'
+
+
+
+  springboot:
+    image: springio/hitstar_backend
     ports:
-      - '6543:5432'
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/hitstar_backend
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
 
   # mqtt server
   mosquitto:
@@ -47,7 +61,8 @@ services:
     ports:
       - "8083:80"
     volumes:
+      - ./nginx/assets/nginx.conf:/etc/nginx/default.conf
       - ../backend/images:/usr/share/nginx/html/images
       - ../backend/sounds:/usr/share/nginx/html/sounds
-      - ./nginx/assets/nginx.conf:/etc/nginx/default.conf
+      
 
