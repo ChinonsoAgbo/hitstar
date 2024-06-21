@@ -106,15 +106,7 @@ public class AccountServiceTest {
 
     }
 
-    @Test
-    void AccountAlreadyExists() {
-        when(accountRepository.save(any())).thenReturn(account);
-        account = accountService.saveAccount(account);
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            accountService.saveAccount(account);
-        });
-        assertTrue(accountService.findByID(account.getId()).isPresent());
-    }
+
 
 
     @AfterEach

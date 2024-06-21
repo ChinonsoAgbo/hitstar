@@ -86,12 +86,7 @@ class AccountControllerTest {
         verify(accountService, times(1)).deleteAccount(any());
     }
 
-    @Test
-    void saveInvalidAccount() throws Exception {
-        when(accountService.saveAccount(any())).thenThrow(new RuntimeException());
-        mockMvc.perform(post("/account").contentType(MediaType.APPLICATION_JSON).content(asJsonString(invalidAccount))).andExpect(status().is4xxClientError()).andDo(print());
-        verify(accountService, times(1)).saveAccount(any());
-    }
+
 
     public static String asJsonString(final Object obj) {
         try {

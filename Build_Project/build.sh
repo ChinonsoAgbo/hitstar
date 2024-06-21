@@ -3,6 +3,13 @@
 # Docker herunterfahren
 docker compose down
 
+# Das Spring-Boot-Projekt in builden
+cd ../backend
+docker build --build-arg JAR_FILE=../build/libs/backend-0.0.1-SNAPSHOT.jar -t springio/hitstar_backend .
+./gradlew build && java -jar build/libs/backend-0.0.1-SNAPSHOT.jar
+
+
+
 # In das Verzeichnis 'frontend/main_device' wechseln und bauen
 cd ../frontend/main_device
 npm run build
