@@ -20,26 +20,30 @@ services:
     volumes:
       - ../backend/mosquitto:/mosquitto
 
-  # nginx for serving images in backend
-  web:
+  # nginx for serving the frontend for the main_device
+  web_main_device:
     image: nginx:latest
+    container_name: web_main_device
     ports:
       - "8081:80"
     volumes:
       - ../frontend/main_device/dist:/usr/share/nginx/html/main_device
       - ./nginx/main_device/nginx.conf:/etc/nginx/conf.d/default.conf
 
-
-  web2:
+ # nginx for serving the frontend for the controller
+  web_controller:
     image: nginx:latest
+    container_name: web_controller
     ports:
       - "8082:80"
     volumes:
       - ../frontend/controller/dist:/usr/share/nginx/html/controller
       - ./nginx/controller/nginx.conf:/etc/nginx/conf.d/default.conf
       
-  web3:
+   # nginx for serving the the images and sounds
+  web_assets:
     image: nginx:latest
+    container_name: web_assets
     ports:
       - "8083:80"
     volumes:
