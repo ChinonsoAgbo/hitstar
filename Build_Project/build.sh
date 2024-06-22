@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Beendet das Skript, wenn ein Befehl fehlschlägt
+set -e
+
 # Docker herunterfahren
 docker compose down
 

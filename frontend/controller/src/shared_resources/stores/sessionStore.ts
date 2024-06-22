@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import { Ref, ref } from "vue";
 
-const sessionID: Ref<string> = ref("");
 
 export const useSessionStore = defineStore("session", () => {
+  
+const sessionID: Ref<string> = ref("");
   function setSessionID(sessionId: string) {
     sessionID.value = sessionId;
   }
