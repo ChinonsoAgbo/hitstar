@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {IMAGE_URL, SOUND_URL} from "@shared/urls";
-import {onMounted, watch} from "vue";
+import {onMounted, watch, ref} from "vue";
 import {useRoute} from "vue-router";
 
 const music = new Audio(`${SOUND_URL}8Bit_music.mp3`);
@@ -24,11 +24,12 @@ watch(route, (before, after) => {
     music.play();
   }
 })
+const bg_url = ref(`${IMAGE_URL}/stage.jpg`)
 </script>
 
 <template>
 
-  <div class="bg-[url('http://192.168.178.106:8083/images/stage.jpg')] bg-center bg-cover fixed top-0 left-0 w-full h-full"></div>
+  <div class="bg-img" :style="{backgroundImage: 'url(' + bg_url + ')'}"></div>
 
     <div class="fixed top-0 left-[10%] h-full flex items-center justify-center">
       <div class="background-animate p-5 flex justify-center align-middle rounded-full backdrop-blur-md bg-gradient-to-r from-orange-500 to-blue-800">
@@ -40,6 +41,16 @@ watch(route, (before, after) => {
 </template>
 
 <style scoped>
+.bg-img{
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 .background-animate {
   background-size: 400%;
   -webkit-animation: AnimationName 15s ease infinite;
@@ -57,5 +68,3 @@ watch(route, (before, after) => {
   }
 }
 </style>
-
-
