@@ -37,6 +37,7 @@ async function login() {
       throw new Error('Login failed');
     }
     const data = await response.json();
+    localStorage.setItem('user', JSON.stringify(data));
     accountStore.setAccount(data.username, data.token);
     infoText.value='Logged in Successfully.';
     console.log(infoText.value)
