@@ -14,13 +14,13 @@ const password = ref('')
 const infoText = ref('')
 
 const accountStore = useAccountStore()
+const successful = ref(false)
 
 const isFormValid = computed(() => {
   return username.value !== '' && password.value !== ''
 })
 
 async function login() {
-  console.log(username.value + ", " + password.value);
   try {
     const response = await fetch('http://localhost:8080/api/auth/signin', {
       method: 'POST',
@@ -41,6 +41,7 @@ async function login() {
     infoText.value='Logged in Successfully.';
     console.log(infoText.value)
     console.log(accountStore.account);
+    successful.value=true;
   } catch (error) {
     infoText.value=error.message;
     console.log(error)
@@ -78,10 +79,10 @@ async function login() {
         <p v-if="infoText !== ''" class="text-blue-500 text-lg mt-1">{{infoText}}</p>
       </HWarning>
 
-      <HButton class="w-full mt-5" type="submit" :disabled="!isFormValid">
+      <HButton v-if="!successful" class="w-full mt-5" type="submit" :disabled="!isFormValid">
         Login
       </HButton>
-      <RouterLink v-if="accountStore.loggedIn" to="start">
+      <RouterLink v-if="successful" to="start">
         <HButton class="w-full mt-5" type="button">
           TO START
         </HButton>
