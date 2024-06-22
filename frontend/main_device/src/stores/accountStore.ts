@@ -9,11 +9,18 @@ export const useAccountStore = defineStore('user', () => {
 
     const loggedIn: Ref<boolean> = ref(false);
 
+    const showLoginButtons : Ref<boolean> = ref(true);
 
+    const changeInterface = () => {
+        if(loggedIn) {
+            showLoginButtons.value = !showLoginButtons.value;
+        }
+    };
 
     function setAccount(username: string, token: string ){
         account.value = {username, token };
         loggedIn.value=true;
+        changeInterface()
     }
 
     function clearAccount(){
@@ -27,7 +34,9 @@ export const useAccountStore = defineStore('user', () => {
         account,
         loggedIn,
         setAccount,
-        clearAccount
+        clearAccount,
+        changeInterface,
+        showLoginButtons
     };
 
 });
