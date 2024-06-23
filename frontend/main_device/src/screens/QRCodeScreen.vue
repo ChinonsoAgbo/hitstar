@@ -4,10 +4,11 @@ import { useQRCode } from "@vueuse/integrations/useQRCode";
 import { useSessionStore } from "@shared/stores/sessionStore";
 import { useGameStore } from "@stores/gameStore";
 import { Player } from "@shared/types";
-import { ref } from "vue";
+import {computed, ref} from "vue";
 import mqtt from "mqtt";
 import {ArrowLeftIcon, MusicalNoteIcon, SwatchIcon} from "@heroicons/vue/24/solid";
 import {router} from "../router";
+import HWarning from "@components/HWarning.vue";
 
 
 
@@ -24,6 +25,10 @@ const client = mqtt.connect(`ws://${sessionStore.getIPAddress()}:9001`);
 // const playersToJoin = useGameStore().pla
 
 const playersReadyTojoin = ref<Player[]>([]);
+
+const hasEnoughPlayers = computed(() => {
+  return playersReadyTojoin.value.length > 2 && playersReadyTojoin.value.length <9;
+})
 
 // subscribing to players
 // wait for joining players to publich on joing
@@ -79,7 +84,7 @@ function addPlayer(incomingPlayer: any) {
   if (incomingPlayer) {
     playersReadyTojoin.value.push(incomingPlayer);
   }
-  console.log("Player lenth", playersReadyTojoin.value.length);
+  console.log("Player length ", playersReadyTojoin.value.length);
 }
 
 async function deleteGame() {
@@ -193,7 +198,7 @@ async function savePlayers() {
     </div>
     <div class="absolute bottom-5 left-5 grid grid-cols-4 gap-4 items-stretch justify-center">
       <form @submit.prevent="savePlayers">
-        <HButton type="submit" class="animate-pulse w-full flex justify-around items-center">
+        <HButton type="submit" class="animate-pulse w-full flex justify-around items-center" :disabled="!hasEnoughPlayers">
           START GAME
           <MusicalNoteIcon class="w-8 h-8 mx-5" />
         </HButton>
@@ -205,6 +210,9 @@ async function savePlayers() {
           <SwatchIcon class="w-8 h-8 mx-5" />
         </HButton>
       </RouterLink>
+      <HWarning v-if="!hasEnoughPlayers" >
+        <p v-if="!hasEnoughPlayers" class="text-red-500 text-lg mt-1">You need 3 to 8 players to start a game</p>
+      </HWarning>
     </div>
 
 
