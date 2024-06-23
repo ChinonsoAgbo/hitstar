@@ -72,7 +72,7 @@ client.on("message", function (_, message) {
   }
 });
 
-// Function to add a new player to the lobby waaiting list
+// Function to add a new player to the lobby waiting list
 function addPlayer(incomingPlayer: any) {
   // could check if player is already in the list
   //if (!players.value.some(player => player.name === playerName)) {
@@ -109,6 +109,47 @@ async function deleteGame() {
       sessionStore.setGameCreated(false);
       console.log("Game was deleted successfully!")
       await router.push('/start');
+    } catch (error) {
+      console.log(error)
+    }
+
+}
+
+async function savePlayers() {
+  console.log("submit button works!")
+    try {
+      const game = JSON.parse(localStorage.getItem('game'));
+      const id = game ? game.id : null;
+
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user ? user.token : null;
+
+      for(const player of gameStore.players) {
+        const response = await fetch('http://localhost:8080/player', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            playerName: player.name,
+            avatarURL: player.iconURL,
+            game:{
+              id:id
+            }
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Saving Player failed');
+        }
+        console.log("Saving successful for player" + player.name);
+        const data = await response.json();
+
+        localStorage.setItem(player.id , JSON.stringify(data));
+        console.log(JSON.stringify(data))
+      }
+      await router.push('/game')
     } catch (error) {
       console.log(error)
     }
@@ -154,14 +195,13 @@ async function deleteGame() {
       </ul>
 
     </div>
-
     <div class="absolute bottom-5 left-5 grid grid-cols-4 gap-4 items-stretch justify-center">
-      <RouterLink to="/game">
-        <HButton class="animate-pulse w-full flex justify-around items-center">
+      <form @submit.prevent="savePlayers">
+        <HButton type="submit" class="animate-pulse w-full flex justify-around items-center">
           START GAME
           <MusicalNoteIcon class="w-8 h-8 mx-5" />
         </HButton>
-      </RouterLink>
+      </form>
       <RouterLink to="/design-settings">
         <!-- A button to go to  the Design settings  -->
         <HButton class="w-full flex justify-around items-center">
@@ -170,6 +210,7 @@ async function deleteGame() {
         </HButton>
       </RouterLink>
     </div>
+
 
   </div>
 </template>

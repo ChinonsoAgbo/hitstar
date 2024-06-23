@@ -684,6 +684,102 @@ export const useGameStore = defineStore('game', () => {
             }, SHOW_CARD_DURATION);
         },
 
+        async updateGameData(){
+            console.log("function is called")
+
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const token = user ? user.token : null;
+                const userId = user ? user.id : null;
+
+                const game = JSON.parse(localStorage.getItem('game'));
+                const gameId = game ? game.id : null;
+                const creationTime = game ? game.creationTime : null;
+
+                if (!token) {
+                    throw new Error('No token found');
+                }
+
+                const response = await fetch('http://localhost:8080/game', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        id: gameId,
+                        gameUrl: sessionStore.getSessionID(),
+                        creationTime: creationTime,
+                        endTime: new Date().getTime(),
+                        account:{
+                            id:userId
+                        }
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Creating Game failed');
+                }
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async updatePlayerData() {
+            try {
+                const game = JSON.parse(localStorage.getItem('game'));
+                const gameId = game ? game.id : null;
+
+                const user = JSON.parse(localStorage.getItem('user'));
+                const token = user ? user.token : null;
+
+                const sortedPlayers = players.value.sort((a, b) => b.cards.length - a.cards.length);
+                let counter =1;
+
+                for(const p of sortedPlayers) {
+
+                    const player = JSON.parse(localStorage.getItem(p.id));
+                    const playerId = player ? player.id : null;
+                    const playerName = player ? player.playerName : null;
+                    const avatatUrl = player ? player.avatarURL : null;
+                    const playerRank =counter;
+
+                    console.log(player)
+                    console.log(localStorage.getItem(p.id))
+
+                    const response = await fetch('http://localhost:8080/player', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            id: playerId,
+                            playerName: playerName,
+                            avatarURL: avatatUrl,
+                            playerRank: playerRank,
+                            game:{
+                                id:gameId
+                            }
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Updating Player failed');
+                    }
+                    const data = await response.json();
+                    console.log(data);
+                    counter ++;
+                }
+                await router.push('/end')
+            } catch (error) {
+                console.log(error)
+            }
+
+        },
+
         checkWinner() {
 
             for (let card of activePlayer.value.cards) {
@@ -694,10 +790,11 @@ export const useGameStore = defineStore('game', () => {
             fanfareSound.play();
             gameCycleStore.setGameState(GameState.GAMEEND);
             setTimeout(() => {
-                router.push('/end');
+                this.updateGameData();
+                this.updatePlayerData();
             }, 5000);
             return true;
-        }
+        },
     }
 
 
@@ -716,6 +813,6 @@ export const useGameStore = defineStore('game', () => {
         SONG_DURATION,
         startGame,
         colors,
-        hitstarCards
+        hitstarCards,
     }
 });
