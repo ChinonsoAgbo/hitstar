@@ -685,7 +685,6 @@ export const useGameStore = defineStore('game', () => {
         },
 
         async updateGameData(){
-            console.log("function is called")
 
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
@@ -745,9 +744,6 @@ export const useGameStore = defineStore('game', () => {
                     const playerName = player ? player.playerName : null;
                     const avatatUrl = player ? player.avatarURL : null;
                     const playerRank =counter;
-
-                    console.log(player)
-                    console.log(localStorage.getItem(p.id))
 
                     const response = await fetch('http://localhost:8080/player', {
                         method: 'PUT',

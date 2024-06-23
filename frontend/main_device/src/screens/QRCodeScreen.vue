@@ -83,11 +83,9 @@ function addPlayer(incomingPlayer: any) {
 }
 
 async function deleteGame() {
-  console.log("submit button works!")
     try {
-      console.log(localStorage.getItem('game'));
+
       const game = JSON.parse(localStorage.getItem('game'));
-      console.log(game);
       const id = game ? game.id : null;
 
       const user = JSON.parse(localStorage.getItem('user'));
@@ -116,7 +114,6 @@ async function deleteGame() {
 }
 
 async function savePlayers() {
-  console.log("submit button works!")
     try {
       const game = JSON.parse(localStorage.getItem('game'));
       const id = game ? game.id : null;
@@ -143,11 +140,10 @@ async function savePlayers() {
         if (!response.ok) {
           throw new Error('Saving Player failed');
         }
-        console.log("Saving successful for player" + player.name);
+        console.log("Saving successful for player " + player.name);
         const data = await response.json();
 
         localStorage.setItem(player.id , JSON.stringify(data));
-        console.log(JSON.stringify(data))
       }
       await router.push('/game')
     } catch (error) {
