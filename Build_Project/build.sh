@@ -33,10 +33,12 @@ sed -i "s/^VITE_IP_ADRESS=.*$/VITE_IP_ADRESS=$ip_adress/" $env_file_controller
 
 # In das Verzeichnis 'frontend/main_device' wechseln und bauen
 cd ../frontend/main_device
+npm install
 npm run build
 
 # In das Verzeichnis 'controller' wechseln und bauen
 cd ../controller
+npm install
 npm run build 
 
 # Zurück zum Hauptverzeichnis und in das Verzeichnis 'Docker' wechseln
