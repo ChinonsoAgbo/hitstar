@@ -1,4 +1,4 @@
-export interface Account{
+export interface Account {
   username: string;
   token: string;
 }
@@ -85,7 +85,58 @@ export interface MQTTMessage {
   message: Message;
 }
 
-const playerNames = ["Bananenbrei", "Carl Gustav", "Schwitziger Axel", "Jesus"];
+const playerNames = [
+  "Beethoven der Bassist",
+  "Mozart der Metronom",
+  "Bach der Beatboxer",
+  "Vivaldi der Vibraphonist",
+  "Chopin der Chorleiter",
+  "Haydn der Harmoniker",
+  "Handel der Harfenist",
+  "Schubert der Schlagzeuger",
+  "Tchaikovsky der Tamburinspieler",
+  "Brahms der Banjospieler",
+  "Mendelssohn der Mundharmonikaspieler",
+  "Verdi der Violinist",
+  "Puccini der Pianist",
+  "Wagner der Waldhornspieler",
+  "Strauss der Saxophonist",
+  "Mahler der Mandolinenspieler",
+  "Debussy der Dudelsackspieler",
+  "Ravel der Rapper",
+  "Gershwin der Gitarrist",
+  "Copland der Cellist",
+  "Stravinsky der Synthesizerspieler",
+  "Prokofiev der Perkussionist",
+  "Shostakovich der Schellenbaumschüttler",
+  "Bartok der Bassklarinettist",
+  "Bernstein der Blockflötist",
+  "Sibelius der Sousaphonist",
+  "Elgar der E-Bassist",
+  "Holst der Hornist",
+  "Vaughan Williams der Vibrafonist",
+  "Britten der Bratschist",
+  "Tippett der Triangelspieler",
+  "Lennon der Lautenspieler",
+  "McCartney der Mundharmonikaspieler",
+  "Harrison der Harfenist",
+  "Starr der Schlagzeuger",
+  "Joplin der Jazzpianist",
+  "Presley der Paukenschläger",
+  "Dylan der Dudelsackspieler",
+  "Marley der Mandolinenspieler",
+  "Wonder der Waldhornspieler",
+  "Jackson der Jazzgitarrist",
+  "Prince der Pianist",
+  "Madonna der Mundharmonikaspieler",
+  "Houston der Harfenist",
+  "Spears der Schlagzeuger",
+  "Timberlake der Tamburinspieler",
+  "Beyoncé der Banjospieler",
+  "Adele der Akkordeonspieler",
+  "Sheeran der Synthesizerspieler",
+  "Swift der Saxophonist"
+];
 /**
  * Wird an alle Geräte gesendet, wenn ein Spieler
  * - der Lobby beitritt
