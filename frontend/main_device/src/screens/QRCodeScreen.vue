@@ -7,6 +7,7 @@ import { Player } from "@shared/types";
 import { ref } from "vue";
 import mqtt from "mqtt";
 import {ArrowLeftIcon, MusicalNoteIcon, SwatchIcon} from "@heroicons/vue/24/solid";
+import {router} from "../router";
 
 
 
@@ -81,6 +82,39 @@ function addPlayer(incomingPlayer: any) {
   console.log("Player lenth", playersReadyTojoin.value.length);
 }
 
+async function deleteGame() {
+  console.log("submit button works!")
+    try {
+      console.log(localStorage.getItem('game'));
+      const game = JSON.parse(localStorage.getItem('game'));
+      console.log(game);
+      const id = game ? game.id : null;
+
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user ? user.token : null;
+
+      const response = await fetch('http://localhost:8080/game/'+id, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Deleting Game failed');
+      }
+      sessionStore.setSessionID("")
+      localStorage.removeItem('game')
+      sessionStore.setGameCreated(false);
+      console.log("Game was deleted successfully!")
+      await router.push('/start');
+    } catch (error) {
+      console.log(error)
+    }
+
+}
+
 </script>
 
 <template>
@@ -91,13 +125,12 @@ function addPlayer(incomingPlayer: any) {
     <!-- Creates a List of Users that are Connected to the server and are connceted  -->
 
     <div class="absolute p-5 top-[10%] left-[5%] h-[80%] w-[90%] rounded-lg gap-2 backdrop-blur-md grid grid-cols-2">
-
-      <RouterLink to="/start">
-        <HButton class="fixed -top-5 -right-5 flex justify-around items-center">
+      <form @submit.prevent="deleteGame">
+        <HButton type="submit" class="fixed -top-5 -right-5 flex justify-around items-center">
           <ArrowLeftIcon class="w-8 h-8 mr-5" />
           BACK
         </HButton>
-      </RouterLink>
+      </form>
 
       <div class="flex flex-col items-center space-y-8">
         <h1 class="text-xl font-bold text-white">JOIN THE GAME</h1>

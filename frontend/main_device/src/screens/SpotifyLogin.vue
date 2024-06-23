@@ -51,6 +51,7 @@ async function createGame() {
       }
       const data = await response.json();
       sessionStore.setSessionID(data.gameUrl)
+      localStorage.setItem('game', JSON.stringify(data))
       infoText.value='Game was created successfully';
       sessionStore.setInfoTextAvailable(true);
       sessionStore.setGameCreated(true);
@@ -60,7 +61,7 @@ async function createGame() {
       infoText.value=error.message;
     }
   }
-  }
+}
 
 
 
