@@ -22,7 +22,7 @@ const isFormValid = computed(() => {
 
 async function login() {
   try {
-    const response = await fetch('http://localhost:8080/api/auth/signin', {
+    const response = await fetch(`${import.meta.env.VITE_IP_ADRESS_WITH_HTTP}:8080/api/auth/signin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,6 +37,7 @@ async function login() {
       throw new Error('Login failed');
     }
     const data = await response.json();
+    localStorage.setItem('user', JSON.stringify(data));
     accountStore.setAccount(data.username, data.token);
     infoText.value='Logged in Successfully.';
     console.log(infoText.value)

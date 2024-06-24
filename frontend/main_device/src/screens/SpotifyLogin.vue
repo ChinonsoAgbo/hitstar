@@ -7,11 +7,62 @@ import { IMAGE_URL } from "@shared/urls";
 import { useSpotifyStore } from "@stores/spotifyStore.ts";
 import TimeLineStep from "@components/TimeLineStep.vue";
 import {UserIcon, ArrowLeftIcon, MusicalNoteIcon} from "@heroicons/vue/24/solid";
+import HWarning from "@components/HWarning.vue";
 
 const spotifyStore = useSpotifyStore();
 // parse the URL to retrieve the code parameter for spotify Token
 const code = new URLSearchParams(window.location.search).get("code"); // get access code
 const currentStep = ref(0)
+
+// is used to create a sessionStore  instance
+const sessionStore = useSessionStore();
+
+const infoText= ref("");
+
+async function createGame() {
+  console.log("submit button works!")
+  if(sessionStore.getSessionID() == ""){
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user ? user.token : null;
+      const id = user ? user.id : null;
+
+
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_IP_ADRESS_WITH_HTTP}:8080/game`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          creationTime: new Date().getTime(),
+          account:{
+            id:id
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Creating Game failed');
+      }
+      const data = await response.json();
+      sessionStore.setSessionID(data.gameUrl)
+      localStorage.setItem('game', JSON.stringify(data))
+      infoText.value='Game was created successfully';
+      sessionStore.setInfoTextAvailable(true);
+      sessionStore.setGameCreated(true);
+      console.log(data);
+    } catch (error) {
+      console.log(error)
+      infoText.value=error.message;
+    }
+  }
+}
+
 
 
 const startGame = (newValue: boolean) => { // show the button to sart game 
@@ -75,9 +126,6 @@ if (code) {
 }
 
 
-
-// is used to create a sessionStore  instance
-const sessionStore = useSessionStore();
 if (code) {
 const script = document.createElement('script');
 script.src = 'https://sdk.scdn.co/spotify-player.js';
@@ -129,7 +177,7 @@ onMounted(() => {
 </script>
 
 <template>
-
+  <form @submit.prevent="createGame">
     <div class="absolute p-5 top-[10%] right-[10%] h-[80%] w-[40%] rounded-lg \
                 gap-2 backdrop-blur-md flex flex-col items-stretch justify-center">
 
@@ -157,17 +205,26 @@ onMounted(() => {
             START GAME!
           </template>
           <template #button>
-            <RouterLink v-show="code && spotifyStore.is_active" to="/qr-code">
-              <HButton @click="sessionStore.createSessionID" class="animate-pulse w-full flex justify-around items-center">
-                START GAME
-                <MusicalNoteIcon class="w-8 h-8 mx-5" />
-              </HButton>
+            <HButton v-show="code && spotifyStore.is_active" type="submit" class="animate-pulse w-full flex justify-around items-center">
+              CREATE GAME
+              <MusicalNoteIcon class="w-8 h-8 mx-5" />
+            </HButton>
+            <RouterLink v-show="code && spotifyStore.is_active && sessionStore.getGameCreated()" to="/qr-code">
+                <HButton class="animate-pulse w-full flex justify-around items-center">
+                  START GAME
+                  <MusicalNoteIcon class="w-8 h-8 mx-5" />
+                </HButton>
             </RouterLink>
           </template>
+
         </TimeLineStep>
       </ol>
+      <HWarning v-if="sessionStore.getInfoTextAvailable()">
+        <p class="text-blue-500 text-lg mt-1">{{infoText}}</p>
+      </HWarning>
 
     </div>
+  </form>
 
     <!--    <div class="flex-col  w-full ">-->
 <!--    <div>-->

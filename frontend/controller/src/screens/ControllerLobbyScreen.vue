@@ -93,7 +93,7 @@ const bg_url = ref(`${IMAGE_URL}/stage.jpg`)
   <RouterLink to="/">
     <HButton class="fixed bottom-5 m-[5%] left-0 w-[90%] flex justify-around items-center">
       <ArrowLeftIcon class="w-8 h-8 mr-5" />
-      EXIT GAME
+      EXIT GAME 
     </HButton>
   </RouterLink>
 
