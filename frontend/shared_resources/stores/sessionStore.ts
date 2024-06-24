@@ -18,11 +18,7 @@ export const useSessionStore = defineStore("session", () => {
     sessionID.value = self.crypto.randomUUID();
   }
   function getIPAddress() {
-    //return "192.168.53.5";
-    //return "localhost";
-    return '192.168.178.106';
-    //return '192.168.178.87'
-    return '192.168.0.121';
+    return import.meta.env.VITE_IP_ADRESS;
   }
   function getGameCreated(){
     return gameCreated.value;
