@@ -5,7 +5,8 @@ set -e
 
 # Funktion, um die lokale IP-Adresse zu ermitteln
 get_local_ip() {
-    /mnt/c/Windows/System32/ipconfig.exe | grep 'IPv4-Adresse' | sed -n 's/.*: //p'
+    #/mnt/c/Windows/System32/ipconfig.exe | grep 'IPv4-Adresse' | sed -n 's/.*: //p'
+    ifconfig | grep 'inet6 ' | grep -v '127.0.0.1' | awk '{print $2}'
 }
 
 # Fragt ob das Skript im Dev-Mode gestartet werden soll.
