@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=hitstar_backend'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '6543:5432'
+
+  # mqtt server
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    hostname: mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+        - "1883:1883"
+        - "9001:9001"
+    volumes:
+      - "./mosquitto:/mosquitto"
+
+  # nginx for serving images in backend
+  web:
+    image: nginx:latest
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/default.conf
+      - ./images:/usr/share/nginx/html/images
+      - ./sounds:/usr/share/nginx/html/sounds
