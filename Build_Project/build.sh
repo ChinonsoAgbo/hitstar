@@ -5,12 +5,18 @@ set -e
 
 # Funktion, um die lokale IP-Adresse zu ermitteln
 get_local_ip() {
-    #/mnt/c/Windows/System32/ipconfig.exe | grep 'IPv4-Adresse' | sed -n 's/.*: //p'
-    ifconfig | grep 'inet6 ' | grep -v '127.0.0.1' | awk '{print $2}'
+    /mnt/c/Windows/System32/ipconfig.exe | grep 'IPv4-Adresse' | sed -n 's/.*: //p'
+    #ifconfig | grep 'inet6 ' | grep -v '127.0.0.1' | awk '{print $2}'
 }
 
 # Fragt ob das Skript im Dev-Mode gestartet werden soll.
-read -p "Soll das Programm im Entwicklermodus gestartet werden?(zum Out-of-the-Box testen oder builden bitte n wählen (j/n)): " dev_mode
+#read -p "Soll das Programm im Entwicklermodus gestartet werden?(zum Out-of-the-Box testen oder builden bitte n wählen (j/n)): " dev_mode
+
+# Erstellt die shared_resources-Verzeichisse in den beiden frontend-Projekten
+mkdir -p ../frontend/controller/src/shared_resources
+mkdir -p ../frontend/main_device/src/shared_resources
+touch ../frontend/controller/src/shared_resources/dummy.txt
+touch ../frontend/main_device/src/shared_resources/dummy.txt
 
 # Kopieren der shared_resources in die beiden frontend-Projekte
 sharedResources_Source="../frontend/shared_resources"
@@ -22,6 +28,8 @@ if [ ! -d "$sharedResources_Source" ]; then
     echo "Das Verzeichnis $sharedResources_Source existiert nicht. Bitte überprüfen Sie den Pfad."
     exit 1
 fi
+
+
 
 # Kopieren der gemeinsamen Ressourcen in die beiden Frontend-Projekte
 cp -a "$sharedResources_Source"/* "$shared_resources_main_device"
@@ -53,15 +61,15 @@ if [ "$dev_mode" = "j" ]; then
 
 else
     # Setzen Sie die Standardwerte, wenn keine Eingabe erfolgt, sonst werden das eingetragene Protokoll und die IP-Adresse verwendet
-    read -p "Bitte geben Sie das Protokoll ein (http oder https, Standard: https): " protocol
+    #read -p "Bitte geben Sie das Protokoll ein (http oder https, Standard: https): " protocol
     default_ip=$(get_local_ip)
     echo -e "Ggf. über cmd *ipconifg* vergleichen -> Die von uns ermittelten lokale IP-Adresse lauten:\n$default_ip"
     read -p "Bitte geben Sie die IP-Adresse ein (für Lokal dieses Format verwenden: 192.168.178.1, Standard: hitstar.ddns.net): " ip_adress
-    read -p "Möchten Sie das Backend bauen? (für den ersten durchlauf während des Aufsetzen unbedingt j, Standard: n): " build_backend
+    #read -p "Möchten Sie das Backend bauen? (für den ersten durchlauf während des Aufsetzen unbedingt j, Standard: j (j/n)): " build_backend
 
     ip_adress=${ip_adress:-hitstar.ddns.net}
-    protocol=${protocol:-https}
-    build_backend=${build_backend:-n}
+    protocol=${protocol:-http}
+    build_backend=${build_backend:-j}
     port=8082
 
 
@@ -111,6 +119,6 @@ rm -r "$shared_resources_controller"/*
 # Docker starten
 docker compose up -d
 
-echo -e "\nHerzlichen Glückwunsch! Das Projekt wurde vollständig gebaut, bitte überprüfen Sie ggf. in Docker Desktop,\nob alle 7 Container nach 10 Sekunden noch laufen. sSt das der Fall sollte alles funktioniert haben. \nHistar kann nun typischerweise bzw. abhänigig von den Eingaben unter folgender Adresse aufgerufen werden: http://localhost:8081"
+echo -e "\nHerzlichen Glückwunsch! Das Projekt wurde vollständig gebaut, bitte überprüfen Sie ggf. in Docker Desktop,\nob alle 6 Container nach 10 Sekunden noch laufen. Ist das der Fall sollte alles funktioniert haben. \nHistar kann nun typischerweise bzw. abhänigig von den Eingaben unter folgender Adresse aufgerufen werden: http://localhost:8081\nViel spaß beim spielen wünscht das das Hitstar-Entwicklungsteam."
 
 fi
